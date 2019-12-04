@@ -23,3 +23,15 @@ def calculate_houses(path):
             houses.add(position)
 
     return len(houses)
+
+
+def main():
+    with open("day03/input") as input_file:
+        path = input_file.readlines()[0]
+
+    houses = calculate_houses(path)
+    print(houses)
+
+
+if __name__ == "__main__":
+    main()
