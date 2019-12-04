@@ -9,5 +9,17 @@ def calculate_houses(path):
             x, y = position
             position = x + 1, y
             houses.add(position)
+        elif location == '<':
+            x, y = position
+            position = x - 1, y
+            houses.add(position)
+        elif location == '^':
+            x, y = position
+            position = x, y + 1
+            houses.add(position)
+        elif location == 'v':
+            x, y = position
+            position = x, y - 1
+            houses.add(position)
 
     return len(houses)
