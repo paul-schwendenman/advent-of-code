@@ -5,7 +5,7 @@ map_parens = {
 
 
 def count_parens(instructions):
-    return 0
+    return sum(map_parens[instruction] for instruction in instructions)
 
 
 def main():
