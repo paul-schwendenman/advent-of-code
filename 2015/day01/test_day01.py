@@ -1,4 +1,4 @@
-from day01 import count_parens
+from day01 import count_parens, find_basement
 
 
 def test_count_parens():
@@ -35,3 +35,11 @@ def test_count_parens8():
 
 def test_count_parens9():
     assert count_parens(")())())") == -3
+
+
+def test_find_basement():
+    assert find_basement(")") == 1
+
+
+def test_find_basement2():
+    assert find_basement("()())") == 5
