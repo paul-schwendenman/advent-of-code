@@ -22,14 +22,14 @@ def calculate_houses(path):
             position = x, y - 1
             houses.add(position)
 
-    return len(houses)
+    return houses
 
 
 def main():
     with open("day03/input") as input_file:
         path = input_file.readlines()[0]
 
-    houses = calculate_houses(path)
+    houses = len(calculate_houses(path))
     print(houses)
 
 
