@@ -1,5 +1,6 @@
 from day02 import (
-    get_dimensions, calculate_surface_area, calculate_paper_needed)
+    get_dimensions, calculate_surface_area, calculate_paper_needed,
+    calculate_bow_length, calculate_ribbon_length)
 
 
 def test_get_dimensions():
@@ -24,3 +25,19 @@ def test_calculate_paper_needed():
 
 def test_calculate_paper_needed2():
     assert calculate_paper_needed(1, 1, 10) == 43
+
+
+def test_calculate_bow_length():
+    assert calculate_bow_length(2, 3, 4) == 24
+
+
+def test_calculate_bow_length2():
+    assert calculate_bow_length(1, 1, 10) == 10
+
+
+def test_calculate_ribbon_length():
+    assert calculate_ribbon_length(2, 3, 4) == 34
+
+
+def test_calculate_ribbon_length2():
+    assert calculate_ribbon_length(1, 1, 10) == 14
