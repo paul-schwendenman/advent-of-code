@@ -11,8 +11,12 @@ def calculate_paper_needed(side_a, side_b, side_c):
 
 
 def main():
-    pass
+    with open("day02/input") as input_file:
+        lines = input_file.readlines()
+
+    total = sum(calculate_paper_needed(*get_dimensions(line)) for line in lines)
+    print(total)
 
 
 if __name__ == "__main__":
-    pass
+    main()
