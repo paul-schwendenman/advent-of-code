@@ -22,8 +22,11 @@ def main():
     with open("day02/input") as input_file:
         lines = input_file.readlines()
 
-    total = sum(calculate_paper_needed(*get_dimensions(line)) for line in lines)
-    print(total)
+    total_paper = sum(calculate_paper_needed(*get_dimensions(line)) for line in lines)
+    print(total_paper)
+
+    total_ribbon = sum(calculate_ribbon_length(*get_dimensions(line)) for line in lines)
+    print(total_ribbon)
 
 
 if __name__ == "__main__":
