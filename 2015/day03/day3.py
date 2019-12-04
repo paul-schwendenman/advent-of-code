@@ -32,6 +32,13 @@ def main():
     houses = len(calculate_houses(path))
     print(houses)
 
+    santa_path = (house for counter, house in enumerate(path) if counter % 2 == 0)
+    robot_path = (house for counter, house in enumerate(path) if counter % 2 == 1)
+
+    santa_houses = calculate_houses(santa_path)
+    robot_houses = calculate_houses(robot_path)
+    print(len(santa_houses.union(robot_houses)))
+
 
 if __name__ == "__main__":
     main()
