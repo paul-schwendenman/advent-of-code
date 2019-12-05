@@ -5,18 +5,18 @@ def calc_hash(key, counter):
     return hashlib.md5(data).hexdigest()
 
 
-def check_hash(hash):
-    return hash[:5] == "00000"
+def check_hash(hash, leading_zeros=5):
+    return hash[:leading_zeros] == "0" * leading_zeros
 
 
-def main(key):
+def main(key, leading_zeros=5):
     for counter in range(100000000):
         hash = calc_hash(key, counter)
-        if check_hash(hash):
+        if check_hash(hash, leading_zeros):
             break
 
     return counter
 
 
 if __name__ == "__main__":
-    print(main('iwrupvqb'))
+    print(main('iwrupvqb', 6))
