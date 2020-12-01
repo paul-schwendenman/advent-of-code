@@ -4,15 +4,9 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-flake8 = "*"
-doc8 = "*"
-mypy = "*"
-rope = "*"
 jupyter = "*"
 
 [packages]
-intcode = {editable = true,path = "./libs"}
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
