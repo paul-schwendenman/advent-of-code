@@ -1,5 +1,6 @@
 from day01 import part1, part2, prod
 
+
 def test_day1_part1():
     assert part1([1721, 979, 366, 299, 675, 1456]) == 514579
 

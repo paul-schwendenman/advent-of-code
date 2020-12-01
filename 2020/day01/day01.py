@@ -1,8 +1,8 @@
 import fileinput
 import functools
 import itertools
-import math
 import operator
+
 
 def prod(*args: int) -> int:
     return functools.reduce(operator.mul, args)
@@ -17,11 +17,14 @@ def calculate_report(expenses, *, entry_count=2, desired_sum=2020):
 
     return prod(*pairing)
 
+
 def part1(expenses):
     return calculate_report(expenses)
 
+
 def part2(expenses):
     return calculate_report(expenses, entry_count=3)
+
 
 def main():
     with fileinput.input() as input:
