@@ -17,23 +17,23 @@ def test_manhattan3():
 
 
 def test_line_up_coords():
-    assert convert_instructions_to_path(["U2"]) == [(0, 1), (0, 2)]
+    assert list(convert_instructions_to_path(["U2"])) == [(0, 1), (0, 2)]
 
 
 def test_line_down_coords():
-    assert convert_instructions_to_path(["D2"]) == [(0, -1), (0, -2)]
+    assert list(convert_instructions_to_path(["D2"])) == [(0, -1), (0, -2)]
 
 
 def test_line_right_coords():
-    assert convert_instructions_to_path(["R3"]) == [(1, 0), (2, 0), (3, 0)]
+    assert list(convert_instructions_to_path(["R3"])) == [(1, 0), (2, 0), (3, 0)]
 
 
 def test_line_left_coords():
-    assert convert_instructions_to_path(["L1"]) == [(-1, 0), ]
+    assert list(convert_instructions_to_path(["L1"])) == [(-1, 0), ]
 
 
 def test_complicated_coords():
-    assert convert_instructions_to_path(["U3", "R3",  "D2", "L1"]) == [(0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3), (3, 2), (3, 1), (2, 1)]
+    assert list(convert_instructions_to_path(["U3", "R3",  "D2", "L1"])) == [(0, 1), (0, 2), (0, 3), (1, 3), (2, 3), (3, 3), (3, 2), (3, 1), (2, 1)]  # noqa: E501
 
 
 def test_find_intersections():

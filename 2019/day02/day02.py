@@ -6,6 +6,7 @@ def combine(noun=1, verb=1):
     # print(f'{noun:02}{verb:02}')
     return noun * 100 + verb
 
+
 def run_program(program, cursor=0):
     opcode = program[cursor]
 
@@ -20,8 +21,9 @@ def run_program(program, cursor=0):
 
         return run_program(program, cursor + 4)
 
+
 def main():
-    goal = 19690720 # goal 2
+    goal = 19690720  # goal 2
     with open('day02/input') as input:
         program_string = input.readlines()[0]
 
@@ -42,8 +44,8 @@ def main():
             continue
         break
 
-
     return combine(noun=noun, verb=verb)
+
 
 if __name__ == "__main__":
     print(main())

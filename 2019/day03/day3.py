@@ -8,27 +8,25 @@ def spilt_instruction(instruction):
 
 def convert_instructions_to_path(instructions):
     x, y = 0, 0
-    path = []
 
     for instruction in instructions:
         direction, length = spilt_instruction(instruction)
         if direction == 'R':
             for i in range(length):
                 x += 1
-                path.append((x, y))
+                yield (x, y)
         elif direction == 'L':
             for i in range(length):
                 x -= 1
-                path.append((x, y))
+                yield (x, y)
         elif direction == 'U':
             for i in range(length):
                 y += 1
-                path.append((x, y))
+                yield (x, y)
         elif direction == 'D':
             for i in range(length):
                 y -= 1
-                path.append((x, y))
-    return path
+                yield (x, y)
 
 
 def find_intersections(path1, path2):
@@ -44,8 +42,8 @@ def find_signal_delay(coords, path1, path2):
 
 
 def main(path1, path2):
-    path1 = convert_instructions_to_path(path1.split(','))
-    path2 = convert_instructions_to_path(path2.split(','))
+    path1 = list(convert_instructions_to_path(path1.split(',')))
+    path2 = list(convert_instructions_to_path(path2.split(',')))
 
     coords = find_intersections(path1, path2)
 
@@ -53,8 +51,8 @@ def main(path1, path2):
 
 
 def main2(path1, path2):
-    path1 = convert_instructions_to_path(path1.split(','))
-    path2 = convert_instructions_to_path(path2.split(','))
+    path1 = list(convert_instructions_to_path(path1.split(',')))
+    path2 = list(convert_instructions_to_path(path2.split(',')))
 
     coords = find_intersections(path1, path2)
 
@@ -62,7 +60,8 @@ def main2(path1, path2):
 
 
 if __name__ == "__main__":
-    with open('input') as input:
+    with open('day03/input') as input:
         lines = input.readlines()
 
+    print(main(lines[0], lines[1]))
     print(main2(lines[0], lines[1]))
