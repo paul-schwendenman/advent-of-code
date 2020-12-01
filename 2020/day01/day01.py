@@ -1,32 +1,35 @@
+import fileinput
+import functools
 import itertools
-import sys
+import math
+import operator
+
+def prod(*args: int) -> int:
+    return functools.reduce(operator.mul, args)
+
+
+def calculate_report(expenses, *, entry_count=2, desired_sum=2020):
+    pairs = itertools.combinations(expenses, entry_count)
+
+    for pairing in pairs:
+        if sum(pairing) == desired_sum:
+            break
+
+    return prod(*pairing)
 
 def part1(expenses):
-    pairs = itertools.permutations(expenses, 2)
-
-    for x, y in pairs:
-        if x + y == 2020:
-            break
-
-    return x * y
+    return calculate_report(expenses)
 
 def part2(expenses):
-    pairs = itertools.permutations(expenses, 3)
+    return calculate_report(expenses, entry_count=3)
 
-    for x, y, z in pairs:
-        if x + y + z == 2020:
-            break
+def main():
+    with fileinput.input() as input:
+        lines = [int(line) for line in input]
 
-    return x * y * z
-
-def main(filename):
-    lines = []
-    with open(filename) as file:
-        lines = file.readlines()
-
-    print(part1(int(line) for line in lines))
-    print(part2(int(line) for line in lines))
+    print(part1(lines))
+    print(part2(lines))
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main()
