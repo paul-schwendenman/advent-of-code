@@ -37,14 +37,14 @@ class Password():
         return Counter(self.password)
 
 
-def is_valid_part1_password(line):
+def sled_rental_rule(line):
     password = Password.make(line)
     count = password.counts()[password.target_char]
 
-    return password.lower_bound <= count and count <= password.upper_bound
+    return password.lower_bound <= count <= password.upper_bound
 
 
-def is_valid_part2_password(line):
+def official_toboggan_rule(line):
     password = Password.make(line)
 
     lower_match = password.lower_char == password.target_char
@@ -54,11 +54,11 @@ def is_valid_part2_password(line):
 
 
 def part1(lines):
-    return sum([is_valid_part1_password(line) for line in lines])
+    return sum([sled_rental_rule(line) for line in lines])
 
 
 def part2(lines):
-    return sum([is_valid_part2_password(line) for line in lines])
+    return sum([official_toboggan_rule(line) for line in lines])
 
 
 def main():
