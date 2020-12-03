@@ -14,15 +14,15 @@ def prod(*args: int) -> int:
     return functools.reduce(operator.mul, args)
 
 
-def tree_count(map, slope_x, slope_y):
+def tree_count(toboggan_hill, slope_x, slope_y):
     count = 0
     pos_x, pos_y = 0, 0
 
-    height = len(map)
-    width = len(map[0])
+    height = len(toboggan_hill)
+    width = len(toboggan_hill[0])
 
     while pos_y < height:
-        if (map[pos_y])[pos_x % width] == '#':
+        if (toboggan_hill[pos_y])[pos_x % width] == '#':
             count += 1
 
         pos_x += slope_x
@@ -31,14 +31,14 @@ def tree_count(map, slope_x, slope_y):
     return count
 
 
-def part1(map):
-    return tree_count(map, 3, 1)
+def part1(toboggan_hill):
+    return tree_count(toboggan_hill, 3, 1)
 
 
-def part2(map):
+def part2(toboggan_hill):
     slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
 
-    trees = [tree_count(map, *slope) for slope in slopes]
+    trees = [tree_count(toboggan_hill, *slope) for slope in slopes]
 
     return prod(*trees)
 
