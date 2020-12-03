@@ -1,6 +1,13 @@
+from contextlib import contextmanager
 import fileinput
 import functools
 import operator
+
+
+@contextmanager
+def readfile(filename=None):
+    with fileinput.input(filename) as data:
+        yield [line.rstrip() for line in data]
 
 
 def prod(*args: int) -> int:
@@ -37,11 +44,9 @@ def part2(map):
 
 
 def main(filename=None):
-    with fileinput.input(filename) as data:
-        lines = [line.rstrip() for line in data]
-
-    print(part1(lines))
-    print(part2(lines))
+    with readfile() as data:
+        print(part1(data))
+        print(part2(data))
 
 
 if __name__ == '__main__':
