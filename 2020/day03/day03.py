@@ -15,9 +15,7 @@ def tree_count(map, slope_x, slope_y):
     width = len(map[0])
 
     while pos_y < height:
-
-        # print(pos_x, pos_y, map[pos_y][pos_x % (width - 1)] == '#')
-        if (map[pos_y])[pos_x % (width - 1)] == '#':
+        if (map[pos_y])[pos_x % width] == '#':
             count += 1
 
         pos_x += slope_x
@@ -27,22 +25,7 @@ def tree_count(map, slope_x, slope_y):
 
 
 def part1(map):
-    count = 0
-    pos_x, pos_y = 0, 0
-
-    height = len(map)
-    width = len(map[0])
-
-    while pos_y < height:
-
-        # print(pos_x, pos_y, map[pos_y][pos_x % (width - 1)] == '#')
-        if (map[pos_y])[pos_x % (width - 1)] == '#':
-            count += 1
-
-        pos_x += 3
-        pos_y += 1
-
-    return count
+    return tree_count(map, 3, 1)
 
 
 def part2(map):
@@ -53,9 +36,9 @@ def part2(map):
     return prod(*trees)
 
 
-def main():
-    with fileinput.input() as data:
-        lines = list(data)
+def main(filename=None):
+    with fileinput.input(filename) as data:
+        lines = [line.rstrip() for line in data]
 
     print(part1(lines))
     print(part2(lines))
