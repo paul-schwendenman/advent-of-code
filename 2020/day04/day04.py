@@ -1,6 +1,9 @@
 from contextlib import contextmanager
+from typing import cast, List, Mapping, Tuple
 import fileinput
 import re
+
+Passport = Mapping[str, str]
 
 
 @contextmanager
@@ -9,11 +12,14 @@ def readfile(filename=None):
         yield [line for line in data]
 
 
-def make_passport(passport):
-    return dict([item.split(':') for item in passport.split()])
+def make_passport(raw_passport: str) -> Passport:
+    return dict(cast(
+        List[Tuple[str, str]],
+        [item.split(':') for item in raw_passport.split()]
+    ))
 
 
-def validate_passport_field(passport, field):
+def validate_passport_field(passport: Passport, field: str) -> bool:
     value = passport[field]
     if field == 'byr':
         year = int(value)
@@ -41,16 +47,18 @@ def validate_passport_field(passport, field):
     elif field == 'pid':
         return bool(re.match(r'^[0-9]{9}$', value))
     elif field == 'cid':
-        return value
+        return True
+
+    return False
 
 
-def validate_passport_fields(passport):
+def validate_passport_fields(passport: Passport) -> bool:
     required_fields = ('byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid')
 
     return all(validate_passport_field(passport, field) for field in required_fields)
 
 
-def validate_passport(passport):
+def validate_passport(passport: Passport) -> bool:
     '''Ensure a passport has all the correct fields
 
     byr (Birth Year)
@@ -66,7 +74,7 @@ def validate_passport(passport):
     return all(field in passport for field in required_fields)
 
 
-def part1(data):
+def part1(data: List[str]) -> int:
     count = 0
     passports = ''.join(data).split('\n\n')
 
@@ -78,8 +86,7 @@ def part1(data):
     return count
 
 
-
-def part2(data):
+def part2(data: List[str]) -> int:
     count = 0
     passports = ''.join(data).split('\n\n')
 
@@ -90,7 +97,8 @@ def part2(data):
 
     return count
 
-def main():
+
+def main() -> None:
     with readfile() as data:
         print(part1(data))
         print(part2(data))
