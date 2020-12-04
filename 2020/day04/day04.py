@@ -41,7 +41,7 @@ def validate_passport_field(passport: Passport, field: str) -> bool:
             return 150 <= height <= 193
 
     elif field == 'hcl':
-        return bool(re.match(r'#[0-9a-f]{6}', value))
+        return bool(re.match(r'^#[0-9a-f]{6}$', value))
     elif field == 'ecl':
         return value in ('amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth')
     elif field == 'pid':
