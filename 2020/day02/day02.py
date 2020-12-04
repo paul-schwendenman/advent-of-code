@@ -1,5 +1,6 @@
 from collections import Counter
 from dataclasses import dataclass
+from typing import List, ClassVar
 import fileinput
 import re
 
@@ -11,7 +12,7 @@ class Password():
     target_char: str
     password: str
 
-    _pattern = re.compile(r'(?P<lower_bound>[0-9]+)-(?P<upper_bound>[0-9]+) (?P<target_char>.): (?P<password>.+)')
+    _pattern: ClassVar[re.Pattern] = re.compile(r'(?P<lower_bound>[0-9]+)-(?P<upper_bound>[0-9]+) (?P<target_char>.): (?P<password>.+)')
 
     def __init__(self, lower_bound, upper_bound, target_char, password):
         self.lower_bound = int(lower_bound)
@@ -20,10 +21,13 @@ class Password():
         self.password = password
 
     @classmethod
-    def make(cls, line):
-        match = cls._pattern.match(line).groupdict()
+    def make(cls, line: str) -> Password:
+        match = cls._pattern.match(line)
 
-        return cls(**match)
+        if match:
+            return cls(**match.groupdict())
+
+        raise ValueError("Invalid Password")
 
     @property
     def lower_char(self):
@@ -33,35 +37,35 @@ class Password():
     def upper_char(self):
         return self.password[self.upper_bound - 1]
 
-    def counts(self):
+    def counts(self) -> Counter:
         return Counter(self.password)
 
 
-def sled_rental_rule(line):
+def sled_rental_rule(line: str) -> bool:
     password = Password.make(line)
     count = password.counts()[password.target_char]
 
-    return password.lower_bound <= count <= password.upper_bound
+    return bool(password.lower_bound <= count <= password.upper_bound)
 
 
-def official_toboggan_rule(line):
+def official_toboggan_rule(line: str) -> bool:
     password = Password.make(line)
 
     lower_match = password.lower_char == password.target_char
     upper_match = password.upper_char == password.target_char
 
-    return lower_match ^ upper_match
+    return bool(lower_match ^ upper_match)
 
 
-def part1(lines):
+def part1(lines: List[str]) -> int:
     return sum([sled_rental_rule(line) for line in lines])
 
 
-def part2(lines):
+def part2(lines: List[str]) -> int:
     return sum([official_toboggan_rule(line) for line in lines])
 
 
-def main():
+def main() -> None:
     with fileinput.input() as data:
         lines = list(data)
 
