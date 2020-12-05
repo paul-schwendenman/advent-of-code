@@ -9,10 +9,11 @@ def readfile(filename=None):
         yield [line.rstrip() for line in data]
 
 
-def find_seat_id(boarding_pass: str) -> int:
-    seat = boarding_pass.replace('B', '1').replace('F', '0').replace('R', '1').replace('L', '0')
+SEAT_TRANSLATION = str.maketrans('BFRL', '1010')
 
-    return int(seat, base=2)
+
+def find_seat_id(boarding_pass: str) -> int:
+    return int(boarding_pass.translate(SEAT_TRANSLATION), base=2)
 
 
 def part1(data: List[str]) -> int:
