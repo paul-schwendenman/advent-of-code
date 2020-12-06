@@ -20,11 +20,9 @@ def part1(groups: List[str]) -> int:
     count = 0
 
     for group in groups:
-        answers = set()
-        for person in group.split('\n'):
-            for answer in person:
-                answers.add(answer)
-        count += len(answers)
+        answers = [set(person) for person in group.split('\n') if person]
+
+        count += len(reduce(set.union, answers))
 
     return count
 
