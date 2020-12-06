@@ -1,13 +1,19 @@
 from contextlib import contextmanager
+from functools import reduce
 from typing import List
-import fileinput
-import functools
+import sys
 
 
 @contextmanager
 def readfile(filename=None):
-    with fileinput.input(filename) as data:
-        yield ''.join(data).split('\n\n')
+    if not filename:
+        try:
+            filename = sys.argv[1]
+        except IndexError:
+            filename = 0
+
+    with open(filename) as data:
+        yield data.read().split('\n\n')
 
 
 def part1(groups: List[str]) -> int:
@@ -29,7 +35,7 @@ def part2(groups: List[str]) -> int:
     for group in groups:
         answers = [set(person) for person in group.split('\n') if person]
 
-        count += len(functools.reduce(set.intersection, answers))
+        count += len(reduce(set.intersection, answers))
 
     return count
 
