@@ -7,29 +7,27 @@ import functools
 @contextmanager
 def readfile(filename=None):
     with fileinput.input(filename) as data:
-        yield [line for line in data]
+        yield ''.join(data).split('\n\n')
 
 
-def part1(data: List[str]) -> int:
+def part1(groups: List[str]) -> int:
     count = 0
-    groups = ''.join(data).split('\n\n')
 
     for group in groups:
-        questions = set()
+        answers = set()
         for person in group.split('\n'):
-            for question in person:
-                questions.add(question)
-        count += len(questions)
+            for answer in person:
+                answers.add(answer)
+        count += len(answers)
 
     return count
 
 
-def part2(data: List[str]) -> int:
+def part2(groups: List[str]) -> int:
     count = 0
-    groups = ''.join(data).split('\n\n')
 
     for group in groups:
-        answers = [set(item) for item in group.split('\n') if item]
+        answers = [set(person) for person in group.split('\n') if person]
 
         count += len(functools.reduce(set.intersection, answers))
 
