@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from functools import reduce
-from typing import List
+from typing import Iterable, List
 import sys
 
 
@@ -16,26 +16,16 @@ def readfile(filename=None):
         yield data.read().split('\n\n')
 
 
+def parse_answers(group: str) -> Iterable[set]:
+    return (set(person) for person in group.split('\n') if person)
+
+
 def part1(groups: List[str]) -> int:
-    count = 0
-
-    for group in groups:
-        answers = [set(person) for person in group.split('\n') if person]
-
-        count += len(reduce(set.union, answers))
-
-    return count
+    return sum(len(reduce(set.union, parse_answers(group))) for group in groups)
 
 
 def part2(groups: List[str]) -> int:
-    count = 0
-
-    for group in groups:
-        answers = [set(person) for person in group.split('\n') if person]
-
-        count += len(reduce(set.intersection, answers))
-
-    return count
+    return sum(len(reduce(set.intersection, parse_answers(group))) for group in groups)
 
 
 def main() -> None:
