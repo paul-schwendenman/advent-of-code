@@ -15,6 +15,12 @@ def strip_quanity(raw_bag):
     return raw_bag.split(' ', 1)[1]
 
 
+def parse_quanity(raw_bag):
+    count, bag = raw_bag.split(' ', 1)
+
+    return int(count), bag
+
+
 def strip_bags(raw_bag):
     return raw_bag.strip().replace('bags', 'bag')
 
@@ -57,14 +63,39 @@ def part1(data: List[str]) -> int:
     return len(search('shiny gold bag', rules))
 
 
+def search_quanity(item, quanity, tree):
+    print(item, quanity, tree[item])
+    if item not in tree:
+        return 0
+
+    return quanity + sum(search_quanity(child, quanity*child_quanity, tree) for child_quanity, child in tree[item])
+
+
 def part2(data: List[str]) -> int:
-    return 2
+    rules = defaultdict(list)
+    for raw_rule in data:
+        rule = parse_rule(raw_rule)
+
+        if rule:
+            # print(rule)
+            parent, children = rule
+
+            for child in children:
+                # print(strip_quanity(child))
+                rules[parent].append(parse_quanity(child))
+
+    # print(rules.keys())
+    # print(len(rules['shiny gold bag']))
+
+    count = 0
+
+    return search_quanity('shiny gold bag', 1, rules) - 1
 
 
 def main() -> None:
     with readfile() as data:
         print(part1(data))
-        # print(part2(data))
+        print(part2(data))
 
 
 if __name__ == '__main__':
