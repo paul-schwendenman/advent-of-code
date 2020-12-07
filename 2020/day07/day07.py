@@ -35,6 +35,7 @@ def parse_rule(raw_rule):
 
     return strip_bags(parent), children
 
+
 def search(item, tree):
     if item not in tree:
         return set()
@@ -48,17 +49,10 @@ def part1(data: List[str]) -> int:
         rule = parse_rule(raw_rule)
 
         if rule:
-            # print(rule)
             parent, children = rule
 
             for child in children:
-                # print(strip_quanity(child))
                 rules[strip_quanity(child)].append(parent)
-
-    # print(rules.keys())
-    # print(len(rules['shiny gold bag']))
-
-    count = 0
 
     return len(search('shiny gold bag', rules))
 
@@ -77,17 +71,10 @@ def part2(data: List[str]) -> int:
         rule = parse_rule(raw_rule)
 
         if rule:
-            # print(rule)
             parent, children = rule
 
             for child in children:
-                # print(strip_quanity(child))
                 rules[parent].append(parse_quanity(child))
-
-    # print(rules.keys())
-    # print(len(rules['shiny gold bag']))
-
-    count = 0
 
     return search_quanity('shiny gold bag', 1, rules) - 1
 
