@@ -1,8 +1,7 @@
 from contextlib import contextmanager
-from collections import defaultdict
-from functools import reduce
-from typing import List
+from typing import Dict, List, Tuple
 import fileinput
+import re
 
 
 @contextmanager
@@ -11,72 +10,65 @@ def readfile(filename=None):
         yield [line.rstrip() for line in data]
 
 
-def strip_quanity(raw_bag):
-    return raw_bag.split(' ', 1)[1]
+Rules = Dict[str, Dict[str, int]]
 
 
-def parse_quanity(raw_bag):
-    count, bag = raw_bag.split(' ', 1)
-
-    return int(count), bag
+def strip_bags(raw_bag: str) -> str:
+    return raw_bag.replace('bags', '').replace('bag', '').strip()
 
 
-def strip_bags(raw_bag):
-    return raw_bag.strip().replace('bags', 'bag')
+def parse_quanity(raw_bag: str) -> Tuple[str, int]:
+    match = re.match(r'.*?([0-9]+) (.+?) bags?', raw_bag)
+
+    if not match:
+        raise ValueError("No match")
+
+    count, bag = match.groups()
+
+    return strip_bags(bag), int(count)
 
 
-def parse_rule(raw_rule):
-    parent, raw_children = raw_rule[:-1].split('contain')
+def parse_rules(raw_rules: List[str]) -> Rules:
+    rules: Rules = {}
+    for rule in raw_rules:
+        raw_parent, raw_children = rule[:-1].split('contain')
 
-    children = [strip_bags(child) for child in raw_children.split(',')]
+        if 'no other bag' in raw_children:
+            continue
 
-    if children == ["no other bag"]:
-        return None
+        parent = strip_bags(raw_parent)
 
-    return strip_bags(parent), children
+        children = [parse_quanity(child) for child in raw_children.split(',')]
 
+        rules[parent] = dict(children)
 
-def search(item, tree):
-    if item not in tree:
-        return set()
-
-    return reduce(set.union, (search(parent, tree) for parent in tree[item]), set(tree[item]))
-
-
-def part1(data: List[str]) -> int:
-    rules = defaultdict(list)
-    for raw_rule in data:
-        rule = parse_rule(raw_rule)
-
-        if rule:
-            parent, children = rule
-
-            for child in children:
-                rules[strip_quanity(child)].append(parent)
-
-    return len(search('shiny gold bag', rules))
+    return rules
 
 
-def search_quanity(item, quanity, tree):
-    print(item, quanity, tree[item])
-    if item not in tree:
-        return 0
+def count_bags(rules: Rules, parent: str, quanity: int) -> int:
+    if parent not in rules:
+        return quanity
 
-    return quanity + sum(search_quanity(child, quanity*child_quanity, tree) for child_quanity, child in tree[item])
+    return quanity * (1 + sum(count_bags(rules, child, child_quanity) for child, child_quanity in rules[parent].items()))
+
+
+def bag_contains(rules: Rules, bag: str, target: str) -> bool:
+    if bag not in rules:
+        return False
+
+    return target in rules[bag] or any(bag_contains(rules, parent, target) for parent in rules[bag])
+
+
+def part1(data: List[str], target: str = 'shiny gold') -> int:
+    rules = parse_rules(data)
+
+    return sum(bag_contains(rules, key, target) for key in rules.keys())
 
 
 def part2(data: List[str]) -> int:
-    rules = defaultdict(list)
-    for raw_rule in data:
-        rule = parse_rule(raw_rule)
+    rules = parse_rules(data)
 
-        if rule:
-            parent, children = rule
-
-            for child in children:
-                rules[parent].append(parse_quanity(child))
-
-    return search_quanity('shiny gold bag', 1, rules) - 1
+    return count_bags(rules, 'shiny gold', 1) - 1
 
 
 def main() -> None:
