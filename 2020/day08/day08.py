@@ -23,71 +23,56 @@ def parse_program(commands: List[str]) -> Program:
     return [parse_command(command) for command in commands]
 
 
-def part1(data: List[str], target: str = 'shiny gold') -> int:
-    commands = parse_program(data)
-    acc = 0
-    cur = 0
+def run_progam(program: Program, acc: int = 0, cursor: int = 0) -> Tuple[int, int]:
+    previous_cursors = []
 
-    pos = []
+    while (cursor not in previous_cursors) and (cursor < len(program)):
+        previous_cursors.append(cursor)
 
-    while cur not in pos:
-        pos.append(cur)
-        instruction, value = commands[cur]
+        instruction, value = program[cursor]
 
         if instruction == 'nop':
-            cur += 1
+            cursor += 1
         elif instruction == 'jmp':
-            cur += value
+            cursor += value
         elif instruction == 'acc':
             acc += value
-            cur += 1
+            cursor += 1
+
+    return cursor, acc
+
+
+def part1(data: List[str]) -> int:
+    commands = parse_program(data)
+
+    cur, acc = run_progam(commands)
 
     return acc
 
 
-def runner(commands: Program) -> Optional[int]:
-    acc = 0
-    cur = 0
-
-    pos = []
-
-    try:
-        while cur not in pos:
-            pos.append(cur)
-            instruction, value = commands[cur]
-
-            if instruction == 'nop':
-                cur += 1
-            elif instruction == 'jmp':
-                cur += value
-            elif instruction == 'acc':
-                acc += value
-                cur += 1
-    except IndexError:
-        return acc
-    else:
-        return None
-
-
 def part2(data: List[str]) -> int:
     commands = parse_program(data)
-
+    goal = len(commands)
     programs = []
 
-    for cur, command in enumerate(commands):
+    for index, command in enumerate(commands):
         instruction, value = command
         if instruction == "nop":
             new_prog = commands.copy()
-            new_prog[cur] = ('jmp', value)
+            new_prog[index] = ('jmp', value)
             programs.append(new_prog)
         elif instruction == 'jmp':
             new_prog = commands.copy()
-            new_prog[cur] = ('nop', value)
+            new_prog[index] = ('nop', value)
             programs.append(new_prog)
 
-    return [value for value in (runner(program) for program in programs) if value is not None][0]
+    for program in programs:
+        cursor, acc = run_progam(program)
 
+        if cursor == goal:
+            break
 
+    return acc
 
 
 def main() -> None:
