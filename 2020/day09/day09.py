@@ -1,27 +1,22 @@
+from collections import namedtuple
 from typing import List
 from itertools import combinations
 from aoc import readfile
 
+Window = namedtuple('Window', 'bottom top')
 
-def part1(data: List[str], preamble: int = 25) -> int:
-    numbers = [int(num) for num in data]
 
-    for index, num in enumerate(range(preamble, len(numbers))):
-        print((index - preamble), numbers[index:num])
-        previous = [sum(pair) for pair in combinations(numbers[(index):num], 2)]
+def find_invalid_number(numbers: List[int], preamble_length: int = 25) -> int:
+    for low_index, high_index in enumerate(range(preamble_length, len(numbers))):
+        previous = [sum(pair) for pair in combinations(numbers[low_index:high_index], 2)]
 
-        print(index, num, previous)
-
-        if numbers[num] not in previous:
-            return numbers[num]
+        if numbers[high_index] not in previous:
+            return numbers[high_index]
 
     raise ValueError()
 
 
-def part2(data: List[str], goal=556543474) -> int:
-    numbers = [int(num) for num in data]
-    bounds = None
-
+def find_contiguous_set(numbers: List[int], goal: int) -> Window:
     for index, number in enumerate(numbers):
         pos = index
         sum = 0
@@ -30,21 +25,32 @@ def part2(data: List[str], goal=556543474) -> int:
             pos += 1
 
         if sum == goal:
-            bounds = (index, pos)
-            break
+            return Window(index, pos)
     else:
         raise ValueError()
 
-    weak_range = numbers[bounds[0]:bounds[1]]
+
+def part1(data: List[str]) -> int:
+    numbers = [int(num) for num in data]
+
+    return find_invalid_number(numbers, 25)
+
+
+def part2(data: List[str], goal: int) -> int:
+    numbers = [int(num) for num in data]
+
+    window = find_contiguous_set(numbers, goal)
+
+    weak_range = numbers[window.bottom:window.top]
 
     return min(weak_range) + max(weak_range)
 
 
 def main() -> None:
     with readfile() as data:
-        # print(part1(data, 25))
-        # print(part2(data, 127))
-        print(part2(data))
+        part1_solution = part1(data)
+        print(part1_solution)
+        print(part2(data, part1_solution))
 
 
 if __name__ == '__main__':
