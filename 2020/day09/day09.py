@@ -17,17 +17,21 @@ def find_invalid_number(numbers: List[int], preamble_length: int = 25) -> int:
 
 
 def find_contiguous_set(numbers: List[int], goal: int) -> Window:
-    for index, number in enumerate(numbers):
-        pos = index
-        sum = 0
-        while sum < goal and pos < len(numbers):
-            sum += numbers[pos]
-            pos += 1
+    lower_bound: int = 0
+    upper_bound: int = 0
+    running_total: int = 0
 
-        if sum == goal:
-            return Window(index, pos)
-    else:
-        raise ValueError()
+    while upper_bound < len(numbers):
+        if running_total == goal:
+            return Window(lower_bound, upper_bound)
+        elif running_total < goal:
+            running_total += numbers[upper_bound]
+            upper_bound += 1
+        else:
+            running_total -= numbers[lower_bound]
+            lower_bound += 1
+
+    raise ValueError()
 
 
 def part1(data: List[str]) -> int:
