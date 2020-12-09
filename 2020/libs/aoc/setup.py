@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Copyright 2019 Paul Schwendenman. All Rights Reserved.
 
-from setuptools import setup
+from setuptools import setup, find_packages
 import aoc
 
 
@@ -13,7 +13,7 @@ setup(name='aoc',
       author_email=aoc.__email__,
       license=aoc.__license__,
       url='https://github.com/paul-schwendenman/advent-of-code/libs/aoc/',
-      packages=['aoc'],
+      packages=find_packages(),
       package_data={"aoc": ["py.typed"]},
       classifiers=[],
       )
