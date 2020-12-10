@@ -1,9 +1,26 @@
-from typing import List
+from typing import Iterator, List, Tuple
 from collections import defaultdict
+from itertools import islice
 from aoc import readfile
 
 
-# def next_adapter():
+def generate_pairs(seq: List[int]) -> Iterator[Tuple[int, int]]:
+    yield from zip(seq, islice(seq, 1, None))
+
+
+def tribonacci(n: int, n_0: int = 0, n_1: int = 0, n_2: int = 1) -> int:
+    '''Tribonacci sequence
+
+    0, 0, 1, 1, 2, 4, 7, 13...
+    '''
+    if n == 0:
+        return n_0
+    elif n == 1:
+        return n_1
+    elif n == 2:
+        return n_2
+    else:
+        return tribonacci(n-1) + tribonacci(n-2) + tribonacci(n-3)
 
 
 def part1(data: List[str]) -> int:
@@ -17,40 +34,21 @@ def part1(data: List[str]) -> int:
     return counts[1] * (counts[3] + 1)
 
 
-def arrangements(adapters, base, goal):
-    if base == goal:
-        return 1
-    if base not in adapters:
-        return 0
-
-    return arrangements(adapters, base+1, goal) + arrangements(adapters, base+2, goal) + arrangements(adapters, base+3, goal)
-
-
-def part2_slow(data: List[str]) -> int:
-    adapters = [0] + sorted([int(item) for item in data])
-
-    goal = max(adapters) + 3
-
-    return arrangements(adapters, 0, goal)
-
-
 def part2(data: List[str]) -> int:
     adapters = [0] + sorted([int(item) for item in data])
-
     adapters.append(adapters[-1] + 3)
 
-    small = []
-    ways = 1
+    arrangements = 1
+    count = 0
 
-    for index, adapter in enumerate(adapters[:-1]):
-        if adapters[index+1] - adapter == 3:
-            small.append(adapter)
-            ways *= arrangements(small, small[0], small[-1])
-            small = [adapter]
+    for adapter, next_adapter in generate_pairs(adapters):
+        if next_adapter - adapter == 3:
+            arrangements *= tribonacci(count + 2)
+            count = 0
         else:
-            small.append(adapter)
+            count += 1
 
-    return ways
+    return arrangements
 
 
 def main() -> None:
