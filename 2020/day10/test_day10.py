@@ -15,16 +15,16 @@ def input_data():
 
 
 def test_part1_sample(sample_data):
-    assert part1(sample_data) == -1
+    assert part1(sample_data) == 35
 
 
 def test_part2_sample(sample_data):
-    assert part2(sample_data) == -1
+    assert part2(sample_data) == 8
 
 
 def test_part1_input(input_data):
-    assert part1(input_data) == -1
+    assert part1(input_data) == 2343
 
 
 def test_part2_input(input_data):
-    assert part2(input_data) == -1
+    assert part2(input_data) == 31581162962944
