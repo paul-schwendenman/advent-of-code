@@ -11,12 +11,8 @@ def part1(data: List[str]) -> int:
 
     counts = defaultdict(int)
 
-    print(adapters)
-
     for index, adapter in enumerate(adapters[:-1]):
         counts[adapters[index+1] - adapter] += 1
-
-    print(counts)
 
     return counts[1] * (counts[3] + 1)
 
@@ -38,7 +34,7 @@ def part2_slow(data: List[str]) -> int:
     return arrangements(adapters, 0, goal)
 
 
-def part2(data):
+def part2(data: List[str]) -> int:
     adapters = [0] + sorted([int(item) for item in data])
 
     adapters.append(adapters[-1] + 3)
@@ -49,24 +45,17 @@ def part2(data):
     for index, adapter in enumerate(adapters[:-1]):
         if adapters[index+1] - adapter == 3:
             small.append(adapter)
-            sub_ways = arrangements(small, small[0], small[-1])
-            print(small, sub_ways)
-            if sub_ways:
-                ways *= sub_ways
+            ways *= arrangements(small, small[0], small[-1])
             small = [adapter]
         else:
             small.append(adapter)
 
-    print(ways)
-
-    # print(diffs)
-
-    return None
+    return ways
 
 
 def main() -> None:
     with readfile() as data:
-        # print(part1(data))
+        print(part1(data))
         print(part2(data))
 
 
