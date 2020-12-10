@@ -1,4 +1,4 @@
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, MutableMapping, Tuple
 from collections import defaultdict
 from itertools import islice
 from aoc import readfile
@@ -25,13 +25,14 @@ def tribonacci(n: int, n_0: int = 0, n_1: int = 0, n_2: int = 1) -> int:
 
 def part1(data: List[str]) -> int:
     adapters = [0] + sorted([int(item) for item in data])
+    adapters.append(adapters[-1] + 3)
 
-    counts = defaultdict(int)
+    counts: MutableMapping[int, int] = defaultdict(int)
 
-    for index, adapter in enumerate(adapters[:-1]):
-        counts[adapters[index+1] - adapter] += 1
+    for adapter, next_adapter in generate_pairs(adapters):
+        counts[next_adapter - adapter] += 1
 
-    return counts[1] * (counts[3] + 1)
+    return counts[1] * counts[3]
 
 
 def part2(data: List[str]) -> int:
