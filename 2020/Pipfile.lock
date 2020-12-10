@@ -15,7 +15,12 @@
             }
         ]
     },
-    "default": {},
+    "default": {
+        "aoc": {
+            "editable": true,
+            "path": "./libs/aoc"
+        }
+    },
     "develop": {
         "appnope": {
             "hashes": [

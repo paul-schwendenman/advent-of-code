@@ -12,6 +12,7 @@ rope = "*"
 jupyter = "*"
 
 [packages]
+aoc = {editable = true, path = "./libs/aoc"}
 
 [requires]
 python_version = "3.7"
