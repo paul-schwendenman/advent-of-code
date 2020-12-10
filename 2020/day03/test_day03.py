@@ -1,10 +1,13 @@
 import pytest
+from os.path import dirname, join
 from day03 import part1, part2, readfile
 
 
 @pytest.fixture
 def sample_map():
-    with readfile('sample') as data:
+    sample = join(dirname(__file__), 'sample')
+
+    with readfile(sample) as data:
         yield data
 
 
