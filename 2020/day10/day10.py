@@ -40,7 +40,7 @@ def part1(data: List[str]) -> int:
     return counts[1] * counts[3]
 
 
-def part2(data: List[str]) -> int:
+def part2_math(data: List[str]) -> int:
     adapters = parse_adapters(data)
 
     arrangements = 1
@@ -54,6 +54,23 @@ def part2(data: List[str]) -> int:
             count += 1
 
     return arrangements
+
+
+def part2_dp(data: List[str]) -> int:
+    adapters = parse_adapters(data)
+
+    arrangements = defaultdict(int)
+    arrangements[0] = 1
+
+    for adapter in adapters[1:]:
+        arrangements[adapter] = arrangements[adapter - 1] + arrangements[adapter - 2] + arrangements[adapter - 3]
+
+    return arrangements[adapters[-1]]
+
+
+def part2(data: List[str]) -> int:
+    # return part2_math(data)
+    return part2_dp(data)
 
 
 def main() -> None:
