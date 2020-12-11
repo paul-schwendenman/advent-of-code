@@ -1,5 +1,6 @@
 from typing import Iterator, List, MutableMapping, Tuple
 from collections import defaultdict
+from functools import lru_cache
 from itertools import islice
 from aoc import readfile
 
@@ -68,9 +69,25 @@ def part2_dp(data: List[str]) -> int:
     return arrangements[adapters[-1]]
 
 
+def part2_recusive(data: List[str]) -> int:
+    adapters = tuple(parse_adapters(data))
+
+    @lru_cache()
+    def count_arrangements(adapters: Tuple[int, ...], base: int, goal: int) -> int:
+        if base == goal:
+            return 1
+        if base not in adapters:
+            return 0
+
+        return count_arrangements(adapters, base+1, goal) + count_arrangements(adapters, base+2, goal) + count_arrangements(adapters, base+3, goal)
+
+    return count_arrangements(adapters, adapters[0], adapters[-1])
+
+
 def part2(data: List[str]) -> int:
     # return part2_math(data)
-    return part2_dp(data)
+    # return part2_dp(data)
+    return part2_recusive(data)
 
 
 def main() -> None:
