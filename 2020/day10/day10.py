@@ -72,7 +72,7 @@ def part2_dp(data: List[str]) -> int:
 def part2_recusive(data: List[str]) -> int:
     adapters = tuple(parse_adapters(data))
 
-    @lru_cache()
+    @lru_cache(maxsize=max(adapters))
     def count_arrangements(adapters: Tuple[int, ...], base: int, goal: int) -> int:
         if base == goal:
             return 1
