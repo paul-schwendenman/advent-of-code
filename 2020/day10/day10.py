@@ -4,6 +4,12 @@ from itertools import islice
 from aoc import readfile
 
 
+def parse_adapters(data: List[str]) -> List[int]:
+    adapters = [0] + sorted([int(item) for item in data])
+    adapters.append(adapters[-1] + 3)
+    return adapters
+
+
 def generate_pairs(seq: List[int]) -> Iterator[Tuple[int, int]]:
     yield from zip(seq, islice(seq, 1, None))
 
@@ -24,8 +30,7 @@ def tribonacci(n: int, n_0: int = 0, n_1: int = 0, n_2: int = 1) -> int:
 
 
 def part1(data: List[str]) -> int:
-    adapters = [0] + sorted([int(item) for item in data])
-    adapters.append(adapters[-1] + 3)
+    adapters = parse_adapters(data)
 
     counts: MutableMapping[int, int] = defaultdict(int)
 
@@ -36,8 +41,7 @@ def part1(data: List[str]) -> int:
 
 
 def part2(data: List[str]) -> int:
-    adapters = [0] + sorted([int(item) for item in data])
-    adapters.append(adapters[-1] + 3)
+    adapters = parse_adapters(data)
 
     arrangements = 1
     count = 0
