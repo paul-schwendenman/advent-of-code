@@ -1,17 +1,4 @@
-import pytest
-from day09 import find_invalid_number, find_contiguous_set, part1, part2, readfile
-
-
-@pytest.fixture
-def sample_data():
-    with readfile('sample') as data:
-        yield data
-
-
-@pytest.fixture
-def input_data():
-    with readfile('input') as data:
-        yield data
+from day09 import find_invalid_number, find_contiguous_set, part1, part2
 
 
 def test_part1_sample(sample_data):

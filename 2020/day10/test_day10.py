@@ -1,17 +1,4 @@
-import pytest
-from day10 import part1, part2, part2_dp, part2_math, readfile
-
-
-@pytest.fixture
-def sample_data():
-    with readfile('sample') as data:
-        yield data
-
-
-@pytest.fixture
-def input_data():
-    with readfile('input') as data:
-        yield data
+from day10 import part1, part2, part2_dp, part2_math
 
 
 def test_part1_sample(sample_data):
