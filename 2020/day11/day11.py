@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Iterator, Tuple
+from typing import List, Iterator, Tuple, MutableMapping
 from collections import namedtuple, defaultdict
 from enum import Enum
 from aoc import readfile
@@ -22,8 +22,14 @@ class Position(Enum):
     OCCUPIED = '#'
 
 
-def parse_grid(raw_grid):
-    grid = defaultdict(str)
+class Grid(defaultdict, MutableMapping[Point, Position]):
+    @property
+    def occupied_seats(self):
+        return sum(seat == Position.OCCUPIED for _, seat in self.items())
+
+
+def parse_grid(raw_grid: List[str]) -> Grid:
+    grid = Grid(str)
 
     for x_index, line in enumerate(raw_grid):
         for y_index, item in enumerate(line):
@@ -42,7 +48,7 @@ def part1(data: List[str]) -> int:
     seat_count = 0
 
     while True:
-        new_grid = defaultdict(str)
+        new_grid = Grid(str)
 
         for x_index in range(x_max):
             for y_index in range(y_max):
@@ -62,7 +68,7 @@ def part1(data: List[str]) -> int:
                 else:
                     new_grid[here] = current
 
-        seat_count = sum(seat == Position.OCCUPIED for _, seat in new_grid.items())
+        seat_count = new_grid.occupied_seats
 
         if last_seat_count == seat_count:
             break
@@ -71,10 +77,6 @@ def part1(data: List[str]) -> int:
         grid = new_grid
 
     return seat_count
-
-
-
-
 
 
 def part2(data: List[str]) -> int:
@@ -87,7 +89,7 @@ def part2(data: List[str]) -> int:
     seat_count = 0
 
     while True:
-        new_grid = defaultdict(str)
+        new_grid = Grid(str)
 
         for x_index in range(x_max):
             for y_index in range(y_max):
@@ -111,8 +113,6 @@ def part2(data: List[str]) -> int:
                         elif grid[next_seat] == Position.EMPTY:
                             break
 
-                # count = sum(grid[neighboor] == '#' for neighboor in here.get_neighboors())
-
                 if count >= 5:
                     new_grid[here] = Position.EMPTY
                 elif count == 0:
@@ -120,7 +120,7 @@ def part2(data: List[str]) -> int:
                 else:
                     new_grid[here] = current
 
-        seat_count = sum(seat == Position.OCCUPIED for _, seat in new_grid.items())
+        seat_count = new_grid.occupied_seats
 
         if last_seat_count == seat_count:
             break
