@@ -4,6 +4,8 @@ from aoc import readfile
 from collections import namedtuple
 from enum import Enum
 
+Rotation = Tuple[Tuple[int, int], Tuple[int, int]]
+
 
 class Point(namedtuple('Point', 'x y')):
     __slots__ = ()
@@ -22,14 +24,9 @@ class Waypoint(Point):
     def __mul__(self: Point, other: int) -> Waypoint:
         return Waypoint(self.x * other, self.y * other)
 
-    def rotate(self, angle: int) -> Waypoint:
-        angle = angle % 360
-        if angle == 90:
-            x, y = -self.y, self.x
-        elif angle == 180:
-            x, y = -self.x, -self.y
-        elif angle == 270:
-            x, y = self.y, -self.x
+    def __matmul__(self: Point, other: Rotation) -> Waypoint:
+        x = self.x * other[0][0] + self.y * other[0][1]
+        y = self.x * other[1][0] + self.y * other[1][1]
 
         return Waypoint(x, y)
 
@@ -50,6 +47,15 @@ def map_angle_to_action(angle: int) -> Action:
         90: Action.NORTH,
         180: Action.WEST,
         270: Action.SOUTH,
+    }[angle % 360]
+
+
+def map_angle_to_rotation(angle: int) -> Rotation:
+    return {
+        0: ((1, 0), (0, 1)),
+        90: ((0, -1), (1, 0)),
+        180: ((-1, 0), (0, -1)),
+        270: ((0, 1), (-1, 0)),
     }[angle % 360]
 
 
@@ -101,9 +107,11 @@ def part2(data: List[str]) -> int:
         elif action == Action.EAST:
             waypoint += (num, 0)
         elif action == Action.LEFT:
-            waypoint = waypoint.rotate(num)
+            rotation = map_angle_to_rotation(num)
+            waypoint @= rotation
         elif action == Action.RIGHT:
-            waypoint = waypoint.rotate(-num)
+            rotation = map_angle_to_rotation(-num)
+            waypoint @= rotation
 
     return ship.manhattan_distance()
 
