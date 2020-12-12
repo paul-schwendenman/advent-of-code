@@ -53,12 +53,16 @@ def map_angle_to_action(angle: int) -> Action:
     }[angle % 360]
 
 
+def parse_command(command: str) -> Tuple[Action, int]:
+    return Action(command[0]), int(command[1:])
+
+
 def part1(data: List[str]) -> int:
     ship = Point(0, 0)
     theta = 0
 
     for command in data:
-        action, num = Action(command[0]), int(command[1:])
+        action, num = parse_command(command)
 
         if action == Action.FORWARD:
             action = map_angle_to_action(theta)
@@ -84,7 +88,7 @@ def part2(data: List[str]) -> int:
     waypoint = Waypoint(10, 1)
 
     for command in data:
-        action, num = Action(command[0]), int(command[1:])
+        action, num = parse_command(command)
 
         if action == Action.FORWARD:
             ship += waypoint * num
