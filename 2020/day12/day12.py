@@ -37,7 +37,43 @@ def part1(data: List[str]) -> int:
 
 
 def part2(data: List[str]) -> int:
-    pass
+    x = 0
+    w_x = 10
+    y = 0
+    w_y = 1
+
+    for command in data:
+        action, num = command[0], int(command[1:])
+
+        if action == 'F':
+            x += w_x * num
+            y += w_y * num
+
+        if action == 'N':
+            w_y += num
+        elif action == 'S':
+            w_y -= num
+        elif action == 'W':
+            w_x -= num
+        elif action == 'E':
+            w_x += num
+        elif action == 'L':
+            if num == 90:
+                w_y, w_x = w_x, -w_y
+            elif num == 180:
+                w_y, w_x = -w_y, -w_x
+            elif num == 270:
+                w_y, w_x = -w_x, w_y
+
+        elif action == 'R':
+            if num == 90:
+                w_y, w_x = -w_x, w_y
+            elif num == 180:
+                w_y, w_x = -w_y, -w_x
+            elif num == 270:
+                w_y, w_x = w_x, -w_y
+
+    return abs(x) + abs(y)
 
 
 def main() -> None:
