@@ -1,7 +1,37 @@
 from __future__ import annotations
-from typing import List
+from typing import cast, List, Tuple
 from aoc import readfile
+from collections import namedtuple
 from enum import Enum
+
+
+class Point(namedtuple('Point', 'x y')):
+    __slots__ = ()
+
+    def __add__(self: Point, other: Tuple) -> Point:
+        return Point(self.x + other[0], self.y + other[1])
+
+    def manhattan_distance(self) -> int:
+        return cast(int, abs(self.x) + abs(self.y))
+
+
+class Waypoint(Point):
+    def __add__(self: Point, other: Tuple) -> Waypoint:
+        return Waypoint(self.x + other[0], self.y + other[1])
+
+    def __mul__(self: Point, other: int) -> Waypoint:
+        return Waypoint(self.x * other, self.y * other)
+
+    def rotate(self, angle: int) -> Waypoint:
+        angle = angle % 360
+        if angle == 90:
+            x, y = -self.y, self.x
+        elif angle == 180:
+            x, y = -self.x, -self.y
+        elif angle == 270:
+            x, y = self.y, -self.x
+
+        return Waypoint(x, y)
 
 
 class Action(Enum):
@@ -24,8 +54,7 @@ def map_angle_to_action(angle: int) -> Action:
 
 
 def part1(data: List[str]) -> int:
-    x = 0
-    y = 0
+    ship = Point(0, 0)
     theta = 0
 
     for command in data:
@@ -35,59 +64,44 @@ def part1(data: List[str]) -> int:
             action = map_angle_to_action(theta)
 
         if action == Action.NORTH:
-            y -= num
+            ship += (0, -num)
         elif action == Action.SOUTH:
-            y += num
+            ship += (0, num)
         elif action == Action.WEST:
-            x -= num
+            ship += (-num, 0)
         elif action == Action.EAST:
-            x += num
+            ship += (num, 0)
         elif action == Action.LEFT:
             theta += num
         elif action == Action.RIGHT:
             theta -= num
 
-    return abs(x) + abs(y)
+    return ship.manhattan_distance()
 
 
 def part2(data: List[str]) -> int:
-    x = 0
-    w_x = 10
-    y = 0
-    w_y = 1
+    ship = Point(0, 0)
+    waypoint = Waypoint(10, 1)
 
     for command in data:
         action, num = Action(command[0]), int(command[1:])
 
         if action == Action.FORWARD:
-            x += w_x * num
-            y += w_y * num
-
-        if action == Action.NORTH:
-            w_y += num
+            ship += waypoint * num
+        elif action == Action.NORTH:
+            waypoint += (0, num)
         elif action == Action.SOUTH:
-            w_y -= num
+            waypoint += (0, -num)
         elif action == Action.WEST:
-            w_x -= num
+            waypoint += (-num, 0)
         elif action == Action.EAST:
-            w_x += num
+            waypoint += (num, 0)
         elif action == Action.LEFT:
-            if num == 90:
-                w_y, w_x = w_x, -w_y
-            elif num == 180:
-                w_y, w_x = -w_y, -w_x
-            elif num == 270:
-                w_y, w_x = -w_x, w_y
-
+            waypoint = waypoint.rotate(num)
         elif action == Action.RIGHT:
-            if num == 90:
-                w_y, w_x = -w_x, w_y
-            elif num == 180:
-                w_y, w_x = -w_y, -w_x
-            elif num == 270:
-                w_y, w_x = w_x, -w_y
+            waypoint = waypoint.rotate(-num)
 
-    return abs(x) + abs(y)
+    return ship.manhattan_distance()
 
 
 def main() -> None:
