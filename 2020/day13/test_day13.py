@@ -2,11 +2,11 @@ from day13 import part1, part2
 
 
 def test_part1_sample(sample_data):
-    assert part1(sample_data) == -1
+    assert part1(sample_data) == 295
 
 
 def test_part2_sample(sample_data):
-    assert part2(sample_data) == -1
+    assert part2(sample_data) == 1068781
 
 
 # def test_part1_input(input_data):
