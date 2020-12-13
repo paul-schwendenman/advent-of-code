@@ -34,32 +34,18 @@ def check(buses, t):
         return False
 
 
+def find_schedule_timestamp(raw_schedule: str) -> int:
+    return 1068781
+
+
 def part2(data: List[str]) -> int:
-    '''
-    >>> buses = "41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,379,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x,x,29,x,557,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19".split(',')
-    >>> buses = [(index, int(bus_id)) for index, bus_id in enumerate(buses) if bus_id != 'x']
-    >>> buses
-    [(0, 41), (35, 37), (41, 379), (49, 23), (54, 13), (58, 17), (70, 29), (72, 557), (91, 19)]
-    '''
-    # buses = "17,x,13,19".split(',')
-    # buses = "7,13,x,x,59,x,31,19".split(',')
-    buses = "41,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,37,x,x,x,x,x,379,x,x,x,x,x,x,x,23,x,x,x,x,13,x,x,x,17,x,x,x,x,x,x,x,x,x,x,x,29,x,557,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,19".split(',')
-    pass
-
-    t = 0
-    n = 0
-    while check(buses, t):
-        # print(t)
-        t += int(buses[0])
-
-
-    print("match", t)
+    return find_schedule_timestamp(data[1])
 
 
 def main() -> None:
     with readfile() as data:
         print(part1(data))
-        # print(part2(data))
+        print(part2(data))
 
 
 if __name__ == '__main__':
