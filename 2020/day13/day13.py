@@ -3,25 +3,23 @@ from typing import List
 from aoc import readfile
 
 
+def calculate_time_until_bus(bus_id: int, timestamp: int) -> int:
+    return bus_id - (timestamp % bus_id)
+
+
 def part1(data: List[str]) -> int:
-    '''
-    >>> a = lambda b,c: (((b//c)+1)*c) - b
-    >>> a(1004345,41)
-    32
-    >>> a(1004345,37)
-    20
-    >>> [a(1004345,x) for x in (41,37,379,23,13,17, 29,557,19)]
-    [32, 20, 5, 19, 9, 15, 12, 483, 14]
-    >>> [x, a(1004345,x) for x in (41,37,379,23,13,17, 29,557,19)]
-    File "<stdin>", line 1
-        [x, a(1004345,x) for x in (41,37,379,23,13,17, 29,557,19)]
-                        ^
-    SyntaxError: invalid syntax
-    >>> [(x, a(1004345,x)) for x in (41,37,379,23,13,17, 29,557,19)]
-    [(41, 32), (37, 20), (379, 5), (23, 19), (13, 9), (17, 15), (29, 12), (557, 483), (19, 14)]
-    >>> 379*5
-    '''
-    pass
+    timestamp = int(data[0])
+    bus_ids = [int(bus) for bus in data[1].split(',') if bus != 'x']
+
+    arrival_times = sorted(
+        ((bus_id, calculate_time_until_bus(bus_id, timestamp)) for bus_id in bus_ids),
+        key=lambda item: item[1]
+    )
+
+    next_bus, wait = arrival_times[0]
+
+    return next_bus * wait
+
 
 def check(buses, t):
     for index, bus in enumerate(buses):
@@ -61,7 +59,7 @@ def part2(data: List[str]) -> int:
 def main() -> None:
     with readfile() as data:
         print(part1(data))
-        print(part2(data))
+        # print(part2(data))
 
 
 if __name__ == '__main__':
