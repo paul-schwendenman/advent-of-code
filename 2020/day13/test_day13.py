@@ -13,8 +13,8 @@ def test_part1_input(input_data):
     assert part1(input_data) == 1895
 
 
-# def test_part2_input(input_data):
-#     assert part2(input_data) == -1
+def test_part2_input(input_data):
+    assert part2(input_data) == 840493039281088
 
 
 def test_find_schedule_1():
