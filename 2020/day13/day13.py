@@ -22,16 +22,15 @@ def part1(data: List[str]) -> int:
 
 
 def find_schedule_timestamp(raw_schedule: str) -> int:
-    bus_ids = [None if bus == 'x' else int(bus) for bus in raw_schedule.split(',')]
-    bus_offsets = {bus_id: index for index, bus_id in enumerate(bus_ids) if bus_id}
+    bus_wait_times = {int(bus_id): index for index, bus_id in enumerate(raw_schedule.split(',')) if bus_id != 'x'}
+
+    bus_ids = sorted(bus_wait_times.keys(), reverse=True)
 
     increment = bus_ids[0]
-    accumulator = 0
+    accumulator = bus_ids[0] - bus_wait_times[increment]
 
     for bus_id in bus_ids[1:]:
-        if bus_id is None:
-            continue
-        while (accumulator + bus_offsets[bus_id]) % bus_id:
+        while (accumulator + bus_wait_times[bus_id]) % bus_id:
             accumulator += increment
         print(bus_id, increment, accumulator)
         increment *= bus_id
