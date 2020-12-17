@@ -1,22 +1,43 @@
 from __future__ import annotations
-from typing import List, MutableMapping, Set
+from typing import Iterator, List, MutableMapping, Set, Sequence, Optional, Tuple
 from aoc import readfile
 from collections import defaultdict, namedtuple
+from dataclasses import dataclass
 from functools import reduce
 from operator import mul
+import re
 
 
 Notes = namedtuple('Notes', 'rules your_ticket nearby_ticket')
+# Rule = namedtuple('Rule', 'field bound_1 bound_2')
+Rule = Tuple[str, int, int, int, int]
 
 
 def parse_notes(notes: str) -> Notes:
     top, bottom = notes.split('your ticket:')
     your_ticket, others = bottom.split('nearby tickets:')
 
-    rules = top.splitlines()
+    rules = top.strip().splitlines()
     nearby_tickets = others.strip().split('\n')
 
     return Notes(rules, your_ticket, nearby_tickets)
+
+
+def parse_rules(rules: Iterator[str]) -> Sequence[Rule]:
+    def parse(rule: str) -> Rule:
+        match = re.match(r'^(.*): (\d+)-(\d+) or (\d+)-(\d+)$', rule)
+        if match:
+            groups = match.groups()
+
+            name = groups[0]
+            bottom_lower = int(groups[1])
+            bottom_upper = int(groups[2])
+            top_lower = int(groups[3])
+            top_upper = int(groups[4])
+            # return Rule(groups[0], Range(*groups[1:2]), Range(*groups[1:2]))
+            return (name, bottom_lower, bottom_upper, top_lower, top_upper)
+        raise ValueError("Parse Error in rule: '%s'" % rule)
+    return tuple(parse(rule) for rule in rules)
 
 
 def part1(data: List[str]) -> int:
@@ -31,34 +52,11 @@ def part1(data: List[str]) -> int:
     return sum(filtered)
 
 
-# /(.*): (\d+)-(\d+) or (\d+)-(\d+)/
-rules = (
-    ("departure location", 32, 69, 86, 968),
-    ("departure station", 27, 290, 301, 952),
-    ("departure platform", 47, 330, 347, 956),
-    ("departure track", 46, 804, 826, 956),
-    ("departure date", 25, 302, 320, 959),
-    ("departure time", 29, 885, 893, 961),
-    ("arrival location", 33, 643, 649, 963),
-    ("arrival station", 29, 135, 151, 973),
-    ("arrival platform", 50, 648, 674, 961),
-    ("arrival track", 45, 761, 767, 971),
-    ("class", 46, 703, 725, 951),
-    ("duration", 47, 244, 257, 957),
-    ("price", 49, 195, 209, 956),
-    ("route", 44, 368, 393, 968),
-    ("row", 48, 778, 797, 954),
-    ("seat", 31, 421, 427, 964),
-    ("train", 42, 229, 245, 961),
-    ("type", 31, 261, 281, 964),
-    ("wagon", 36, 428, 445, 967),
-    ("zone", 30, 906, 923, 960),)
-
-
 def part2(data: List[str]) -> int:
     document = '\n'.join(data)
 
-    _, your_ticket, nearby_tickets = parse_notes(document)
+    raw_rules, your_ticket, nearby_tickets = parse_notes(document)
+    rules = parse_rules(raw_rules)
 
     all_numbers_lists = [[int(item) for item in line.split(',') if item] for line in nearby_tickets]
 
