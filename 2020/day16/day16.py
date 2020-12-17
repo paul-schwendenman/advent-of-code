@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, MutableMapping, Set
 from aoc import readfile
 from collections import defaultdict
 from functools import reduce
@@ -21,8 +21,6 @@ def part1(data: List[str]) -> int:
     filtered = filter(lambda a: not (25 <= a <= 973), all_numbers)
 
     return sum(filtered)
-
-    # print(all_numbers[0:30])
 
 
 # /(.*): (\d+)-(\d+) or (\d+)-(\d+)/
@@ -55,48 +53,33 @@ def part2(data: List[str]) -> int:
     your_ticket, others = bottom.split('nearby tickets:')
 
     nearby_tickets = others.strip().split('\n')
-    # print(nearby_tickets[0:5])
 
     all_numbers_lists = [[int(item) for item in line.split(',') if item] for line in others.split('\n')]
-    # print(all_numbers[0:30])
-    # all_numbers = sorted(reduce(add, all_numbers_lists))
 
     filtered = [item for item in filter(lambda l: all((25 <= a <= 973) for a in l), all_numbers_lists) if item]
 
     filtered.append([int(i) for i in your_ticket.split(',')])
 
-    # print(len(all_numbers_lists))
-    # print(len(list(filtered)))
-    # with open('out', 'w') as output:
-    for line in filtered[:3]:
-        print(', '.join(f'{item:3}' for item in line))
-
-
-    # print(filtered)
     rotated = list(zip(*filtered))
-    # print(rotated)
+
+    field_option_set = defaultdict(set)
 
     for index, line in enumerate(rotated):
-        # print(', '.join(f'{item:3}' for item in line))
-        print(index)
         for rule in rules:
             if all(map(lambda num: (rule[1] <= num <= rule[2] or rule[3] <= num <= rule[4]), line)):
-                print(rule[0], end=', ')
-        # if all(map(lambda num: (27 <= num <= 290 or 301 <= num <= 952), line)):
-        #     print('station', end=', ')
-        # if all(map(lambda num: (47 <= num <= 330 or 347 <= num <= 956), line)):
-        #     print('platform', end=', ')
-        # if all(map(lambda num: (46 <= num <= 804 or 826 <= num <= 956), line)):
-        #     print('track', end=', ')
-        # if all(map(lambda num: (25 <= num <= 302 or 320 <= num <= 959), line)):
-        #     print('date', end=', ')
-        # if all(map(lambda num: (29 <= num <= 885 or 893 <= num <= 961), line)):
-        #     print('time', end=', ')
-        print('')
+                field_option_set[index].add(rule[0])
 
-    print(your_ticket)
+    field_options: MutableMapping[str, int] = {}
+    used_fields: Set[str] = set()
 
-    return reduce(mul, [int(value) for index, value in enumerate(your_ticket.split(',')) if index in (3, 8, 10, 12, 13, 18)])
+    for item in sorted(field_option_set.items(), key=lambda pair: len(pair[1])):
+        leftover = (item[1] - used_fields).pop()
+        field_options[leftover] = item[0]
+        used_fields.add(leftover)
+
+    fields = set(value for key, value in field_options.items() if 'departure' in key)
+
+    return reduce(mul, [int(value) for index, value in enumerate(your_ticket.split(',')) if index in fields])
 
 
 def main() -> None:
