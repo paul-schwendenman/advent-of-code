@@ -1,22 +1,30 @@
 from __future__ import annotations
 from typing import List, MutableMapping, Set
 from aoc import readfile
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from functools import reduce
-from operator import add, mul
+from operator import mul
+
+
+Notes = namedtuple('Notes', 'rules your_ticket nearby_ticket')
+
+
+def parse_notes(notes: str) -> Notes:
+    top, bottom = notes.split('your ticket:')
+    your_ticket, others = bottom.split('nearby tickets:')
+
+    rules = top.splitlines()
+    nearby_tickets = others.strip().split('\n')
+
+    return Notes(rules, your_ticket, nearby_tickets)
 
 
 def part1(data: List[str]) -> int:
     document = '\n'.join(data)
-    top, bottom = document.split('your ticket:')
-    your_ticket, others = bottom.split('nearby tickets:')
 
-    nearby_tickets = others.strip().split('\n')
-    # print(nearby_tickets[0:5])
+    _, _, nearby_tickets = parse_notes(document)
 
-    all_numbers_lists = [[int(item) for item in line.split(',') if item] for line in others.split('\n')]
-    # print(all_numbers[0:30])
-    all_numbers = sorted(reduce(add, all_numbers_lists))
+    all_numbers = [int(item) for line in nearby_tickets for item in line.split(',')]
 
     filtered = filter(lambda a: not (25 <= a <= 973), all_numbers)
 
@@ -49,12 +57,10 @@ rules = (
 
 def part2(data: List[str]) -> int:
     document = '\n'.join(data)
-    top, bottom = document.split('your ticket:')
-    your_ticket, others = bottom.split('nearby tickets:')
 
-    nearby_tickets = others.strip().split('\n')
+    _, your_ticket, nearby_tickets = parse_notes(document)
 
-    all_numbers_lists = [[int(item) for item in line.split(',') if item] for line in others.split('\n')]
+    all_numbers_lists = [[int(item) for item in line.split(',') if item] for line in nearby_tickets]
 
     filtered = [item for item in filter(lambda l: all((25 <= a <= 973) for a in l), all_numbers_lists) if item]
 
