@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Sequence, Mapping
 from itertools import product
 from functools import lru_cache
-from aoc import readfile, tracer
+from aoc import readfile, tracer, profiler
 
 
 def parse_rules(rules: Sequence[str]) -> Mapping[str, str]:
@@ -16,7 +16,7 @@ def parse_rules(rules: Sequence[str]) -> Mapping[str, str]:
 
 # @tracer
 def eval_rule(rules, rule_id):
-    @lru_cache(maxsize=10)
+    @lru_cache(maxsize=1000)
     # @tracer
     def inner(rule):
         if rule == '"a"':
@@ -28,18 +28,21 @@ def eval_rule(rules, rule_id):
             return [item for group in (inner(first), inner(second)) for item in group]
         else:
             return list(''.join(item) for item in product(*[inner(rules[item]) for item in rule.split(' ')]))
-    return inner(rules[rule_id])
+
+    print(inner.cache_info())
+    value =  inner(rules[rule_id])
+    print(inner.cache_info())
+    return value
 
 
+@profiler
 def part1(data: Sequence[str]) -> int:
     section_break = data.index('')
     raw_rules, messages = data[:section_break], data[section_break+1:]
 
     rules = parse_rules(raw_rules)
 
-    print(rules)
-
-    valid_answers = eval_rule(rules, '0')
+    valid_answers = set(eval_rule(rules, '0'))
 
     return sum(message in valid_answers for message in messages)
 
