@@ -3,7 +3,7 @@ from typing import Sequence
 from aoc import readfile
 
 
-def parse_math(line: str) -> str:
+def parse_math(line: str) -> int:
     if line[0] == '(':
         parens = 0
         for index, char in enumerate(line):
@@ -17,7 +17,7 @@ def parse_math(line: str) -> str:
     parts = line.split(' ', 2)
 
     if len(parts) == 1:
-        return parts[0]
+        return int(parts[0])
     left, opp, rest = parts
 
     if rest[0] == '(':
@@ -34,9 +34,9 @@ def parse_math(line: str) -> str:
     rest_parts = rest.split(' ', 1)
     if len(rest_parts) == 1:
         if opp == '*':
-            return f'{int(left) * int(rest_parts[0])}'
+            return int(left) * int(rest_parts[0])
         elif opp == '+':
-            return f'{int(left) + int(rest_parts[0])}'
+            return int(left) + int(rest_parts[0])
     else:
         if opp == '*':
             return parse_math(f'{int(left) * int(rest_parts[0])} {rest_parts[1]}')
