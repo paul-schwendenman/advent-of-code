@@ -26,6 +26,10 @@ def test_parse_math_sample6():
     assert parse_math('((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2') == 13632
 
 
+def test_part1_input(input_data):
+    assert part1(input_data) == 701339185745
+
+
 def test_parse_math2_sample():
     assert parse_math2('1 + 2 * 3 + 4 * 5 + 6') == '231'
 
