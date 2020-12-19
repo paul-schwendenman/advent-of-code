@@ -71,7 +71,7 @@ def parse_math(line: str):
     #         if parens == 0:
     #             parse_math(1:index)
 
-def part1(data: Sequence[str]) -> int:
+def part2(data: Sequence[str]) -> int:
     answers = []
     for line in data:
         answer = parse_math(line)
@@ -81,13 +81,8 @@ def part1(data: Sequence[str]) -> int:
     return sum(answers)
 
 
-def part2(data: Sequence[str]) -> int:
-    pass
-
-
 def main() -> None:
     with readfile() as data:
-        print(part1(data))
         print(part2(data))
 
 

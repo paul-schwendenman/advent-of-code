@@ -1,5 +1,5 @@
-from day18 import part1, part2, parse_math
-from day18_part2 import parse_math as parse_math2
+from day18 import part1, parse_math
+from day18_part2 import part2, parse_math as parse_math2
 
 
 def test_parse_math_sample():
@@ -52,3 +52,7 @@ def test_parse_math2_sample5():
 
 def test_parse_math2_sample6():
     assert parse_math2('((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2') == '23340'
+
+
+def test_part2_input(input_data):
+    assert part2(input_data) == 4208490449905
