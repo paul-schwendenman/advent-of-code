@@ -21,9 +21,9 @@ def readfile(filename=None):
 
 def profiler(func):
     def wrapper(*args, **kwargs):
-        t = time.time()
+        t = time.perf_counter_ns()
         result = func(*args, **kwargs)
-        print(f'Timing {func.__name__}: {time.time()-t:2.5f} sec')
+        print(f'Timing {func.__name__}: {(time.perf_counter_ns()-t)/1000000:2.5f} ms')
         return result
     return wrapper
 
