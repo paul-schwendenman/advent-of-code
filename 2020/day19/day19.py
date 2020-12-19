@@ -3,7 +3,7 @@ from typing import Sequence, Mapping
 from itertools import product
 from functools import lru_cache
 from aoc import readfile, tracer, profiler
-import re
+import regex
 
 
 def parse_rules(rules: Sequence[str]) -> Mapping[str, str]:
@@ -49,7 +49,7 @@ def convert_rule(rules, rule_id):
         elif rule_id == '8':
             return f'({inner("42")})+'
         elif rule_id == '11':
-            return f'({inner("42")})+({inner("31")})+'
+            return f'(?P<eleven>{inner("42")}(?P&eleven){"{0,1}"}{inner("31")})+'
         elif '|' in rule:
             first, second = rule.split(' | ')
             return f'(({inner(rule_id, rule=first)})|({inner(rule_id, rule=second)}))'
@@ -85,10 +85,10 @@ def part2(data: Sequence[str]) -> int:
 
     # valid_answers = set(eval_rule(rules, '0'))
     print(convert_rule(rules, '0'))
-    pattern = re.compile(convert_rule(rules, '0'))
+    pattern = regex.compile(convert_rule(rules, '0'))
     print(pattern)
 
-    return sum(1 for message in messages if re.match(pattern, message))
+    return sum(1 for message in messages if regex.match(pattern, message))
 
 
 def main() -> None:
