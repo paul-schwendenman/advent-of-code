@@ -49,7 +49,7 @@ def convert_rule(rules, rule_id):
         elif rule_id == '8':
             return f'({inner("42")})+'
         elif rule_id == '11':
-            return f'(?P<eleven>{inner("42")}(?P&eleven){"{0,1}"}{inner("31")})+'
+            return f'(?P<eleven>{inner("42")}(?P&eleven){"{0,1}"}{inner("31")})'
         elif '|' in rule:
             first, second = rule.split(' | ')
             return f'(({inner(rule_id, rule=first)})|({inner(rule_id, rule=second)}))'
@@ -83,10 +83,7 @@ def part2(data: Sequence[str]) -> int:
     rules['8'] = '42 | 42 8'
     rules['11'] = '42 31 | 42 11 31'
 
-    # valid_answers = set(eval_rule(rules, '0'))
-    print(convert_rule(rules, '0'))
     pattern = regex.compile(convert_rule(rules, '0'))
-    print(pattern)
 
     return sum(1 for message in messages if regex.match(pattern, message))
 
