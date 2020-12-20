@@ -17,5 +17,5 @@ def test_part2_sample2(sample2_data):
     assert part2(sample2_data) == 12
 
 
-# def test_part2_input(input_data):
-#     assert part2(input_data) == 0
+def test_part2_input(input_data):
+    assert part2(input_data) == 246
