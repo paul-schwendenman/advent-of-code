@@ -47,7 +47,6 @@ def part1(data: Sequence[str]) -> int:
 @profiler
 def part2(data: Sequence[str]) -> str:
     labels = []
-    ingredient_map = {}
     allergen_map: MutableMapping[str, set] = {}
 
     for line in data:
@@ -56,26 +55,20 @@ def part2(data: Sequence[str]) -> str:
     all_ingredients = reduce(set.union, [ingredients for ingredients, _ in labels])
 
     for ingredients, allergens in labels:
-        # for ingredient in ingredients:
-        #     pass
         for allergen in allergens:
             if allergen not in allergen_map:
                 allergen_map[allergen] = ingredients
             else:
                 allergen_map[allergen] = allergen_map[allergen].intersection(ingredients)
 
-    print(allergen_map)
     all_possible_allergens = reduce(set.union, [ingredients for ingredients in allergen_map.values()])
 
     clean_ingredients = (all_ingredients - all_possible_allergens)
-    print(clean_ingredients)
 
     canonical = {}
 
     for allergen in allergen_map.keys():
         canonical[allergen] = (allergen_map[allergen] - clean_ingredients)
-
-    all_allergens = allergen_map.keys()
 
     used_ingredients = clean_ingredients.copy()
 
@@ -85,15 +78,6 @@ def part2(data: Sequence[str]) -> str:
             if len(remaining) == 1:
                 canonical[allergen] = remaining
                 used_ingredients = used_ingredients.union(remaining)
-
-
-    # for allergen, ingredients in sorted(allergen_map.items(), key=lambda item: len(item[1])):
-    #     ingredient = (ingredients - clean_ingredients) - set(canonical.values())
-    #     if len(ingredient) > 1:
-    #         continue
-    #     canonical[allergen] = ingredient.pop()
-
-    print(canonical)
 
     return ','.join([canonical[allergen].pop() for allergen in sorted(allergen_map.keys())])
 
