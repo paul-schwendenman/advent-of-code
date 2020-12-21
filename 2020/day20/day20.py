@@ -70,6 +70,9 @@ class Tile:
             self.rotate(Rotation.CLOCKWISE)
             yield self
 
+    def core(self):
+        return [row[1:-1] for row in self.shape[1:-1]]
+
     def transpose(self) -> None:
         self.shape = [list(row) for row in zip(*self.shape)]
 
@@ -154,6 +157,16 @@ def print_puzzle(puzzle: List[List[Tile]]) -> None:
         print('|'.join('-' * sub_row_count for _ in range(len(row))))
 
 
+def assemble_puzzle(puzzle: List[List[Tile]]) -> List[str]:
+    solution = []
+    sub_row_count = len(puzzle[0][0].core())
+    for row in puzzle:
+        for sub_row in range(sub_row_count):
+            solution.append(''.join(''.join(tile.core()[sub_row] if tile else ' ' * sub_row_count) for tile in row))
+
+    return solution
+
+
 @profiler
 def part1(data: Sequence[str]) -> int:
     tiles = {}
@@ -193,7 +206,7 @@ def part2(data: Sequence[str]) -> int:
 
     puzzle[0][0] = tiles[corners[0]]
 
-    below, right_side = map(tiles.get, tiles_matches[corners[0]])
+    right_side, below = map(tiles.get, tiles_matches[corners[0]])
 
     print(puzzle[0][0])
     print(right_side)
@@ -268,8 +281,41 @@ def part2(data: Sequence[str]) -> int:
                     print_puzzle(puzzle)
                     print_puzzle_ids(puzzle)
                     raise Exception("No option found")
-    print_puzzle(puzzle)
+    # print_puzzle(puzzle)
     print_puzzle_ids(puzzle)
+
+    assembled = assemble_puzzle(puzzle)
+    print('\n'.join(assembled))
+
+    og_monster = ['                  # ',
+                  '#    ##    ##    ###',
+                  ' #  #  #  #  #  #   ']
+
+    monster_count = 0
+
+    print('finding monsters')
+    for index, monster_tile in enumerate(Tile('monster', og_monster).rotations()):
+        print(f'try {index}')
+        monster = monster_tile.shape
+        for base_row in range(len(assembled) - len(monster)):
+            for base_column in range(len(assembled[0]) - len(monster[0])):
+                if base_row == 1 and base_column == 2:
+                    print('\n'.join([''.join([
+                    assembled[base_row + row][base_column + column] if monster[row][column] == '#' else ' '
+                    for column in range(len(monster[0]))])
+                    for row in range(len(monster))]))
+                if all(monster[row][column] == ' ' or
+                    assembled[base_row + row][base_column + column] == '#'
+                    for row in range(len(monster))
+                    for column in range(len(monster[0]))):
+                    monster_count += 1
+    print(f'monsters: {monster_count}')
+
+    print(''.join(assembled).count('#'))
+    print(''.join(og_monster).count('#'))
+    return ''.join(assembled).count('#') - (''.join(og_monster).count('#') * monster_count)
+
+
 
 
 
