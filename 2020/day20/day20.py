@@ -29,10 +29,31 @@ class Tile:
     def match(self, other):
         return any(side1 == side2 for side1, side2 in product(self.sides, other.sides + other.sides_reversed))
 
-    def above(self, other):
-        return self.bottom == other.top or self.bottom == other.top_reversed
+    def exactly_above(self, other):
+        return any(self.bottom == side for side in other.sides)
 
-    def rotate(self, rotation: Rotation):
+    def exactly_below(self, other):
+        return any(self.top == side for side in other.sides)
+
+    def exactly_left_of(self, other):
+        return any(self.right == side for side in other.sides)
+
+    def exactly_right_of(self, other):
+        return any(self.left == side for side in other.sides)
+
+    def above(self, other):
+        return any(self.bottom == side for side in other.sides + other.sides_reversed)
+
+    def below(self, other):
+        return any(self.top == side for side in other.sides + other.sides_reversed)
+
+    def left_of(self, other):
+        return any(self.right == side for side in other.sides + other.sides_reversed)
+
+    def right_of(self, other):
+        return any(self.left == side for side in other.sides + other.sides_reversed)
+
+    def rotate(self, rotation: Rotation) -> None:
         if rotation == Rotation.CLOCKWISE:
             self.transpose()
             self.flip(Axis.HORIZONTAL)
@@ -48,9 +69,6 @@ class Tile:
         for _ in range(4):
             self.rotate(Rotation.CLOCKWISE)
             yield self
-
-    def all(self):
-        pass
 
     def transpose(self) -> None:
         self.shape = [list(row) for row in zip(*self.shape)]
@@ -115,11 +133,25 @@ class Tile:
         ]
 
 
-def parse_tile(tile):
+def parse_tile(tile: List[str]) -> Tile:
     tile_id = int(tile[0].split(' ')[1][:-1])
     shape = [list(row) for row in tile[1:]]
 
     return Tile(tile_id, shape)
+
+
+def print_puzzle_ids(puzzle: List[List[Tile]]) -> None:
+    for row in puzzle:
+        print(' '.join(str(tile.tile_id) if tile else '????' for tile in row))
+
+
+def print_puzzle(puzzle: List[List[Tile]]) -> None:
+    print('Puzzle')
+    sub_row_count = len(puzzle[0][0].shape)
+    for row in puzzle:
+        for sub_row in range(sub_row_count):
+            print('|'.join(''.join(tile.shape[sub_row] if tile else ' ' * sub_row_count) for tile in row))
+        print('|'.join('-' * sub_row_count for _ in range(len(row))))
 
 
 @profiler
@@ -157,21 +189,89 @@ def part2(data: Sequence[str]) -> int:
     number_of_tiles = len(tiles.keys())
     length_of_side = int(sqrt(number_of_tiles))
 
-
-    puzzle = [[None] * length_of_side for _ in range(length_of_side)]
+    puzzle: List[List[Tile]] = [[None] * length_of_side for _ in range(length_of_side)]
 
     puzzle[0][0] = tiles[corners[0]]
+
+    below, right_side = map(tiles.get, tiles_matches[corners[0]])
+
+    print(puzzle[0][0])
+    print(right_side)
+    print(below)
+
+    for index, orientation in enumerate(puzzle[0][0].rotations()):
+        print(f"{index}. turning...")
+        if orientation.left_of(right_side) and orientation.above(below):
+            print("found rotation:")
+            print(orientation)
+            break
+    else:
+        raise Exception("No rotation found")
 
     # print(f'number of tiles: {len(tiles.keys())}')
     # print(f'corners: {corners}')
     # print(f'edges: {len(list(map(lambda a: a[0], filter(lambda a: a[1] == 3, neighbor_count))))}')
 
-    # print(puzzle[0][0])
+    print(puzzle[0][0])
     # puzzle[0][0].transpose()
     # print(puzzle[0][0])
 
     # for piece in puzzle[0][0].rotations():
         # print(piece)
+
+    for row in range(length_of_side):
+        for column in range(length_of_side):
+            print(f'placing {row} {column}')
+            if row == 0 and column == 0:
+                continue
+            if row == 0:
+                previous = puzzle[row][column-1]
+                if column == 1:
+                    print(right_side)
+                    options = [right_side]
+                else:
+                    options = map(tiles.get, tiles_matches[previous.tile_id])
+                for option in options:
+                    if previous.left_of(option):
+                        for index, orientation in enumerate(option.rotations()):
+                            print(f"{index}. turning...")
+                            if orientation.exactly_right_of(previous):
+                                break
+                        else:
+                            raise Exception("No rotation found")
+                        print(f'found {option.tile_id}')
+                        puzzle[row][column] = option
+                        break
+                    else:
+                        print(f'skipping {option.tile_id}')
+                else:
+                    raise Exception("No option found")
+            else:
+                previous = puzzle[row-1][column]
+                for option in map(tiles.get, tiles_matches[previous.tile_id]):
+                    if previous.above(option):
+                        for index, orientation in enumerate(option.rotations()):
+                            print(f"{index}. turning...")
+                            if orientation.below(previous):
+                                break
+                        else:
+                            raise Exception("No rotation found")
+                        print(f'found {option.tile_id}')
+                        puzzle[row][column] = option
+                        break
+                    else:
+                        print(f'skipping {option.tile_id}')
+                else:
+                    # print(puzzle[0][1].top)
+                    # print(puzzle[0][1].bottom)
+                    # print(tiles[1427])
+                    print_puzzle(puzzle)
+                    print_puzzle_ids(puzzle)
+                    raise Exception("No option found")
+    print_puzzle(puzzle)
+    print_puzzle_ids(puzzle)
+
+
 
 
 def main() -> None:
