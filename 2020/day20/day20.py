@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Sequence, List
+from typing import Sequence, List, Optional, Generator, Iterator, Iterable
 from itertools import permutations, product
 from functools import reduce
 from operator import mul
@@ -25,31 +25,31 @@ class Tile:
     tile_id: int
     shape: List[List[str]]
 
-    def match(self, other):
+    def match(self, other: Tile) -> bool:
         return any(side1 == side2 for side1, side2 in product(self.sides, other.sides + other.sides_reversed))
 
-    def exactly_above(self, other):
+    def exactly_above(self, other: Tile) -> bool:
         return any(self.bottom == side for side in other.sides)
 
-    def exactly_below(self, other):
+    def exactly_below(self, other: Tile) -> bool:
         return any(self.top == side for side in other.sides)
 
-    def exactly_left_of(self, other):
+    def exactly_left_of(self, other: Tile) -> bool:
         return any(self.right == side for side in other.sides)
 
-    def exactly_right_of(self, other):
+    def exactly_right_of(self, other: Tile) -> bool:
         return any(self.left == side for side in other.sides)
 
-    def above(self, other):
+    def above(self, other: Tile) -> bool:
         return any(self.bottom == side for side in other.sides + other.sides_reversed)
 
-    def below(self, other):
+    def below(self, other: Tile) -> bool:
         return any(self.top == side for side in other.sides + other.sides_reversed)
 
-    def left_of(self, other):
+    def left_of(self, other: Tile) -> bool:
         return any(self.right == side for side in other.sides + other.sides_reversed)
 
-    def right_of(self, other):
+    def right_of(self, other: Tile) -> bool:
         return any(self.left == side for side in other.sides + other.sides_reversed)
 
     def rotate(self, rotation: Rotation) -> None:
@@ -60,7 +60,7 @@ class Tile:
             self.transpose()
             self.flip(Axis.VERTICAL)
 
-    def rotations(self):
+    def rotations(self) -> Generator[Tile, None, None]:
         for _ in range(4):
             self.rotate(Rotation.CLOCKWISE)
             yield self
@@ -69,7 +69,7 @@ class Tile:
             self.rotate(Rotation.CLOCKWISE)
             yield self
 
-    def core(self):
+    def core(self) -> List[List[str]]:
         return [row[1:-1] for row in self.shape[1:-1]]
 
     def transpose(self) -> None:
@@ -204,7 +204,7 @@ def part2(data: Sequence[str]) -> int:
 
     puzzle[0][0] = tiles[corners[0]]
 
-    right_side, below = map(tiles.get, tiles_matches[corners[0]])
+    right_side, below = map(tiles.__getitem__, tiles_matches[corners[0]])
 
     for index, orientation in enumerate(puzzle[0][0].rotations()):
         if orientation.left_of(right_side) and orientation.above(below):
@@ -217,11 +217,12 @@ def part2(data: Sequence[str]) -> int:
             if row == 0 and column == 0:
                 continue
             if row == 0:
+                options: Iterable[Tile]
                 previous = puzzle[row][column-1]
                 if column == 1:
                     options = [right_side]
                 else:
-                    options = map(tiles.get, tiles_matches[previous.tile_id])
+                    options = map(tiles.__getitem__, tiles_matches[previous.tile_id])
                 for option in options:
                     if previous.left_of(option):
                         for index, orientation in enumerate(option.rotations()):
