@@ -180,7 +180,6 @@ def part1(data: Sequence[str]) -> int:
             tiles_matches[pairing[0]].append(pairing[1])
 
     corners = [tiles[key].tile_id for key, value in tiles_matches.items() if len(value) == 2]
-    print(f'corners: {corners}')
 
     return reduce(mul, corners)
 
@@ -208,55 +207,31 @@ def part2(data: Sequence[str]) -> int:
 
     right_side, below = map(tiles.get, tiles_matches[corners[0]])
 
-    print(puzzle[0][0])
-    print(right_side)
-    print(below)
-
     for index, orientation in enumerate(puzzle[0][0].rotations()):
-        print(f"{index}. turning...")
         if orientation.left_of(right_side) and orientation.above(below):
-            print("found rotation:")
-            print(orientation)
             break
     else:
         raise Exception("No rotation found")
 
-    # print(f'number of tiles: {len(tiles.keys())}')
-    # print(f'corners: {corners}')
-    # print(f'edges: {len(list(map(lambda a: a[0], filter(lambda a: a[1] == 3, neighbor_count))))}')
-
-    print(puzzle[0][0])
-    # puzzle[0][0].transpose()
-    # print(puzzle[0][0])
-
-    # for piece in puzzle[0][0].rotations():
-        # print(piece)
-
     for row in range(length_of_side):
         for column in range(length_of_side):
-            print(f'placing {row} {column}')
             if row == 0 and column == 0:
                 continue
             if row == 0:
                 previous = puzzle[row][column-1]
                 if column == 1:
-                    print(right_side)
                     options = [right_side]
                 else:
                     options = map(tiles.get, tiles_matches[previous.tile_id])
                 for option in options:
                     if previous.left_of(option):
                         for index, orientation in enumerate(option.rotations()):
-                            print(f"{index}. turning...")
                             if orientation.exactly_right_of(previous):
                                 break
                         else:
                             raise Exception("No rotation found")
-                        print(f'found {option.tile_id}')
                         puzzle[row][column] = option
                         break
-                    else:
-                        print(f'skipping {option.tile_id}')
                 else:
                     raise Exception("No option found")
             else:
@@ -264,28 +239,18 @@ def part2(data: Sequence[str]) -> int:
                 for option in map(tiles.get, tiles_matches[previous.tile_id]):
                     if previous.above(option):
                         for index, orientation in enumerate(option.rotations()):
-                            print(f"{index}. turning...")
                             if orientation.exactly_below(previous):
                                 break
                         else:
                             raise Exception("No rotation found")
-                        print(f'found {option.tile_id}')
                         puzzle[row][column] = option
                         break
-                    else:
-                        print(f'skipping {option.tile_id}')
                 else:
-                    # print(puzzle[0][1].top)
-                    # print(puzzle[0][1].bottom)
-                    # print(tiles[1427])
                     print_puzzle(puzzle)
                     print_puzzle_ids(puzzle)
                     raise Exception("No option found")
-    # print_puzzle(puzzle)
-    print_puzzle_ids(puzzle)
 
     assembled = assemble_puzzle(puzzle)
-    print('\n'.join(assembled))
 
     og_monster = ['                  # ',
                   '#    ##    ##    ###',
@@ -293,31 +258,16 @@ def part2(data: Sequence[str]) -> int:
 
     monster_count = 0
 
-    print('finding monsters')
     for index, monster_tile in enumerate(Tile('monster', og_monster).rotations()):
-        print(f'try {index}')
         monster = monster_tile.shape
         for base_row in range(len(assembled) - len(monster)):
             for base_column in range(len(assembled[0]) - len(monster[0])):
-                if base_row == 1 and base_column == 2:
-                    print('\n'.join([''.join([
-                    assembled[base_row + row][base_column + column] if monster[row][column] == '#' else ' '
-                    for column in range(len(monster[0]))])
-                    for row in range(len(monster))]))
                 if all(monster[row][column] == ' ' or
-                    assembled[base_row + row][base_column + column] == '#'
-                    for row in range(len(monster))
-                    for column in range(len(monster[0]))):
+                       assembled[base_row + row][base_column + column] == '#'
+                       for row in range(len(monster))
+                       for column in range(len(monster[0]))):
                     monster_count += 1
-    print(f'monsters: {monster_count}')
-
-    print(''.join(assembled).count('#'))
-    print(''.join(og_monster).count('#'))
     return ''.join(assembled).count('#') - (''.join(og_monster).count('#') * monster_count)
-
-
-
-
 
 
 def main() -> None:
