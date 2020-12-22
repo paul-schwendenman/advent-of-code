@@ -1,34 +1,10 @@
 from __future__ import annotations
 from typing import Sequence, Deque, Tuple
-from aoc import readfile, tracer
+from aoc import readfile
 from collections import deque
 
 
-def play_combat(player_1: Deque[int], player_2: Deque[int]) -> Tuple[str, Deque[int]]:
-    while len(player_1) > 0 and len(player_2) > 0:
-        card_1 = player_1.popleft()
-        card_2 = player_2.popleft()
-
-        if card_1 > card_2:
-            player_1.append(card_1)
-            player_1.append(card_2)
-        elif card_1 < card_2:
-            player_2.append(card_2)
-            player_2.append(card_1)
-
-    print(player_1)
-    print(player_2)
-    if len(player_2) == 0:
-        winner = player_1
-        winner_name = '1'
-    else:
-        winner_name = '2'
-        winner = player_2
-
-    return winner_name, winner
-
-
-def play_recursive_combat(player_1: Deque[int], player_2: Deque[int]) -> Tuple[str, Deque[int]]:
+def play_combat(player_1: Deque[int], player_2: Deque[int], *, recursive: bool = False) -> Tuple[str, Deque[int]]:
     previous_player_1 = []
     previous_player_2 = []
     while len(player_1) > 0 and len(player_2) > 0:
@@ -41,8 +17,8 @@ def play_recursive_combat(player_1: Deque[int], player_2: Deque[int]) -> Tuple[s
         card_1 = player_1.popleft()
         card_2 = player_2.popleft()
 
-        if len(player_1) >= card_1 and len(player_2) >= card_2:
-            winner, _ = play_recursive_combat(deque(list(player_1)[:card_1]), deque(list(player_2)[:card_2]))
+        if len(player_1) >= card_1 and len(player_2) >= card_2 and recursive:
+            winner, _ = play_combat(deque(list(player_1)[:card_1]), deque(list(player_2)[:card_2]), recursive=True)
         else:
             winner = '1' if card_1 > card_2 else '2'
 
@@ -77,7 +53,7 @@ def part1(data: Sequence[str]) -> int:
 
 def part2(data: Sequence[str]) -> int:
     player_1, player_2 = parse_players(data)
-    name, winner = play_recursive_combat(player_1, player_2)
+    name, winner = play_combat(player_1, player_2, recursive=True)
 
     return sum((a + 1) * b for a, b in enumerate(reversed(winner)))
 
