@@ -265,7 +265,7 @@ def part2(data: Sequence[str]) -> int:
                     if previous.above(option):
                         for index, orientation in enumerate(option.rotations()):
                             print(f"{index}. turning...")
-                            if orientation.below(previous):
+                            if orientation.exactly_below(previous):
                                 break
                         else:
                             raise Exception("No rotation found")
