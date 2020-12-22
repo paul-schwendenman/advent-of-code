@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Sequence, List, Optional, Generator, Iterator, Iterable
+from typing import Sequence, List, Optional, Generator, Iterable, TypeVar, cast, MutableMapping
 from itertools import permutations, product
 from functools import reduce
 from operator import mul
@@ -20,8 +20,50 @@ class Axis(Enum):
     HORIZONTAL = auto()
 
 
+T = TypeVar('T', bound='Grid')
+
+
+class Grid:
+    def __init__(self, grid: List[List[str]]):
+        self.shape = grid
+
+    def rotate(self, rotation: Rotation) -> None:
+        if rotation == Rotation.CLOCKWISE:
+            self.transpose()
+            self.flip(Axis.HORIZONTAL)
+        else:
+            self.transpose()
+            self.flip(Axis.VERTICAL)
+
+    def rotations(self: T) -> Generator[T, None, None]:
+        for _ in range(4):
+            self.rotate(Rotation.CLOCKWISE)
+            yield self
+        self.transpose()
+        for _ in range(4):
+            self.rotate(Rotation.CLOCKWISE)
+            yield self
+
+    def core(self) -> List[List[str]]:
+        return [row[1:-1] for row in self.shape[1:-1]]
+
+    def transpose(self) -> None:
+        self.shape = [list(row) for row in zip(*self.shape)]
+
+    def flip(self, axis: Axis) -> None:
+        if axis == Axis.HORIZONTAL:
+            self.shape = [list(reversed(row)) for row in self.shape]
+        elif axis == Axis.VERTICAL:
+            self.shape = list(reversed(self.shape))
+
+
+class Monster(Grid):
+    def __init__(self, grid: List[str]):
+        self.shape = [list(line) for line in grid]
+
+
 @dataclass
-class Tile:
+class Tile(Grid):
     tile_id: int
     shape: List[List[str]]
 
@@ -52,34 +94,8 @@ class Tile:
     def right_of(self, other: Tile) -> bool:
         return any(self.left == side for side in other.sides + other.sides_reversed)
 
-    def rotate(self, rotation: Rotation) -> None:
-        if rotation == Rotation.CLOCKWISE:
-            self.transpose()
-            self.flip(Axis.HORIZONTAL)
-        else:
-            self.transpose()
-            self.flip(Axis.VERTICAL)
-
-    def rotations(self) -> Generator[Tile, None, None]:
-        for _ in range(4):
-            self.rotate(Rotation.CLOCKWISE)
-            yield self
-        self.transpose()
-        for _ in range(4):
-            self.rotate(Rotation.CLOCKWISE)
-            yield self
-
     def core(self) -> List[List[str]]:
         return [row[1:-1] for row in self.shape[1:-1]]
-
-    def transpose(self) -> None:
-        self.shape = [list(row) for row in zip(*self.shape)]
-
-    def flip(self, axis: Axis) -> None:
-        if axis == Axis.HORIZONTAL:
-            self.shape = [list(reversed(row)) for row in self.shape]
-        elif axis == Axis.VERTICAL:
-            self.shape = list(reversed(self.shape))
 
     def __str__(self):
         return f'Tile {self.tile_id}:\n' + '\n'.join(''.join(row) for row in self.shape)
@@ -135,6 +151,10 @@ class Tile:
         ]
 
 
+PartialPuzzle = List[List[Optional[Tile]]]
+Puzzle = List[List[Tile]]
+
+
 def parse_tile(tile: List[str]) -> Tile:
     tile_id = int(tile[0].split(' ')[1][:-1])
     shape = [list(row) for row in tile[1:]]
@@ -142,21 +162,21 @@ def parse_tile(tile: List[str]) -> Tile:
     return Tile(tile_id, shape)
 
 
-def print_puzzle_ids(puzzle: List[List[Tile]]) -> None:
+def print_puzzle_ids(puzzle: PartialPuzzle) -> None:
     for row in puzzle:
         print(' '.join(str(tile.tile_id) if tile else '????' for tile in row))
 
 
-def print_puzzle(puzzle: List[List[Tile]]) -> None:
+def print_puzzle(puzzle: PartialPuzzle) -> None:
     print('Puzzle')
-    sub_row_count = len(puzzle[0][0].shape)
+    sub_row_count = len(puzzle[0][0].shape) if puzzle[0][0] is not None else 0
     for row in puzzle:
         for sub_row in range(sub_row_count):
             print('|'.join(''.join(tile.shape[sub_row] if tile else ' ' * sub_row_count) for tile in row))
         print('|'.join('-' * sub_row_count for _ in range(len(row))))
 
 
-def assemble_puzzle(puzzle: List[List[Tile]]) -> List[str]:
+def assemble_puzzle(puzzle: Puzzle) -> List[str]:
     solution = []
     sub_row_count = len(puzzle[0][0].core())
     for row in puzzle:
@@ -185,7 +205,7 @@ def part1(data: Sequence[str]) -> int:
 
 @profiler
 def part2(data: Sequence[str]) -> int:
-    tiles = {}
+    tiles: MutableMapping[int, Tile] = {}
     tiles_matches = defaultdict(set)
     for raw_tile in ('\n'.join(data)).split('\n\n'):
         tile = parse_tile(raw_tile.rstrip().split('\n'))
@@ -196,17 +216,18 @@ def part2(data: Sequence[str]) -> int:
             tiles_matches[pairing[0]].add(pairing[1])
 
     neighbor_count = [(tiles[key].tile_id, len(value)) for key, value in tiles_matches.items()]
-    corners = list(map(lambda a: a[0], filter(lambda a: a[1] == 2, neighbor_count)))
+    corners = list(map(lambda b: b[0], filter(lambda a: a[1] == 2, neighbor_count)))
     number_of_tiles = len(tiles.keys())
     length_of_side = int(sqrt(number_of_tiles))
 
-    puzzle: List[List[Tile]] = [[None] * length_of_side for _ in range(length_of_side)]
-
-    puzzle[0][0] = tiles[corners[0]]
+    puzzle: PartialPuzzle = [[None] * length_of_side for _ in range(length_of_side)]
 
     right_side, below = map(tiles.__getitem__, tiles_matches[corners[0]])
 
-    for index, orientation in enumerate(puzzle[0][0].rotations()):
+    first_tile = tiles[corners[0]]
+    puzzle[0][0] = first_tile
+
+    for index, orientation in enumerate(first_tile.rotations()):
         if orientation.left_of(right_side) and orientation.above(below):
             break
     else:
@@ -219,6 +240,8 @@ def part2(data: Sequence[str]) -> int:
             if row == 0:
                 options: Iterable[Tile]
                 previous = puzzle[row][column-1]
+                if previous is None:
+                    raise ValueError("Previous tile not positioned")
                 if column == 1:
                     options = [right_side]
                 else:
@@ -236,7 +259,9 @@ def part2(data: Sequence[str]) -> int:
                     raise Exception("No option found")
             else:
                 previous = puzzle[row-1][column]
-                for option in map(tiles.get, tiles_matches[previous.tile_id]):
+                if previous is None:
+                    raise ValueError("Previous tile not positioned")
+                for option in map(tiles.__getitem__, tiles_matches[previous.tile_id]):
                     if previous.above(option):
                         for index, orientation in enumerate(option.rotations()):
                             if orientation.exactly_below(previous):
@@ -250,7 +275,7 @@ def part2(data: Sequence[str]) -> int:
                     print_puzzle_ids(puzzle)
                     raise Exception("No option found")
 
-    assembled = assemble_puzzle(puzzle)
+    assembled = assemble_puzzle(cast(Puzzle, puzzle))
 
     og_monster = ['                  # ',
                   '#    ##    ##    ###',
@@ -258,7 +283,7 @@ def part2(data: Sequence[str]) -> int:
 
     monster_count = 0
 
-    for index, monster_tile in enumerate(Tile('monster', og_monster).rotations()):
+    for monster_tile in Monster(og_monster).rotations():
         monster = monster_tile.shape
         for base_row in range(len(assembled) - len(monster)):
             for base_column in range(len(assembled[0]) - len(monster[0])):
