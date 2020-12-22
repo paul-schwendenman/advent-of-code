@@ -14,4 +14,4 @@ def test_part1_input(input_data):
 
 
 def test_part2_input(input_data):
-    assert part2(input_data) == 0
+    assert part2(input_data) == 31835
