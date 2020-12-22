@@ -1,14 +1,13 @@
 from __future__ import annotations
-from typing import Sequence, Mapping, List
+from typing import Sequence, List
 from itertools import permutations, product
-from functools import lru_cache, reduce
+from functools import reduce
 from operator import mul
 from collections import defaultdict
-from aoc import readfile, tracer, profiler
+from aoc import readfile, profiler
 from dataclasses import dataclass
 from math import sqrt
 from enum import Enum, auto
-import regex
 
 
 class Rotation(Enum):
