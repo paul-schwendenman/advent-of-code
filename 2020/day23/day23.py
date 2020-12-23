@@ -51,8 +51,53 @@ def part1(raw_cups: str, rounds=100) -> str:
     return ''.join(map(str, cups))
 
 
-def part2(data: Sequence[str]) -> int:
-    pass
+def part2(raw_cups: Sequence[str], rounds=100) -> int:
+    cups = deque(map(int, list(raw_cups)))
+
+    for index in range(10, 1_000_001):
+        cups.append(index)
+
+    for move in range(rounds):
+        if move % 1_000 == 0:
+            print(f'------ move {move+1} -----')
+        # print(f'cups: {" ".join(f"({cup})" if index % 9 == move else f" {cup} " for index, cup in enumerate(cups))}')
+        cups.rotate(-move)
+        current = cups.popleft()
+        burn_1 = cups.popleft()
+        burn_2 = cups.popleft()
+        burn_3 = cups.popleft()
+        # print(f'pick up: {", ".join(map(str, [burn_1, burn_2, burn_3]))}')
+        destination = (current - 1) % 9 if current != 1 else 9
+        while destination not in cups:
+            destination = (destination - 1) % 9 if destination != 1 else 9
+        # print(f'destination: {destination}')
+
+        # print(f'current: {current}')
+
+        # print(cups)
+        offset = -(cups.index(destination))
+        cups.rotate(offset)
+        # print(cups, offset, "rotate")
+        destination_cup = cups.popleft()
+        assert destination_cup == destination
+        # print(cups, f"removed {destination_cup}")
+        cups.extendleft([burn_3, burn_2, burn_1, destination_cup])
+        # print(cups, "extend")
+        cups.rotate(-offset)
+        # print(cups, f"rotated {-offset}")
+        cups.appendleft(current)
+        # print(cups, "append")
+        cups.rotate(move)
+        # print(cups, "final")
+
+
+    # print('-- final --')
+    # print(f'cups: {" ".join(f" {cup} " for cup in cups)}')
+    offset = cups.index(1)
+    star_1 = cups[offset+1]
+    star_2 = cups[offset+2]
+
+    return star_1 * star_2
 
 
 def main() -> None:
@@ -61,6 +106,7 @@ def main() -> None:
     print(part1("389125467", 10))
     print(part1("389125467", 100))
     print(part1("784235916", 100))
+    print(part2("784235916", 10_000_000))
     # print(part1(data))
     # print(part2(data))
 
