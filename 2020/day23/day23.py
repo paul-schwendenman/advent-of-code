@@ -1,8 +1,6 @@
 from __future__ import annotations
 from typing import Sequence, Mapping
 from itertools import zip_longest, islice
-# from aoc import readfile
-# from collections import deque, namedtuple
 from dataclasses import dataclass
 
 
@@ -73,19 +71,17 @@ def part1(raw_cups: str, rounds: int = 100) -> str:
     cups = LinkedList([int(cup) for cup in raw_cups], circular=True)
 
     for move in range(rounds):
-        print(f'------ move {move+1} -----')
-        # print(f'cups: {" ".join(f"({cup.value})" if index % 9 == move else f" {cup.value} " for index, cup in enumerate(cups))}')
-        print(f'cups: {cups}')
-        # cups.rotate(-move)
+        # print(f'------ move {move+1} -----')
+        # print(f'cups: {cups}')
         current = cups.current
         # Remove cups
         burn_1 = cups[current.pointer]
         burn_2 = cups[burn_1.pointer]
         burn_3 = cups[burn_2.pointer]
         current.pointer = burn_3.pointer
-        print(f'pick up: {", ".join(map(lambda cup: str(cup.value), [burn_1, burn_2, burn_3]))}')
+        # print(f'pick up: {", ".join(map(lambda cup: str(cup.value), [burn_1, burn_2, burn_3]))}')
         destination = get_destination(current.value, len(cups), [cup.value for cup in (burn_1, burn_2, burn_3)])
-        print(f'destination: {destination}')
+        # print(f'destination: {destination}')
 
         # Insert cups
         destination_cup = cups[destination]
@@ -95,39 +91,12 @@ def part1(raw_cups: str, rounds: int = 100) -> str:
 
         cups.current = current.pointer
 
-
-        # print(f'current: {current}')
-
-        # print(cups)
-        # offset = -(cups.index(destination))
-        # cups.rotate(offset)
-        # print(cups, offset, "rotate")
-        # destination_cup = cups.popleft()
-        # assert destination_cup == destination
-        # print(cups, f"removed {destination_cup}")
-        # cups.extendleft([burn_3, burn_2, burn_1, destination_cup])
-        # print(cups, "extend")
-        # cups.rotate(-offset)
-        # print(cups, f"rotated {-offset}")
-        # cups.appendleft(current)
-        # print(cups, "append")
-        # cups.rotate(move)
-        # print(cups, "final")
-
-
-    print('-- final --')
-    # print(f'cups: {" ".join(f" {cup} " for cup in cups)}')
-    # offset = cups.index(1)
-    # cups.rotate(-(offset + 1))
-    # print(cups)
-    # cups.pop()
     cups.current = 1
-    # print(cups)
 
     return ''.join(str(cup.value) for cup in islice(cups, 1, None))
 
 
-def part2(raw_cups: Sequence[str], rounds=100) -> int:
+def part2(raw_cups: Sequence[str], rounds: int = 100) -> int:
     cups = deque(map(int, list(raw_cups)))
 
     for index in range(10, 1_000_001):
