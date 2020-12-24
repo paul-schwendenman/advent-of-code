@@ -1,10 +1,7 @@
 from __future__ import annotations
 from typing import Sequence, Mapping, MutableMapping, Tuple
 from aoc import readfile, profiler
-from itertools import zip_longest, islice, chain
-from dataclasses import dataclass
-import cProfile
-from collections import namedtuple, defaultdict, deque
+from collections import namedtuple, defaultdict
 from enum import Enum
 
 
@@ -65,28 +62,25 @@ def parse_instruction(line: str) -> Point:
     return tile
 
 
+def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, bool]:
+    tiles: MutableMapping[Point, bool] = defaultdict(bool)
+
+    for instruction in instructions:
+        tile = parse_instruction(instruction)
+        tiles[tile] = not tiles[tile]
+
+    return tiles
+
 
 @profiler
 def part1(data: Sequence[str]) -> int:
-    tiles = defaultdict(bool)
-
-    for line in data:
-        tile = parse_instruction(line)
-        print(f'flipping {tile} from {tiles[tile]} to {not tiles[tile]}')
-        tiles[tile] = not tiles[tile]
+    tiles = parse_instructions(data)
 
     return sum(tiles.values())
 
 @profiler
 def part2(data: Sequence[str]) -> int:
-    tiles: MutableMapping[Point, bool] = defaultdict(bool)
-
-    for line in data:
-        tile = parse_instruction(line)
-        print(f'flipping {tile} from {tiles[tile]} to {not tiles[tile]}')
-        tiles[tile] = not tiles[tile]
-
-    art: Mapping[Point, bool] = tiles.copy()
+    art = parse_instructions(data)
 
     print(f'Day 0: {sum(art.values())}')
 
