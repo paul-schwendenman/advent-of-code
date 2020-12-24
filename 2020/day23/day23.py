@@ -102,7 +102,7 @@ def part1(raw_cups: str, rounds: int = 100) -> str:
     return ''.join(str(cup.value) for cup in islice(cups, 1, None))
 
 
-def part2(raw_cups: Sequence[str], rounds: int = 100) -> int:
+def part2(raw_cups: Sequence[str], rounds: int = 10_000_000) -> int:
     # cups = deque(map(int, list(raw_cups)))
 
     # for index in range(10, 1_000_001):
@@ -123,7 +123,7 @@ def main() -> None:
     # print(part1("389125467", 10))
     # print(part1("389125467", 100))
     # print(part1("784235916", 100))
-    print(part2("784235916", 10_000_000))
+    print(part2("784235916"))
     # print(part1(data))
     # print(part2(data))
 
