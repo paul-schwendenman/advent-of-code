@@ -1,14 +1,19 @@
 from __future__ import annotations
-from typing import Sequence, Mapping, MutableMapping, Tuple
+from typing import Sequence, Mapping, MutableMapping, Tuple, Generator
 from aoc import readfile, profiler
 from collections import namedtuple, defaultdict
-from enum import Enum
+from enum import Enum, auto
+
+
+class Color(Enum):
+    WHITE = auto()
+    BLACK = auto()
 
 
 class Point(namedtuple('Point', 'x y')):
     __slots__ = ()
 
-    def neighboors(self):
+    def neighboors(self) -> Generator[Point, None, None]:
         for direction in ((-2, 0), (-1, 1), (1, 1), (2, 0), (1, -1), (-1, -1)):
             yield self + direction
 
@@ -62,12 +67,12 @@ def parse_instruction(line: str) -> Point:
     return tile
 
 
-def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, bool]:
-    tiles: MutableMapping[Point, bool] = defaultdict(bool)
+def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, Color]:
+    tiles: MutableMapping[Point, Color] = defaultdict(lambda: Color.WHITE)
 
     for instruction in instructions:
         tile = parse_instruction(instruction)
-        tiles[tile] = not tiles[tile]
+        tiles[tile] = Color.WHITE if tiles[tile] == Color.BLACK else Color.BLACK
 
     return tiles
 
@@ -76,13 +81,11 @@ def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, bool]:
 def part1(data: Sequence[str]) -> int:
     tiles = parse_instructions(data)
 
-    return sum(tiles.values())
+    return sum(tile == Color.BLACK for tile in tiles.values())
 
 @profiler
 def part2(data: Sequence[str]) -> int:
     art = parse_instructions(data)
-
-    print(f'Day 0: {sum(art.values())}')
 
     for day in range(100):
         new_art = {}
@@ -92,30 +95,28 @@ def part2(data: Sequence[str]) -> int:
 
             for neighboor in tile.neighboors():
                 if neighboor in art:
-                    black += art[neighboor]
+                    black += (art[neighboor] == Color.BLACK)
                 else:
-                    new_art[neighboor] = 2 == sum(art[neighboor2] for neighboor2 in neighboor.neighboors() if neighboor2 in art)
+                    new_art[neighboor] = (Color.BLACK
+                                          if 2 == sum(art[neighboor2] == Color.BLACK
+                                                      for neighboor2 in neighboor.neighboors()
+                                                      if neighboor2 in art)
+                                          else Color.WHITE)
 
-            if color:
+            if color == Color.BLACK:
                 if black in (0, 3, 4, 5, 6):
-                    new_art[tile] = False
+                    new_art[tile] = Color.WHITE
                 else:
-                    new_art[tile] = True
+                    new_art[tile] = Color.BLACK
             else:
                 if black == 2:
-                    new_art[tile] = True
+                    new_art[tile] = Color.BLACK
                 else:
-                    new_art[tile] = False
+                    new_art[tile] = Color.WHITE
 
         art = new_art
-        print(f'Day {day+1}: {sum(new_art.values())}')
 
-    return sum(art.values())
-
-
-
-
-
+    return sum(tile == Color.BLACK for tile in art.values())
 
 
 def main() -> None:
