@@ -9,6 +9,15 @@ class Color(Enum):
     WHITE = auto()
     BLACK = auto()
 
+    def flip(self) -> Color:
+        return Color.WHITE if self else Color.BLACK
+
+    def __bool__(self) -> bool:
+        return self == Color.BLACK
+
+    def __int__(self) -> int:
+        return int(self == Color.BLACK)
+
 
 class Point(namedtuple('Point', 'x y')):
     __slots__ = ()
@@ -72,7 +81,7 @@ def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, Color]:
 
     for instruction in instructions:
         tile = parse_instruction(instruction)
-        tiles[tile] = Color.WHITE if tiles[tile] == Color.BLACK else Color.BLACK
+        tiles[tile] = tiles[tile].flip()
 
     return tiles
 
@@ -81,7 +90,7 @@ def parse_instructions(instructions: Sequence[str]) -> Mapping[Point, Color]:
 def part1(data: Sequence[str]) -> int:
     tiles = parse_instructions(data)
 
-    return sum(tile == Color.BLACK for tile in tiles.values())
+    return sum(int(tile) for tile in tiles.values())
 
 @profiler
 def part2(data: Sequence[str]) -> int:
@@ -95,15 +104,15 @@ def part2(data: Sequence[str]) -> int:
 
             for neighboor in tile.neighboors():
                 if neighboor in art:
-                    black += (art[neighboor] == Color.BLACK)
+                    black += int(art[neighboor])
                 else:
                     new_art[neighboor] = (Color.BLACK
-                                          if 2 == sum(art[neighboor2] == Color.BLACK
+                                          if 2 == sum(art[neighboor2] is Color.BLACK
                                                       for neighboor2 in neighboor.neighboors()
                                                       if neighboor2 in art)
                                           else Color.WHITE)
 
-            if color == Color.BLACK:
+            if color is Color.BLACK:
                 if black in (0, 3, 4, 5, 6):
                     new_art[tile] = Color.WHITE
                 else:
@@ -116,7 +125,7 @@ def part2(data: Sequence[str]) -> int:
 
         art = new_art
 
-    return sum(tile == Color.BLACK for tile in art.values())
+    return sum(int(tile) for tile in art.values())
 
 
 def main() -> None:
