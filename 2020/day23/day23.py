@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Sequence, Mapping
-from itertools import zip_longest, islice
+from itertools import zip_longest, islice, chain
 from dataclasses import dataclass
 
 
@@ -67,9 +67,7 @@ def get_destination(current: int, _max: int, values: Sequence[int]) -> int:
     return dest
 
 
-def part1(raw_cups: str, rounds: int = 100) -> str:
-    cups = LinkedList([int(cup) for cup in raw_cups], circular=True)
-
+def play_crab_cups(cups: LinkedList, rounds: int) -> LinkedList:
     for move in range(rounds):
         # print(f'------ move {move+1} -----')
         # print(f'cups: {cups}')
@@ -91,56 +89,30 @@ def part1(raw_cups: str, rounds: int = 100) -> str:
 
         cups.current = current.pointer
 
+    return cups
+
+
+def part1(raw_cups: str, rounds: int = 100) -> str:
+    cups = LinkedList([int(cup) for cup in raw_cups], circular=True)
+
+    cups = play_crab_cups(cups, rounds)
+
     cups.current = 1
 
     return ''.join(str(cup.value) for cup in islice(cups, 1, None))
 
 
 def part2(raw_cups: Sequence[str], rounds: int = 100) -> int:
-    cups = deque(map(int, list(raw_cups)))
+    # cups = deque(map(int, list(raw_cups)))
 
-    for index in range(10, 1_000_001):
-        cups.append(index)
+    # for index in range(10, 1_000_001):
+        # cups.append(index)
+    cups = LinkedList([int(cup) for cup in chain(raw_cups, range(10, 1_000_001))], circular=True)
 
-    for move in range(rounds):
-        if move % 1_000 == 0:
-            print(f'------ move {move+1} -----')
-        # print(f'cups: {" ".join(f"({cup})" if index % 9 == move else f" {cup} " for index, cup in enumerate(cups))}')
-        cups.rotate(-move)
-        current = cups.popleft()
-        burn_1 = cups.popleft()
-        burn_2 = cups.popleft()
-        burn_3 = cups.popleft()
-        # print(f'pick up: {", ".join(map(str, [burn_1, burn_2, burn_3]))}')
-        destination = (current - 1) % 9 if current != 1 else 9
-        while destination not in cups:
-            destination = (destination - 1) % 9 if destination != 1 else 9
-        # print(f'destination: {destination}')
+    cups = play_crab_cups(cups, rounds)
 
-        # print(f'current: {current}')
-
-        # print(cups)
-        offset = -(cups.index(destination))
-        cups.rotate(offset)
-        # print(cups, offset, "rotate")
-        destination_cup = cups.popleft()
-        assert destination_cup == destination
-        # print(cups, f"removed {destination_cup}")
-        cups.extendleft([burn_3, burn_2, burn_1, destination_cup])
-        # print(cups, "extend")
-        cups.rotate(-offset)
-        # print(cups, f"rotated {-offset}")
-        cups.appendleft(current)
-        # print(cups, "append")
-        cups.rotate(move)
-        # print(cups, "final")
-
-
-    # print('-- final --')
-    # print(f'cups: {" ".join(f" {cup} " for cup in cups)}')
-    offset = cups.index(1)
-    star_1 = cups[offset+1]
-    star_2 = cups[offset+2]
+    star_1 = cups[1].pointer
+    star_2 = cups[star_1].pointer
 
     return star_1 * star_2
 
@@ -148,10 +120,10 @@ def part2(raw_cups: Sequence[str], rounds: int = 100) -> int:
 def main() -> None:
     # with readfile() as data:
     #     pass
-    print(part1("389125467", 10))
-    print(part1("389125467", 100))
-    print(part1("784235916", 100))
-    # print(part2("784235916", 10_000_000))
+    # print(part1("389125467", 10))
+    # print(part1("389125467", 100))
+    # print(part1("784235916", 100))
+    print(part2("784235916", 10_000_000))
     # print(part1(data))
     # print(part2(data))
 
