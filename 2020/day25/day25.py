@@ -5,13 +5,7 @@ from itertools import count
 
 
 def handshake(subject: int, loop: int) -> int:
-    value = 1
-
-    for _ in range(loop):
-        value *= subject
-        value %= 20201227
-
-    return value
+    return pow(subject, loop, 20201227)
 
 
 def brute_force_loop(subject: int, key: int) -> int:
