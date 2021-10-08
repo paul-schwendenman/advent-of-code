@@ -1,4 +1,5 @@
 import fileinput
+import re
 
 def has_three_vowels(word):
     vowels = "aeiou"
@@ -34,8 +35,30 @@ def part1(filename = "input"):
 
     return count
 
+
+def has_repeated_pair(word):
+    return re.search(r'(..).*\1', word) is not None
+
+
+def has_letter_sandwich(word):
+    return re.search(r'(.).\1', word) is not None
+
+
+def is_nice_string2(word):
+    return has_repeated_pair(word) and has_letter_sandwich(word)
+
+
+def part2(filename = "input"):
+    count = 0
+    for line in fileinput.input(filename):
+        if is_nice_string2(line):
+            count += 1
+
+    return count
+
 def main():
     print(part1())
+    print(part2())
 
 
 if __name__ == '__main__':
