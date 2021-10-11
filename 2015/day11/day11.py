@@ -13,7 +13,7 @@ def next_password(password):
         next_char = (char + overflow) % 26
         acc.appendleft(next_char)
         # print(f"{char} - {overflow} - {chr(char + ord('a'))}: {''.join(chr(char + ord('a')) for char in acc)}")
-        overflow = 1 if next_char == 0 else 0
+        overflow = 1 if next_char == 0 and overflow == 1 else 0
         # print(f"{char} - {overflow} - {chr(char + ord('a'))}: {''.join(chr(char + ord('a')) for char in acc)}")
 
     return "".join(chr(char + ord('a')) for char in acc)
@@ -51,7 +51,7 @@ def next_valid_password(password):
     next_ = next_password(password)
 
     while not is_valid(next_):
-        print(next_)
+        # print(next_)
         next_ = next_password(next_)
 
     return next_
