@@ -32,6 +32,6 @@ def test_is_valid(input, expected):
 def test_is_valid2():
     assert is_valid("cqkaabcc")
 
-# @pytest.mark.parametrize("input,expected", [("abcdefgh", "abcdffaa"), ("ghijklmn", "ghjaabcc")])
-# def test_next_valid_password(input, expected):
-#     assert expected == next_valid_password(input)
+@pytest.mark.parametrize("input,expected", [("abcdefgh", "abcdffaa"), ("ghijklmn", "ghjaabcc")])
+def test_next_valid_password(input, expected):
+    assert expected == next_valid_password(input)
