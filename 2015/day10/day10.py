@@ -25,7 +25,8 @@ def part1(sequence, repetitions=40):
 
 
 def main():
-    print(part1("1321131112"))
+    # print(part1("1321131112"))
+    print(part1("1321131112", 50))
 
 
 if __name__ == '__main__':
