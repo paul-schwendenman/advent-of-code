@@ -63,6 +63,7 @@ def part1(password):
 
 def main():
     print(part1("cqjxjnds"))
+    print(part1("cqjxxyzz"))
 
 
 if __name__ == '__main__':
