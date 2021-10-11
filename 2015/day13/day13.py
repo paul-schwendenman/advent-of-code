@@ -37,12 +37,7 @@ def parse_rules(rules):
 def sum_arrangement(arrangement, mapping):
     value = 0
     for name_1, name_2 in islice(pairwise(cycle(arrangement)), len(arrangement)):
-        # print(name_1, name_2)
-        # print(f"{name_1} -> {name_2} = {mapping[(name_1, name_2)]}")
-        # print(f"{name_2} -> {name_1} = {mapping[(name_2, name_1)]}")
-        # value += mapping[(name_1, name_2)]
         value += mapping.get((name_1, name_2), 0)
-        # value += mapping[(name_2, name_1)]
         value += mapping.get((name_2, name_1), 0)
     return value
 
@@ -50,14 +45,10 @@ def sum_arrangement(arrangement, mapping):
 def part1(rules):
     names, mapping = parse_rules(rules)
 
-    # print(mapping)
-
     max_value = 0
 
-    # for arrangement in [('Alice', 'Bob', 'Carol', 'David')]:
     for arrangement in permutations(names):
         value = sum_arrangement(arrangement, mapping)
-        # print(f"{arrangement} {value}")
 
         if value > max_value:
             max_value = value
@@ -70,14 +61,10 @@ def part2(rules):
 
     names.add("You")
 
-    # print(mapping)
-
     max_value = 0
 
-    # for arrangement in [('Alice', 'Bob', 'Carol', 'David')]:
     for arrangement in permutations(names):
         value = sum_arrangement(arrangement, mapping)
-        # print(f"{arrangement} {value}")
 
         if value > max_value:
             max_value = value
