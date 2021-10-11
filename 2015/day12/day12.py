@@ -2,11 +2,13 @@ import fileinput
 import json
 
 
-def adder(input):
+def adder(input, *, skip_red=False):
     if isinstance(input, dict):
-        return sum(adder(item) for item in input.values())
+        if skip_red and ("red" in input.values()):
+            return 0
+        return sum(adder(item, skip_red=skip_red) for item in input.values())
     elif isinstance(input, list):
-        return sum(adder(item) for item in input)
+        return sum(adder(item, skip_red=skip_red) for item in input)
     elif isinstance(input, int):
         return input
     elif isinstance(input, str):
@@ -21,8 +23,16 @@ def part1(json_data):
     return adder(data)
 
 
+def part2(json_data):
+    data = json.loads(json_data)
+
+    return adder(data, skip_red=True)
+
+
 def main():
-    print(part1(next(fileinput.input())))
+    json_data = next(fileinput.input())
+    print(part1(json_data))
+    print(part2(json_data))
 
 
 if __name__ == '__main__':
