@@ -16,6 +16,7 @@ class Reindeer():
 		self.location = 0
 		self.stage = Stage.FLYING
 		self.stage_duration = 0
+		self.points = 0
 
 	def step(self):
 		if self.stage == Stage.FLYING:
@@ -60,9 +61,25 @@ def part1(lines, duration=1000):
 	return max(deer.location for deer in reindeer)
 
 
+def part2(lines, duration=1000):
+	reindeer = parse_reindeer(lines)
+
+	for _ in range(duration):
+		for deer in reindeer:
+			deer.step()
+
+		leader = max(deer.location for deer in reindeer)
+
+		for deer in reindeer:
+			if deer.location == leader:
+				deer.points += 1
+
+	return max(deer.points for deer in reindeer)
+
 
 def main():
 	print(part1(fileinput.input(), 2503))
+	print(part2(fileinput.input(), 2503))
 
 
 if __name__ == "__main__":
