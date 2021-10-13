@@ -46,18 +46,17 @@ def calc_score(ingredients: list[Ingredient], quanities):
 	durability = sum(quanity * ingredient.durability for ingredient, quanity in zip(ingredients, quanities))
 	flavor = sum(quanity * ingredient.flavor for ingredient, quanity in zip(ingredients, quanities))
 	texture = sum(quanity * ingredient.texture for ingredient, quanity in zip(ingredients, quanities))
+	calories = sum(quanity * ingredient.calories for ingredient, quanity in zip(ingredients, quanities))
 
 	if any(value < 0 for value in (capacity, durability, flavor, texture)):
-		return 0
+		return 0, calories
 
-
-	# print(capacity, durability, flavor, texture)
-	return capacity * durability * flavor * texture
+	return capacity * durability * flavor * texture, calories
 
 def part1(lines):
 	ingredients = parse_ingredients(lines)
 
-	print(ingredients)
+	# print(ingredients)
 
 	max_score = 0
 
@@ -68,9 +67,28 @@ def part1(lines):
 
 				quantities = [first_quantity, second_quanitity, third_quantity, fourth_quantity]
 
-				score = calc_score(ingredients, quantities)
+				score, _ = calc_score(ingredients, quantities)
 
 				if score > max_score:
+					max_score = score
+					# print(first_quantity, second_quanitity, third_quantity, fourth_quantity, score)
+	return max_score
+
+def part2(lines):
+	ingredients = parse_ingredients(lines)
+
+	max_score = 0
+
+	for first_quantity in range(101):
+		for second_quanitity in range(100 - first_quantity):
+			for third_quantity in range(100 - (first_quantity + second_quanitity)):
+				fourth_quantity = 100 - (first_quantity + second_quanitity + third_quantity)
+
+				quantities = [first_quantity, second_quanitity, third_quantity, fourth_quantity]
+
+				score, calories = calc_score(ingredients, quantities)
+
+				if calories == 500 and score > max_score:
 					max_score = score
 					# print(first_quantity, second_quanitity, third_quantity, fourth_quantity, score)
 	return max_score
@@ -78,6 +96,7 @@ def part1(lines):
 
 def main():
 	print(part1(fileinput.input()))
+	print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
