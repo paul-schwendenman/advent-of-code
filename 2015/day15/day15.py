@@ -29,7 +29,6 @@ def parse_ingredients(lines):
 	pattern = re.compile(r'(?P<name>[A-Za-z]+): capacity (?P<capacity>-?[0-9]+), durability (?P<durability>-?[0-9]+), flavor (?P<flavor>-?[0-9]+), texture (?P<texture>-?[0-9]+), calories (?P<calories>-?[0-9]+)')
 	ingredients = []
 
-
 	for line in lines:
 		match = pattern.match(line)
 
@@ -56,8 +55,6 @@ def calc_score(ingredients: list[Ingredient], quanities):
 def part1(lines):
 	ingredients = parse_ingredients(lines)
 
-	# print(ingredients)
-
 	max_score = 0
 
 	for first_quantity in range(101):
@@ -71,7 +68,6 @@ def part1(lines):
 
 				if score > max_score:
 					max_score = score
-					# print(first_quantity, second_quanitity, third_quantity, fourth_quantity, score)
 	return max_score
 
 def part2(lines):
@@ -90,7 +86,6 @@ def part2(lines):
 
 				if calories == 500 and score > max_score:
 					max_score = score
-					# print(first_quantity, second_quanitity, third_quantity, fourth_quantity, score)
 	return max_score
 
 
