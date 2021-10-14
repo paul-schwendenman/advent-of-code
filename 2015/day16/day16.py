@@ -36,6 +36,25 @@ class Aunt():
 
 		return True
 
+	def matches2(self, other):
+		for field in fields(self):
+			value = getattr(self, field.name)
+			other_value = getattr(other, field.name)
+
+			if value is None or other_value is None:
+				continue
+
+			if field.name in ('cats', 'trees'):
+				if value <= other_value:
+					return False
+			elif field.name in ('goldfish', 'pomeranians'):
+				if value >= other_value:
+					return False
+			elif value != other_value:
+				return False
+
+		return True
+
 
 
 def parse_aunts(lines):
@@ -70,8 +89,19 @@ def part1(lines):
 			return aunt.number
 
 
+def part2(lines):
+	aunts = parse_aunts(lines)
+
+	ticker = Aunt(number=None, children=3, cats=7, samoyeds=2, pomeranians=3, akitas=0, vizslas=0, goldfish=5, trees=3, cars=2, perfumes=1)
+
+	for aunt in aunts:
+		if aunt.matches2(ticker):
+			return aunt.number
+
+
 def main():
 	print(part1(fileinput.input()))
+	print(part2(fileinput.input()))
 
 if __name__ == '__main__':
 	main()
