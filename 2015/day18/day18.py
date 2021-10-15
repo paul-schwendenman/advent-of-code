@@ -26,7 +26,7 @@ def make_grid(lines):
 		for x, light in enumerate(line.rstrip()):
 			grid[Point(x, y)] = Light(light)
 
-	return grid
+	return grid, y
 
 def print_grid(grid, length = 100):
 	for y in range(length):
@@ -59,7 +59,7 @@ def count_lights(grid):
 
 
 def part1(lines, steps):
-	grid = make_grid(lines)
+	grid, _ = make_grid(lines)
 	# print_grid(grid, 6)
 
 	for _ in range(steps):
@@ -68,10 +68,26 @@ def part1(lines, steps):
 
 	return count_lights(grid)
 
+def part2(lines, steps):
+	grid, side = make_grid(lines)
+	# print_grid(grid, 6)
+
+	for _ in range(steps):
+		grid = step(grid)
+		grid[Point(0, 0)] = Light.ON
+		grid[Point(side, 0)] = Light.ON
+		grid[Point(0, side)] = Light.ON
+		grid[Point(side, side)] = Light.ON
+		# print_grid(grid, 6)
+
+	return count_lights(grid)
+
 
 def main():
 	# print(part1(fileinput.input(), 4))
 	print(part1(fileinput.input(), 100))
+	# print(part2(fileinput.input(), 5))
+	print(part2(fileinput.input(), 100))
 
 
 if __name__ == '__main__':
