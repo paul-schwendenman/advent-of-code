@@ -63,11 +63,41 @@ def part1(lines):
 
     print(len(boards))
 
+def part2(lines):
+    numbers = [int(num) for num in lines[0].split(',')]
+
+    boards = [parse_board(raw_board) for raw_board in (''.join(lines[2:])).split('\n\n')]
+
+    print(boards[2].match(numbers[:4]))
+    print(boards[2].match(numbers[:5]))
+    print(boards[2].match(numbers[:6]))
+    print(boards[2].match(numbers))
+
+    for i in range(len(numbers)):
+        for board in boards:
+            if board.match(numbers[:i]):
+                if len(boards) == 1:
+                    print('winner')
+                    print(board)
+                    print(board.score(numbers[:i]))
+                    break
+                else:
+                    boards.remove(board)
+        else:
+            continue
+
+        break
+
+    print(board)
+
+    print(len(boards))
+
 
 def main():
     with fileinput.input() as input:
         lines = list(input)
     print(part1(lines))
+    print(part2(lines))
 
 
 if __name__ == '__main__':
