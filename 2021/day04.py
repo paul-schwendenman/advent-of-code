@@ -28,7 +28,6 @@ class BingoCard:
         return any(set(group).issubset(set(numbers)) for group in itertools.chain(self._columns, self._rows))
 
     def score(self, numbers):
-        print(numbers[-1], sum(self._all_nums.difference(numbers)))
         return numbers[-1] * sum(self._all_nums.difference(numbers))
 
     def __str__(self):
@@ -42,44 +41,26 @@ def part1(lines):
 
     boards = [parse_board(raw_board) for raw_board in (''.join(lines[2:])).split('\n\n')]
 
-    print(boards[2].match(numbers[:4]))
-    print(boards[2].match(numbers[:5]))
-    print(boards[2].match(numbers[:6]))
-    print(boards[2].match(numbers))
-
     for i in range(len(numbers)):
         for board in boards:
             if board.match(numbers[:i]):
-                print('winner')
-                print(board)
-                print(board.score(numbers[:i]))
                 break
         else:
             continue
 
         break
 
-    print(board)
-
-    print(len(boards))
+    return board.score(numbers[:i])
 
 def part2(lines):
     numbers = [int(num) for num in lines[0].split(',')]
 
     boards = [parse_board(raw_board) for raw_board in (''.join(lines[2:])).split('\n\n')]
 
-    print(boards[2].match(numbers[:4]))
-    print(boards[2].match(numbers[:5]))
-    print(boards[2].match(numbers[:6]))
-    print(boards[2].match(numbers))
-
     for i in range(len(numbers)):
         for board in boards:
             if board.match(numbers[:i]):
                 if len(boards) == 1:
-                    print('winner')
-                    print(board)
-                    print(board.score(numbers[:i]))
                     break
                 else:
                     boards.remove(board)
@@ -88,9 +69,7 @@ def part2(lines):
 
         break
 
-    print(board)
-
-    print(len(boards))
+    return board.score(numbers[:i])
 
 
 def main():
