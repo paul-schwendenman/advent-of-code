@@ -33,8 +33,10 @@ class BingoCard:
     def __str__(self):
         return ' '.join(f'{num:02}' for num in self.board[0])
 
+
 def parse_board(raw_board):
     return BingoCard.build(raw_board)
+
 
 def part1(lines):
     numbers = [int(num) for num in lines[0].split(',')]
@@ -51,6 +53,7 @@ def part1(lines):
         break
 
     return board.score(numbers[:i])
+
 
 def part2(lines):
     numbers = [int(num) for num in lines[0].split(',')]
