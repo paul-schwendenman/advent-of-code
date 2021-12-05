@@ -32,7 +32,6 @@ def line_to_array(line, include_diagonals = False):
     yield from zip(x_values, y_values)
 
 
-
 def part1(lines):
     grid = defaultdict(int)
 
@@ -62,8 +61,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # print(list(line_to_array('1,1 -> 1,3')))
-    # print(list(line_to_array('9,7 -> 7,7')))
-    # print(list(line_to_array('1,1 -> 3,3', include_diagonals=True)))
-    # print(list(line_to_array('9,7 -> 7,9', include_diagonals=True)))
     main()
