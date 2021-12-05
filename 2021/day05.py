@@ -1,5 +1,6 @@
 import fileinput
 from collections import defaultdict
+from itertools import repeat
 
 
 def print_grid(grid):
@@ -12,25 +13,23 @@ def line_to_array(line, include_diagonals = False):
     start_x, start_y = map(int, start.split(','))
     end_x, end_y = map(int, end.split(','))
 
-    if start_x == end_x:
-        if start_y > end_y:
-            start_y, end_y = end_y, start_y
-        for i in range(start_y, end_y + 1):
-            yield (start_x, i)
-    elif start_y == end_y:
-        if start_x > end_x:
-            start_x, end_x = end_x, start_x
-        for i in range(start_x, end_x + 1):
-            yield (i, start_y)
-    elif include_diagonals:
-        x_step = 1 if end_x > start_x else -1
-        y_step = 1 if end_y > start_y else -1
+    if not include_diagonals and (start_x != end_x and start_y != end_y):
+        return []
 
+    x_step = 1 if end_x >= start_x else -1
+    y_step = 1 if end_y >= start_y else -1
+
+    if start_x == end_x:
+        x_values = repeat(start_x)
+    else:
         x_values = range(start_x, end_x + x_step, x_step)
+
+    if start_y == end_y:
+        y_values = repeat(start_y)
+    else:
         y_values = range(start_y, end_y + y_step, y_step)
 
-        for pair in zip(x_values, y_values):
-            yield pair
+    yield from zip(x_values, y_values)
 
 
 
