@@ -1,6 +1,12 @@
 import fileinput
 from collections import defaultdict
 
+
+def print_grid(grid):
+    for j in range(10):
+        print(''.join('.' if grid[(i,j)] == 0 else str(grid[(i, j)]) for i in range(10)))
+
+
 def line_to_array(line, include_diagonals = False):
     [start, end] = line.split(' -> ')
     start_x, start_y = map(int, start.split(','))
@@ -28,7 +34,6 @@ def line_to_array(line, include_diagonals = False):
 
 
 
-
 def part1(lines):
     grid = defaultdict(int)
 
@@ -36,10 +41,8 @@ def part1(lines):
         for point in line_to_array(line):
             grid[point] += 1
 
-    #print(grid)
-    # print_grid(grid)
+    return sum(1 for value in grid.values() if value > 1)
 
-    return sum(1 for key,value in grid.items() if value > 1)
 
 def part2(lines):
     grid = defaultdict(int)
@@ -48,15 +51,8 @@ def part2(lines):
         for point in line_to_array(line, include_diagonals=True):
             grid[point] += 1
 
-    #print(grid)
-    # print_grid(grid)
+    return sum(1 for value in grid.values() if value > 1)
 
-    return sum(1 for key,value in grid.items() if value > 1)
-
-
-def print_grid(grid):
-    for j in range(10):
-        print(''.join('.' if grid[(i,j)] == 0 else str(grid[(i, j)]) for i in range(10)))
 
 def main():
     with fileinput.input() as input:
@@ -65,9 +61,10 @@ def main():
     print(part1(lines))
     print(part2(lines))
 
+
 if __name__ == '__main__':
-    print(list(line_to_array('1,1 -> 1,3')))
-    print(list(line_to_array('9,7 -> 7,7')))
-    print(list(line_to_array('1,1 -> 3,3')))
-    print(list(line_to_array('9,7 -> 7,9')))
+    # print(list(line_to_array('1,1 -> 1,3')))
+    # print(list(line_to_array('9,7 -> 7,7')))
+    # print(list(line_to_array('1,1 -> 3,3', include_diagonals=True)))
+    # print(list(line_to_array('9,7 -> 7,9', include_diagonals=True)))
     main()
