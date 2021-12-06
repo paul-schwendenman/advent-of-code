@@ -24,36 +24,33 @@ def part1(rows):
     return gamma * epsilon
 
 
-def part2(rows):
-    columns = transpose(rows)
+def calc_fancy_rating(rows, func):
+    guesses = rows
+    for i in (range(len(rows[0]))):
+        c = Counter(item[i] for item in guesses)
 
-    oxygen_guesses = rows
-    scrub_guesses = rows
-
-    for i in (range(len(columns))):
-        c = Counter(item[i] for item in oxygen_guesses)
-
-        filter_on = '0' if c['0'] > c['1'] else '1'
-
-        oxygen_guesses = list(filter(lambda item: item[i] == filter_on, oxygen_guesses))
-        if len(oxygen_guesses) == 1:
-            break
-
-    for i in (range(len(columns))):
-        c = Counter(item[i] for item in scrub_guesses)
-        if c['1'] < c['0']:
-            filter_on = '1'
-        else:
-            filter_on = '0'
-        scrub_guesses = list(filter(lambda item: item[i] == filter_on, scrub_guesses))
-        if len(scrub_guesses) == 1:
+        guesses = list(filter(lambda item: item[i] == func(c), guesses))
+        if len(guesses) == 1:
             break
     else:
         raise ValueError("Did not find one scrub value")
 
-    oxygen_generator_rating, CO2_scrubber_rating = int(oxygen_guesses[0], 2), int(scrub_guesses[0], 2)
+    return int(guesses[0], 2)
+
+
+def calc_co2_scrubber_rating(rows):
+    return calc_fancy_rating(rows, lambda c: '1' if c['0'] > c['1'] else '0')
+
+
+def calc_oxygen_generator_rating(rows):
+    return calc_fancy_rating(rows, lambda c: '0' if c['0'] > c['1'] else '1')
+
+
+def part2(rows):
+    oxygen_generator_rating, CO2_scrubber_rating = calc_oxygen_generator_rating(rows), calc_co2_scrubber_rating(rows)
 
     return oxygen_generator_rating * CO2_scrubber_rating
+
 
 def main():
     with fileinput.input() as raw_data:
@@ -61,6 +58,7 @@ def main():
 
     print(part1(data))
     print(part2(data))
+
 
 if __name__ == '__main__':
     main()
