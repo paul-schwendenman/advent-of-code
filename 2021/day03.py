@@ -7,19 +7,19 @@ def transpose(grid):
 
 
 def part1(rows):
-    gamma_list = []
-    epsilon_list = []
+    gamma = ''
+    epsilon = ''
 
     columns = transpose(rows)
 
     for column in columns:
         c = Counter(column)
 
-        gamma_list.append(c.most_common()[0][0])
-        epsilon_list.append(c.most_common()[1][0])
+        gamma += c.most_common()[0][0]
+        epsilon += c.most_common()[1][0]
 
-    gamma = int(''.join(gamma_list), 2)
-    epsilon = int(''.join(epsilon_list), 2)
+    gamma = int(gamma, 2)
+    epsilon = int(epsilon, 2)
 
     return gamma * epsilon
 
