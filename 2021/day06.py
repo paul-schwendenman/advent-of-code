@@ -1,20 +1,16 @@
 import fileinput
-from collections import Counter
+from collections import Counter, deque
 
 
 def solve(fish, days=80):
-    fish = dict(Counter(fish))
+    counts = Counter(fish)
+    tracker = deque(counts.get(index, 0) for index in range(9))
 
     for _ in range(days):
-        spawn_count = fish.get(0, 0)
+        tracker.rotate(-1)
+        tracker[6] += tracker[8]
 
-        for age in range(8):
-            fish[age] = fish.get(age + 1, 0)
-
-        fish[6] += spawn_count
-        fish[8] = spawn_count
-
-    return sum(fish.values())
+    return sum(tracker)
 
 
 def main():
