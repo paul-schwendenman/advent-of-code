@@ -1,10 +1,10 @@
 import fileinput
-from collections import Counter, deque
+from collections import Counter, deque, defaultdict, ChainMap
 
 
 def solve(fish, days=80):
-    counts = Counter(fish)
-    tracker = deque(counts.get(index, 0) for index in range(9))
+    counts = ChainMap(Counter(fish), defaultdict(int))
+    tracker = deque(counts[index] for index in range(9))
 
     for _ in range(days):
         tracker.rotate(-1)
