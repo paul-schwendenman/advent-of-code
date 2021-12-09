@@ -32,16 +32,15 @@ def part1(lines):
     return sum(low_points) + len(low_points)
 
 
-@lru_cache(maxsize=10_000_000)
-def find_basin(location, grid, path=[]):
-    if location not in grid:
-        return set()
-    if grid[location] == 9:
-        return set()
-    if location in path:
-        return set()
+def find_basin(grid, basin):
+    location = basin[-1]
 
-    return set((location,)) | reduce(lambda a, b: a | b, (find_basin(neighboor, grid, path+[location]) for neighboor in get_neighboors(*location)))
+    for neighboor in get_neighboors(*location):
+        if neighboor not in basin and grid.get(neighboor, 9) < 9:
+            basin.append(neighboor)
+            find_basin(grid, basin)
+
+    return basin
 
 
 def part2(lines):
@@ -62,7 +61,7 @@ def part2(lines):
 
 
     # low_points = find_low_points()
-    basins = [find_basin(low_point) for low_point in low_points]
+    basins = [find_basin(grid, [low_point]) for low_point in low_points]
 
     sizes = list(sorted(map(len, basins)))
     print(sizes)
