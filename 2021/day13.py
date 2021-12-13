@@ -2,7 +2,7 @@ import fileinput
 
 def print_paper(grid, max_y=6, max_x=39):
 	for y in range(max_y):
-		print("".join("#" if (x,y) in grid else "." for x in range(max_x)))
+		print("".join("█" if (x,y) in grid else " " for x in range(max_x)))
 
 def part1(lines):
 	dots = {}
