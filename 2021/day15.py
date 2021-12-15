@@ -2,6 +2,11 @@ import fileinput
 from collections import *
 
 
+def printgrid(grid, end):
+    for j in range(end[1] + 1):
+        print("".join(str(grid[(i, j)]) for i in range(end[0] + 1)))
+
+
 def neighboors(location):
     x, y = location
 
@@ -54,7 +59,31 @@ def part1(lines):
 
 
 def part2(lines):
-    pass
+    little_grid = {
+        (x, y): int(value)
+        for y, line in enumerate(lines)
+        for x, value in enumerate(line)
+    }
+    grid = {}
+
+    start = (0, 0)
+    max_x, max_y = len(lines[0]), len(lines)
+
+    end = (max_x * 5 - 1, max_y * 5 - 1)
+
+    for j in range(5):
+        for i in range(5):
+            for location, value in little_grid.items():
+                x, y = location
+                # print (f'{i} * {max_x} + {x} = {i * max_x + x}, {j} * {max_y} + {y} = {j * max_y + y}')
+                assert (i * max_x + x, j * max_y + y) not in grid
+                new_value = value + i + j
+                grid[(i * max_x + x, j * max_y + y)] = new_value if new_value <= 9 else new_value - 9
+
+    assert end in grid
+    # printgrid(grid, end)
+
+    return find_cost(grid, start, end)
 
 
 def main():
