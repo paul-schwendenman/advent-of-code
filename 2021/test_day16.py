@@ -23,7 +23,7 @@ def test_parse_literal_packet():
 
     assert packet.type == PacketType.LITERAL
     assert packet.version == 6
-    assert packet.literal() == 2021
+    assert packet.value == 2021
 
 
 def test_parse_operator_packet():
@@ -33,10 +33,10 @@ def test_parse_operator_packet():
 
     assert packet.type == 6
     assert packet.version == 1
-    assert packet.literal() == None
-    assert len(packet.packets) == 2
-    assert packet.packets[0].literal() == 10
-    assert packet.packets[1].literal() == 20
+    assert packet.value == None
+    assert len(packet.subpackets) == 2
+    assert packet.subpackets[0].value == 10
+    assert packet.subpackets[1].value == 20
 
 def test_parse_operator_packet2():
     data = hex_to_bin('EE00D40C823060')
@@ -45,11 +45,11 @@ def test_parse_operator_packet2():
 
     assert packet.type == 3
     assert packet.version == 7
-    assert packet.literal() == None
-    assert len(packet.packets) == 3
-    assert packet.packets[0].literal() == 1
-    assert packet.packets[1].literal() == 2
-    assert packet.packets[2].literal() == 3
+    assert packet.value == None
+    assert len(packet.subpackets) == 3
+    assert packet.subpackets[0].value == 1
+    assert packet.subpackets[1].value == 2
+    assert packet.subpackets[2].value == 3
 
 def test_sum_versions():
     data = hex_to_bin('8A004A801A8002F478')

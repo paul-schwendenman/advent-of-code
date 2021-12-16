@@ -19,12 +19,19 @@ class PacketType(IntEnum):
 class Packet:
     version: int
     type: int
-    data: str = None
-    packets: list[any] = field(default_factory=list)
 
-    def literal(self):
-        if self.type == 4:
-            return int(self.data, 2)
+
+@dataclass
+class LiteralPacket(Packet):
+    value: int
+
+    subpackets = []
+
+
+@dataclass
+class OperatorPacket(Packet):
+    value = None
+    subpackets: list[Packet] = field(default_factory=list)
 
 
 hex = {
@@ -70,12 +77,13 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
 
         bits = "".join(bits)
         padding = 4 - (len(bits) % 4) if len(bits) % 4 != 0 else 0
+        bits = int(bits, 2)
 
         zeros, rest = rest[:padding], rest[padding:]
 
         assert all(char == '0' for char in zeros)
 
-        return Packet(version, packet_type, bits), rest
+        return LiteralPacket(version, packet_type, bits), rest
 
     else:
         length_type_id, rest = rest[0], rest[1:]
@@ -101,18 +109,18 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
         else:
             raise ValueError('Invalid length_type_id', length_type_id)
 
-        return Packet(version, packet_type, packets=subpackets), rest
+        return OperatorPacket(version, packet_type, subpackets=subpackets), rest
 
 
 def sum_version(packet: Packet):
-    return packet.version + sum(sum_version(subpacket) for subpacket in packet.packets)
+    return packet.version + sum(sum_version(subpacket) for subpacket in packet.subpackets)
 
 
 def evaluate_packets(packet: Packet):
     if packet.type == PacketType.LITERAL:
-        return packet.literal()
+        return packet.value
 
-    values = [evaluate_packets(subpacket) for subpacket in packet.packets]
+    values = [evaluate_packets(subpacket) for subpacket in packet.subpackets]
 
     if packet.type == PacketType.SUM:
         return sum(values)
