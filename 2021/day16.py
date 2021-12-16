@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from math import prod
 from typing import Tuple
+
+
 class PacketType(IntEnum):
     SUM = 0
     PRODUCT = 1
@@ -44,6 +46,7 @@ hex = {
     'F': '1111',
 }
 
+
 def hex_to_bin(data):
     return "".join(hex[char] for char in data)
 
@@ -68,8 +71,6 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
         bits = "".join(bits)
         padding = 4 - (len(bits) % 4) if len(bits) % 4 != 0 else 0
 
-        print(f'{padding} {rest}')
-
         zeros, rest = rest[:padding], rest[padding:]
 
         assert all(char == '0' for char in zeros)
@@ -79,7 +80,6 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
     else:
         length_type_id, rest = rest[0], rest[1:]
 
-        print(f'length_type_id: {length_type_id}')
         subpackets = []
 
         if length_type_id == '0':
@@ -90,24 +90,19 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
 
             while subpacket_data:
                 subpacket, subpacket_data = parse_packet(subpacket_data)
-                print(f'subpacket: {subpacket} {subpacket.literal()}')
-
                 subpackets.append(subpacket)
         elif length_type_id == '1':
             num_packets, rest = rest[:11], rest[11:]
-            print(num_packets)
             num_packets = int(num_packets, 2)
 
             for _ in range(num_packets):
                 subpacket, rest = parse_packet(rest)
-                print(f'subpacket: {subpacket} {subpacket.literal()}')
-
                 subpackets.append(subpacket)
         else:
             raise ValueError('Invalid length_type_id', length_type_id)
 
-
         return Packet(version, packet_type, packets=subpackets), rest
+
 
 def sum_version(packet: Packet):
     return packet.version + sum(sum_version(subpacket) for subpacket in packet.packets)
@@ -134,13 +129,13 @@ def evaluate_packets(packet: Packet):
     elif packet.type == PacketType.EQUAL_TO:
         return 1 if values[0] == values[1] else 0
     else:
-        print(packet)
         raise ValueError(packet.type)
+
 
 def part1(data):
     data = hex_to_bin(data)
 
-    packet, rest = parse_packet(data)
+    packet, _ = parse_packet(data)
 
     return sum_version(packet)
 
@@ -148,10 +143,9 @@ def part1(data):
 def part2(data):
     data = hex_to_bin(data)
 
-    packet, rest = parse_packet(data)
+    packet, _ = parse_packet(data)
 
     return evaluate_packets(packet)
-
 
 
 def main():
@@ -160,6 +154,7 @@ def main():
 
     print(part1(data))
     print(part2(data))
+
 
 if __name__ == '__main__':
     main()
