@@ -1,7 +1,15 @@
 from contextlib import contextmanager
 import fileinput
 import pytest
-from day16 import parse_packet, evaluate_packets, sum_version, hex_to_bin, PacketType, part1, part2
+from day16 import (
+    parse_packet,
+    evaluate_packets,
+    sum_version,
+    hex_to_bin,
+    PacketType,
+    part1,
+    part2,
+)
 
 
 @contextmanager
@@ -17,7 +25,7 @@ def input_data():
 
 
 def test_parse_literal_packet():
-    data = hex_to_bin('D2FE28')
+    data = hex_to_bin("D2FE28")
 
     packet, _ = parse_packet(data)
 
@@ -27,7 +35,7 @@ def test_parse_literal_packet():
 
 
 def test_parse_operator_packet():
-    data = hex_to_bin('38006F45291200')
+    data = hex_to_bin("38006F45291200")
 
     packet, _ = parse_packet(data)
 
@@ -38,8 +46,9 @@ def test_parse_operator_packet():
     assert packet.subpackets[0].value == 10
     assert packet.subpackets[1].value == 20
 
+
 def test_parse_operator_packet2():
-    data = hex_to_bin('EE00D40C823060')
+    data = hex_to_bin("EE00D40C823060")
 
     packet, _ = parse_packet(data)
 
@@ -51,8 +60,9 @@ def test_parse_operator_packet2():
     assert packet.subpackets[1].value == 2
     assert packet.subpackets[2].value == 3
 
+
 def test_sum_versions():
-    data = hex_to_bin('8A004A801A8002F478')
+    data = hex_to_bin("8A004A801A8002F478")
 
     packet, _ = parse_packet(data)
 
@@ -60,7 +70,7 @@ def test_sum_versions():
 
 
 def test_sum_versions2():
-    data = hex_to_bin('620080001611562C8802118E34')
+    data = hex_to_bin("620080001611562C8802118E34")
 
     packet, _ = parse_packet(data)
 
@@ -68,7 +78,7 @@ def test_sum_versions2():
 
 
 def test_sum_versions3():
-    data = hex_to_bin('C0015000016115A2E0802F182340')
+    data = hex_to_bin("C0015000016115A2E0802F182340")
 
     packet, _ = parse_packet(data)
 
@@ -76,7 +86,7 @@ def test_sum_versions3():
 
 
 def test_sum_versions4():
-    data = hex_to_bin('A0016C880162017C3686B18A3D4780')
+    data = hex_to_bin("A0016C880162017C3686B18A3D4780")
 
     packet, _ = parse_packet(data)
 
@@ -84,7 +94,7 @@ def test_sum_versions4():
 
 
 def test_evalute_packet_addition():
-    data = hex_to_bin('C200B40A82')
+    data = hex_to_bin("C200B40A82")
 
     packet, _ = parse_packet(data)
 
@@ -92,7 +102,7 @@ def test_evalute_packet_addition():
 
 
 def test_evalute_packet_product():
-    data = hex_to_bin('04005AC33890')
+    data = hex_to_bin("04005AC33890")
 
     packet, _ = parse_packet(data)
 
@@ -100,7 +110,7 @@ def test_evalute_packet_product():
 
 
 def test_evalute_packet_min():
-    data = hex_to_bin('880086C3E88112')
+    data = hex_to_bin("880086C3E88112")
 
     packet, _ = parse_packet(data)
 
@@ -108,7 +118,7 @@ def test_evalute_packet_min():
 
 
 def test_evalute_packet_max():
-    data = hex_to_bin('CE00C43D881120')
+    data = hex_to_bin("CE00C43D881120")
 
     packet, _ = parse_packet(data)
 
@@ -116,7 +126,7 @@ def test_evalute_packet_max():
 
 
 def test_evalute_packet_greater():
-    data = hex_to_bin('F600BC2D8F')
+    data = hex_to_bin("F600BC2D8F")
 
     packet, _ = parse_packet(data)
 
@@ -124,7 +134,7 @@ def test_evalute_packet_greater():
 
 
 def test_evalute_packet_less():
-    data = hex_to_bin('D8005AC2A8F0')
+    data = hex_to_bin("D8005AC2A8F0")
 
     packet, _ = parse_packet(data)
 
@@ -132,7 +142,7 @@ def test_evalute_packet_less():
 
 
 def test_evalute_packet_equal():
-    data = hex_to_bin('9C005AC2F8F0')
+    data = hex_to_bin("9C005AC2F8F0")
 
     packet, _ = parse_packet(data)
 
@@ -140,7 +150,7 @@ def test_evalute_packet_equal():
 
 
 def test_evalute_packet_complex():
-    data = hex_to_bin('9C0141080250320F1802104A08')
+    data = hex_to_bin("9C0141080250320F1802104A08")
 
     packet, _ = parse_packet(data)
 
