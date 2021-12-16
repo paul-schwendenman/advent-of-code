@@ -1,5 +1,16 @@
 import fileinput
 from dataclasses import dataclass, field
+from enum import IntEnum
+from math import prod
+class PacketType(IntEnum):
+    SUM = 0
+    PRODUCT = 1
+    MINIMUM = 2
+    MAXIMUM = 3
+    LITERAL = 4
+    GREATER_THAN = 5
+    LESS_THAN = 6
+    EQUAL_TO = 7
 
 @dataclass
 class Packet:
@@ -101,6 +112,30 @@ def sum_version(packet: Packet):
     return packet.version + sum(sum_version(subpacket) for subpacket in packet.packets)
 
 
+def evaluate_packets(packet: Packet):
+    if packet.type == PacketType.LITERAL:
+        return packet.literal()
+
+    values = [evaluate_packets(subpacket) for subpacket in packet.packets]
+
+    if packet.type == PacketType.SUM:
+        return sum(values)
+    elif packet.type == PacketType.PRODUCT:
+        return prod(values)
+    elif packet.type == PacketType.MINIMUM:
+        return min(values)
+    elif packet.type == PacketType.MAXIMUM:
+        return max(values)
+    elif packet.type == PacketType.GREATER_THAN:
+        return 1 if values[0] > values[1] else 0
+    elif packet.type == PacketType.LESS_THAN:
+        return 1 if values[0] < values[1] else 0
+    elif packet.type == PacketType.EQUAL_TO:
+        return 1 if values[0] == values[1] else 0
+    else:
+        print(packet)
+        raise ValueError(packet.type)
+
 def part1(data):
     data = hex_to_bin(data)
 
@@ -109,12 +144,21 @@ def part1(data):
     return sum_version(packet)
 
 
+def part2(data):
+    data = hex_to_bin(data)
+
+    packet, rest = parse_packet(data)
+
+    return evaluate_packets(packet)
+
+
 
 def main():
     with fileinput.input() as input:
         data = [line for line in input][0].rstrip()
 
     print(part1(data))
+    print(part2(data))
 
 if __name__ == '__main__':
     main()
