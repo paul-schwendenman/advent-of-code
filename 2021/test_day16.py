@@ -1,4 +1,20 @@
-from day16 import parse_packet, evaluate_packets, sum_version, hex_to_bin, PacketType
+from contextlib import contextmanager
+import fileinput
+import pytest
+from day16 import parse_packet, evaluate_packets, sum_version, hex_to_bin, PacketType, part1, part2
+
+
+@contextmanager
+def readfile(filename=None):
+    with fileinput.input(filename) as data:
+        yield [line.rstrip() for line in data]
+
+
+@pytest.fixture
+def input_data():
+    with readfile("day16_input") as data:
+        yield data
+
 
 def test_parse_literal_packet():
     data = hex_to_bin('D2FE28')
@@ -129,3 +145,11 @@ def test_evalute_packet_complex():
     packet, _ = parse_packet(data)
 
     assert evaluate_packets(packet) == 1
+
+
+def test_part1(input_data):
+    assert part1(input_data[0]) == 943
+
+
+def test_part2(input_data):
+    assert part2(input_data[0]) == 167737115857
