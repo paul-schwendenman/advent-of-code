@@ -4,7 +4,7 @@ import pytest
 from day16 import (
     parse_packet,
     evaluate_packets,
-    sum_version,
+    sum_versions,
     hex_to_bin,
     PacketType,
     part1,
@@ -41,7 +41,6 @@ def test_parse_operator_packet():
 
     assert packet.type == PacketType.LESS_THAN
     assert packet.version == 1
-    assert packet.value == None
     assert len(packet.subpackets) == 2
     assert packet.subpackets[0].value == 10
     assert packet.subpackets[1].value == 20
@@ -54,7 +53,6 @@ def test_parse_operator_packet2():
 
     assert packet.type == PacketType.MAXIMUM
     assert packet.version == 7
-    assert packet.value == None
     assert len(packet.subpackets) == 3
     assert packet.subpackets[0].value == 1
     assert packet.subpackets[1].value == 2
@@ -66,7 +64,7 @@ def test_sum_versions():
 
     packet, _ = parse_packet(data)
 
-    assert sum_version(packet) == 16
+    assert sum_versions(packet) == 16
 
 
 def test_sum_versions2():
@@ -74,7 +72,7 @@ def test_sum_versions2():
 
     packet, _ = parse_packet(data)
 
-    assert sum_version(packet) == 12
+    assert sum_versions(packet) == 12
 
 
 def test_sum_versions3():
@@ -82,7 +80,7 @@ def test_sum_versions3():
 
     packet, _ = parse_packet(data)
 
-    assert sum_version(packet) == 23
+    assert sum_versions(packet) == 23
 
 
 def test_sum_versions4():
@@ -90,7 +88,7 @@ def test_sum_versions4():
 
     packet, _ = parse_packet(data)
 
-    assert sum_version(packet) == 31
+    assert sum_versions(packet) == 31
 
 
 def test_evalute_packet_addition():

@@ -20,7 +20,7 @@ class PacketType(Enum):
 class Packet:
     version: int
     type: PacketType
-    value: Optional[int] = field(default=None, init=False, repr=False)
+    value: int = field(default=0, init=False, repr=False)
     subpackets: list = field(default_factory=list, init=False, repr=False)
 
 
@@ -32,6 +32,27 @@ class LiteralPacket(Packet):
 @dataclass
 class OperatorPacket(Packet):
     subpackets: list[Packet] = field(default_factory=list)
+
+    @property
+    def value(self):
+        values = [subpacket.value for subpacket in self.subpackets]
+
+        if self.type == PacketType.SUM:
+            return sum(values)
+        elif self.type == PacketType.PRODUCT:
+            return prod(values)
+        elif self.type == PacketType.MINIMUM:
+            return min(values)
+        elif self.type == PacketType.MAXIMUM:
+            return max(values)
+        elif self.type == PacketType.GREATER_THAN:
+            return 1 if values[0] > values[1] else 0
+        elif self.type == PacketType.LESS_THAN:
+            return 1 if values[0] < values[1] else 0
+        elif self.type == PacketType.EQUAL_TO:
+            return 1 if values[0] == values[1] else 0
+        else:
+            raise ValueError(self.type)
 
 
 hex = {
@@ -115,34 +136,14 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
         return OperatorPacket(version, packet_type, subpackets=subpackets), rest
 
 
-def sum_version(packet: Packet) -> int:
+def sum_versions(packet: Packet) -> int:
     return packet.version + sum(
-        sum_version(subpacket) for subpacket in packet.subpackets
+        sum_versions(subpacket) for subpacket in packet.subpackets
     )
 
 
 def evaluate_packets(packet: Packet) -> int:
-    if packet.type == PacketType.LITERAL:
-        return packet.value
-
-    values = [evaluate_packets(subpacket) for subpacket in packet.subpackets]
-
-    if packet.type == PacketType.SUM:
-        return sum(values)
-    elif packet.type == PacketType.PRODUCT:
-        return prod(values)
-    elif packet.type == PacketType.MINIMUM:
-        return min(values)
-    elif packet.type == PacketType.MAXIMUM:
-        return max(values)
-    elif packet.type == PacketType.GREATER_THAN:
-        return 1 if values[0] > values[1] else 0
-    elif packet.type == PacketType.LESS_THAN:
-        return 1 if values[0] < values[1] else 0
-    elif packet.type == PacketType.EQUAL_TO:
-        return 1 if values[0] == values[1] else 0
-    else:
-        raise ValueError(packet.type)
+    return packet.value
 
 
 def part1(data):
@@ -150,7 +151,7 @@ def part1(data):
 
     packet, _ = parse_packet(data)
 
-    return sum_version(packet)
+    return sum_versions(packet)
 
 
 def part2(data):
@@ -158,7 +159,7 @@ def part2(data):
 
     packet, _ = parse_packet(data)
 
-    return evaluate_packets(packet)
+    return packet.value
 
 
 def main():
