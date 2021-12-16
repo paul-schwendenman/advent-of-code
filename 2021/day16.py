@@ -31,7 +31,8 @@ class LiteralPacket(Packet):
 
 @dataclass
 class OperatorPacket(Packet):
-    subpackets: list[Packet] = field(default_factory=list)
+    length_type_flag: bool = field(repr=False)
+    subpackets: list[Packet] = field(default_factory=list, init=False)
 
     @property
     def value(self):
@@ -53,6 +54,9 @@ class OperatorPacket(Packet):
             return 1 if values[0] == values[1] else 0
         else:
             raise ValueError(self.type)
+
+    def append(self, subpacket: Packet) -> None:
+        self.subpackets.append(subpacket)
 
 
 hex = {
@@ -111,8 +115,8 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
 
     else:
         length_type_id, rest = shift(rest, 1)
-
-        subpackets = []
+        length_type_flag = length_type_id == "1"
+        packet = OperatorPacket(version, packet_type, length_type_flag=length_type_flag)
 
         if length_type_id == "0":
             raw_length, rest = shift(rest, 15)
@@ -122,18 +126,18 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
 
             while subpacket_data:
                 subpacket, subpacket_data = parse_packet(subpacket_data)
-                subpackets.append(subpacket)
+                packet.append(subpacket)
         elif length_type_id == "1":
             raw_num_packets, rest = shift(rest, 11)
             num_packets = int(raw_num_packets, 2)
 
             for _ in range(num_packets):
                 subpacket, rest = parse_packet(rest)
-                subpackets.append(subpacket)
+                packet.append(subpacket)
         else:
             raise ValueError("Invalid length_type_id", length_type_id)
 
-        return OperatorPacket(version, packet_type, subpackets=subpackets), rest
+        return packet, rest
 
 
 def sum_versions(packet: Packet) -> int:
