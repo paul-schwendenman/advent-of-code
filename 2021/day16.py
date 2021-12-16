@@ -2,6 +2,7 @@ import fileinput
 from dataclasses import dataclass, field
 from enum import IntEnum
 from math import prod
+from typing import Tuple
 class PacketType(IntEnum):
     SUM = 0
     PRODUCT = 1
@@ -47,7 +48,7 @@ def hex_to_bin(data):
     return "".join(hex[char] for char in data)
 
 
-def parse_packet(data):
+def parse_packet(data: str) -> Tuple[Packet, str]:
     version, packet_type, rest = data[:3], data[3:6], data[6:]
     version = int(version, 2)
     packet_type = int(packet_type, 2)
