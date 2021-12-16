@@ -31,7 +31,7 @@ def test_parse_operator_packet():
 
     packet, _ = parse_packet(data)
 
-    assert packet.type == 6
+    assert packet.type == PacketType.LESS_THAN
     assert packet.version == 1
     assert packet.value == None
     assert len(packet.subpackets) == 2
@@ -43,7 +43,7 @@ def test_parse_operator_packet2():
 
     packet, _ = parse_packet(data)
 
-    assert packet.type == 3
+    assert packet.type == PacketType.MAXIMUM
     assert packet.version == 7
     assert packet.value == None
     assert len(packet.subpackets) == 3

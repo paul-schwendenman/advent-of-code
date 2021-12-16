@@ -1,11 +1,11 @@
 import fileinput
 from dataclasses import dataclass, field
-from enum import IntEnum
+from enum import Enum
 from math import prod
 from typing import Tuple
 
 
-class PacketType(IntEnum):
+class PacketType(Enum):
     SUM = 0
     PRODUCT = 1
     MINIMUM = 2
@@ -24,7 +24,6 @@ class Packet:
 @dataclass
 class LiteralPacket(Packet):
     value: int
-
     subpackets = []
 
 
@@ -54,44 +53,47 @@ hex = {
 }
 
 
-def hex_to_bin(data):
+def hex_to_bin(data: str) -> str:
     return "".join(hex[char] for char in data)
 
 
+def shift(data: str, num_bits: int) -> Tuple[str, str]:
+    return data[:num_bits], data[num_bits:]
+
+
 def parse_packet(data: str) -> Tuple[Packet, str]:
-    version, packet_type, rest = data[:3], data[3:6], data[6:]
+    version, rest = shift(data, 3)
+    packet_type, rest = shift(rest, 3)
+
     version = int(version, 2)
-    packet_type = int(packet_type, 2)
+    packet_type = PacketType(int(packet_type, 2))
 
-    if packet_type == 4:
-        bits = []
+    if packet_type == PacketType.LITERAL:
+        bits = ""
+        group_flag = '1'
 
-        while True:
-            current, rest = rest[:5], rest[5:]
+        while group_flag == '1':
+            group_flag, rest = shift(rest, 1)
+            value, rest = shift(rest, 4)
 
-            if current[0] == '1':
-                bits.append(current[1:])
-            else:
-                bits.append(current[1:])
-                break
+            bits += value
 
-        bits = "".join(bits)
         padding = 4 - (len(bits) % 4) if len(bits) % 4 != 0 else 0
         bits = int(bits, 2)
 
-        zeros, rest = rest[:padding], rest[padding:]
+        zeros, rest = shift(rest, padding)
 
         assert all(char == '0' for char in zeros)
 
         return LiteralPacket(version, packet_type, bits), rest
 
     else:
-        length_type_id, rest = rest[0], rest[1:]
+        length_type_id, rest = shift(rest, 1)
 
         subpackets = []
 
         if length_type_id == '0':
-            length, rest = rest[:15], rest[15:]
+            length, rest = shift(rest, 15)
             length = int(length, 2)
 
             subpacket_data, rest = rest[:length], rest[length:]
@@ -100,7 +102,7 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
                 subpacket, subpacket_data = parse_packet(subpacket_data)
                 subpackets.append(subpacket)
         elif length_type_id == '1':
-            num_packets, rest = rest[:11], rest[11:]
+            num_packets, rest = shift(rest, 11)
             num_packets = int(num_packets, 2)
 
             for _ in range(num_packets):
@@ -112,11 +114,11 @@ def parse_packet(data: str) -> Tuple[Packet, str]:
         return OperatorPacket(version, packet_type, subpackets=subpackets), rest
 
 
-def sum_version(packet: Packet):
+def sum_version(packet: Packet) -> int:
     return packet.version + sum(sum_version(subpacket) for subpacket in packet.subpackets)
 
 
-def evaluate_packets(packet: Packet):
+def evaluate_packets(packet: Packet) -> int:
     if packet.type == PacketType.LITERAL:
         return packet.value
 
