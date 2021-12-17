@@ -5,12 +5,28 @@ from typing import Optional, Tuple
 
 
 @dataclass
+class VelocityBounds:
+    dx: int
+    dy: int
+
+    @property
+    def dx_range(self):
+        return range(0, self.dx)
+
+    @property
+    def dy_range(self):
+        return range(-self.dy, self.dy)
+
+
+@dataclass
 class TargetArea:
     x_min: int
     x_max: int
     y_min: int
     y_max: int
-    pass
+
+    def __str__(self):
+        return f'{self.x_min} -> {self.x_max} {self.y_min} -> {self.y_max}'
 
 
 def parse_target_area(raw: str) -> TargetArea:
@@ -20,6 +36,13 @@ def parse_target_area(raw: str) -> TargetArea:
     [y_min, y_max] = [int(item) for item in target_area[1][2:].split("..")]
 
     return TargetArea(x_min, x_max, y_min, y_max)
+
+
+def find_velocity_bounds(target_area: TargetArea) -> VelocityBounds:
+    max_dx = target_area.x_max
+    max_dy = max(map(abs, (target_area.y_max, target_area.y_min)))
+
+    return VelocityBounds(max_dx, max_dy)
 
 
 def fire(dx: int, dy: int, target_area: TargetArea) -> Tuple[bool, Optional[int]]:
@@ -49,10 +72,10 @@ def part1(data):
     target_area = parse_target_area(data[0])
     highest_point = -1_000_000_000
 
-    # target_velocity = None
+    velocity = find_velocity_bounds(target_area)
 
-    for dy in range(-1000, 1000):
-        for dx in range(100):
+    for dy in velocity.dy_range:
+        for dx in velocity.dx_range:
             hit, new_highest_point = fire(dx, dy, target_area)
 
             if hit and new_highest_point > highest_point:
@@ -69,8 +92,10 @@ def part2(data):
     target_area = parse_target_area(data[0])
     velocities = []
 
-    for dy in range(-1000, 2000):
-        for dx in range(1000):
+    velocity = find_velocity_bounds(target_area)
+
+    for dy in velocity.dy_range:
+        for dx in velocity.dx_range:
             hit, _ = fire(dx, dy, target_area)
 
             if hit:
