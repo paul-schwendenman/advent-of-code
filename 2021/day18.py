@@ -3,63 +3,63 @@ from dataclasses import dataclass
 
 @dataclass
 class SnailNumber:
-	x: int
-	y: int
+    x: int
+    y: int
 
-	def __str__(self):
-		return f'[{self.x},{self.y}]'
+    def __str__(self):
+        return f'[{self.x},{self.y}]'
 
 def parse(string):
-	print(string)
-	raw = eval(string)
+    print(string)
+    raw = eval(string)
 
-	def inner(lst):
-		[raw_x, raw_y] = lst
+    def inner(lst):
+        [raw_x, raw_y] = lst
 
-		try:
-			x = int(raw_x)
-		except:
-			x = inner(raw_x)
-		try:
-			y = int(raw_y)
-		except:
-			y = inner(raw_y)
+        try:
+            x = int(raw_x)
+        except:
+            x = inner(raw_x)
+        try:
+            y = int(raw_y)
+        except:
+            y = inner(raw_y)
 
-		return SnailNumber(x, y)
+        return SnailNumber(x, y)
 
-	return inner(raw)
+    return inner(raw)
 
 
 def reduce(number):
-	pass
+    pass
 
 
 def add(number_1, number_2):
-	return SnailNumber(x=number_1, y=number_2)
+    return SnailNumber(x=number_1, y=number_2)
 
 
 def calc_magnitude(number):
-	if isinstance(number, int):
-		return number
+    if isinstance(number, int):
+        return number
 
-	x, y = number.x, number.y
+    x, y = number.x, number.y
 
-	if isinstance(x, SnailNumber):
-		x = calc_magnitude(x)
+    if isinstance(x, SnailNumber):
+        x = calc_magnitude(x)
 
-	if isinstance(y, SnailNumber):
-		y = calc_magnitude(y)
+    if isinstance(y, SnailNumber):
+        y = calc_magnitude(y)
 
-	print(f'{x} * 3 + {y} * 2 = {x * 3 + y * 2}')
-	return x * 3 + y * 2
+    print(f'{x} * 3 + {y} * 2 = {x * 3 + y * 2}')
+    return x * 3 + y * 2
 
 
 def part1(data):
-	pass
+    pass
 
 
 def part2(data):
-	pass
+    pass
 
 
 def main():
