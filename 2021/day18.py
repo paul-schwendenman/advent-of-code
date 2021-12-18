@@ -2,6 +2,7 @@ import fileinput
 from dataclasses import dataclass
 from typing import Tuple
 from functools import reduce
+from itertools import combinations
 
 
 def parse(string):
@@ -111,7 +112,9 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    numbers = [parse(item) for item in data]
+
+    return max(magnitude(add(num1, num2)) for num1,  num2 in combinations(numbers, 2))
 
 
 def main():
