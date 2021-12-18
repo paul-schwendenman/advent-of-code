@@ -1,17 +1,69 @@
 import fileinput
 from dataclasses import dataclass
 from typing import Tuple
+from functools import reduce
 
 
 def parse(string):
     return eval(string)
 
 
-def reduce(number):
-    pass
+def reducer(number):
+    while True:
+        changed, number, _, _ = explode(number)
 
-def expode(number):
-    pass
+        if changed:
+            continue
+
+        changed, number = split(number)
+
+        if not changed:
+            break
+
+    return number
+
+
+def to_right(base, new):
+    if isinstance(base, int):
+        return base + new
+
+    x, y = base
+
+    return [x, to_right(y, new)]
+
+
+def to_left(base, new):
+    if isinstance(base, int):
+        return base + new
+
+    x, y = base
+
+    return [to_left(x, new), y]
+
+
+def explode(number, depth=0) -> Tuple[bool, int, int, int]:
+    if isinstance(number, int):
+        return False, number, 0, 0
+
+    x, y = number
+
+    if depth >= 4:
+        return True, 0, x, y
+
+    changed, next, left, right = explode(x, depth + 1)
+
+    if changed:
+        number = [next, to_left(y, right)]
+        return True, number, left, 0
+
+    changed, next, left, right = explode(y, depth + 1)
+
+    if changed:
+        number = [to_right(x, left), next]
+
+        return True, number, 0, right
+
+    return False, number, 0, 0
 
 
 def split(number: int) -> Tuple[bool, list]:
@@ -37,7 +89,7 @@ def split(number: int) -> Tuple[bool, list]:
 
 
 def add(number_1, number_2):
-    return [number_1, number_2]
+    return reducer([number_1, number_2])
 
 
 def magnitude(number):
@@ -52,7 +104,10 @@ def magnitude(number):
 def part1(data):
 
     numbers = [parse(item) for item in data]
-    pass
+
+    result = reduce(add, numbers)
+
+    return magnitude(result)
 
 
 def part2(data):
