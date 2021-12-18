@@ -17,9 +17,9 @@ def expode(number):
 def split(number: int) -> Tuple[bool, list]:
     if isinstance(number, int):
         if number > 9:
-            return [number // 2, number // 2 + 1]
+            return True, [number // 2, (number+1) // 2]
         else:
-            return number
+            return False, number
 
     [x, y] = number
 
@@ -28,7 +28,7 @@ def split(number: int) -> Tuple[bool, list]:
     if changed:
         return changed, [new_x, y]
 
-    changed = new_y = split(y)
+    changed, new_y = split(y)
 
     if changed:
         return changed, [x, new_y]
