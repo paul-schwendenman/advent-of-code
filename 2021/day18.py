@@ -6,6 +6,9 @@ class SnailNumber:
 	x: int
 	y: int
 
+	def __str__(self):
+		return f'[{self.x},{self.y}]'
+
 def parse(string):
 	print(string)
 	raw = eval(string)
@@ -32,7 +35,7 @@ def reduce(number):
 
 
 def add(number_1, number_2):
-	pass
+	return SnailNumber(x=number_1, y=number_2)
 
 
 def calc_magnitude(number):
