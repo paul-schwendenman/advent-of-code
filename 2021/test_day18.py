@@ -1,4 +1,4 @@
-from day18 import magnitude, parse, add
+from day18 import magnitude, parse, add, split
 
 
 def test_add():
@@ -32,3 +32,10 @@ def test_magnitude4():
     print(a)
 
     assert magnitude(a) == 445
+
+
+def test_split():
+    assert split(11) == [5, 6]
+    # assert split(12) == [6, 6]
+    # assert split([[[[0,7],4],[15,[0,13]]],[1,1]]) ==  [[[[0,7],4],[[7,8],[0,13]]],[1,1]]
+    # assert split([[[[0,7],4],[[7,8],[0,13]]],[1,1]]) ==  [[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]

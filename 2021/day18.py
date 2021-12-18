@@ -1,5 +1,6 @@
 import fileinput
 from dataclasses import dataclass
+from typing import Tuple
 
 
 def parse(string):
@@ -13,8 +14,26 @@ def expode(number):
     pass
 
 
-def split(number: int):
-    pass
+def split(number: int) -> Tuple[bool, list]:
+    if isinstance(number, int):
+        if number > 9:
+            return [number // 2, number // 2 + 1]
+        else:
+            return number
+
+    [x, y] = number
+
+    changed, new_x = split(x)
+
+    if changed:
+        return changed, [new_x, y]
+
+    changed = new_y = split(y)
+
+    if changed:
+        return changed, [x, new_y]
+
+    return False, number
 
 
 def add(number_1, number_2):
