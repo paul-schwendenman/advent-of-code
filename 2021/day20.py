@@ -10,12 +10,6 @@ def neighboors(pixel):
 
 
 def parse_image(raw_image):
-    # image = {}
-
-    # for j, row in enumerate(raw_image):
-    #     for i, value in enumerate(row):
-    #         image[(i, j)] = 1 if value == "#" else 0
-
     return {
         (i, j): (1 if value == "#" else 0)
         for j, row in enumerate(raw_image)
@@ -31,15 +25,14 @@ def process_image(image_enhancement_algorithm, pixels, step):
         rows.append(y)
         columns.append(x)
 
-    max_x = max(rows)
-    min_x = min(rows)
-    max_y = max(columns)
-    min_y = min(columns)
+    min_x, max_x = min(rows), max(rows)
+    min_y, max_y = min(columns), max(columns)
+    padding = 2
 
     output = {}
 
-    for j in range(min_y - 2, max_y + 2):
-        for i in range(min_x - 2, max_x + 2):
+    for j in range(min_y - padding, max_y + padding):
+        for i in range(min_x - padding, max_x + padding):
             pixel = (i, j)
 
             code = int(
