@@ -1,7 +1,12 @@
 import fileinput
+from typing import Generator
 
 
-def neighboors(pixel):
+Pixel = tuple[int, int]
+Image = dict[Pixel, int]
+
+
+def neighboors(pixel: Pixel) -> Generator[Pixel, None, None]:
     x, y = pixel
 
     for j in (-1, 0, 1):
@@ -9,7 +14,7 @@ def neighboors(pixel):
             yield (x + i, y + j)
 
 
-def parse_image(raw_image):
+def parse_image(raw_image: list[str]) -> Image:
     return {
         (i, j): (1 if value == "#" else 0)
         for j, row in enumerate(raw_image)
@@ -17,7 +22,7 @@ def parse_image(raw_image):
     }
 
 
-def process_image(image_enhancement_algorithm, pixels, step):
+def process_image(image_enhancement_algorithm: str, pixels: Image, step: int) -> Image:
     rows = []
     columns = []
 
@@ -48,7 +53,7 @@ def process_image(image_enhancement_algorithm, pixels, step):
     return output
 
 
-def part1(data, steps=2):
+def part1(data: list[str], steps: int = 2) -> int:
     image_enhancement_algorithm, raw_image = data[0], data[2:]
 
     image = parse_image(raw_image)
