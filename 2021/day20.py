@@ -41,8 +41,8 @@ def part1(data):
         round_1[pixel] = 1 if image_enhancement_algorithm[code] == '#' else 0
         pass
 
-    print_grid(round_1)
-    print('-------------')
+    # print_grid(round_1)
+    # print('-------------')
 
     output = {}
 
@@ -60,7 +60,7 @@ def part1(data):
 
         output[pixel] = 1 if image_enhancement_algorithm[code] == '#' else 0
 
-    print_grid(output)
+    # print_grid(output)
 
     return sum(1 for key, item in output.items() if item and abs(key[0] < 150) and abs(key[1]) < 150)
 
