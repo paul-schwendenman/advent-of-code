@@ -1,5 +1,11 @@
 import fileinput
 from collections import namedtuple
+from itertools import combinations
+
+
+class Scanner(namedtuple('Scanner', 'number beacons')):
+    __slots__ = ()
+
 
 class Point(namedtuple('Point', 'x y z')):
     __slots__ = ()
@@ -13,6 +19,19 @@ class Point(namedtuple('Point', 'x y z')):
     def __rsub__(self, other):
         return Point(other[0] - self.x, other[1] - self.y, other[2] - self.z)
 
+    def __mul__(self, other):
+        return Point(other[0] * self.x, other[1] * self.y, other[2] * self.z)
+
+
+def parse_scanner(data):
+    lines = data.split('\n')
+
+    number = lines[0].split(' ')[2]
+
+    beacons = [Point(*map(int, line.split(','))) for line in lines[1:]]
+
+    return Scanner(number, beacons)
+
 
 def transform_point(point):
     x, y, z = point
@@ -20,73 +39,111 @@ def transform_point(point):
     for i in (-1, 1):
         for j in (-1, 1):
             for k in (-1, 1):
-                yield (i * x, j * y, k * z)
-                yield (i * y, j * z, k * x)
-                yield (i * z, j * x, k * y)
-                yield (i * x, j * z, k * y)
-                yield (i * y, j * x, k * z)
-                yield (i * z, j * y, k * x)
+                yield Point(x, y, z) * (i, j, k)
+                yield Point(y, z, x) * (i, j, k)
+                yield Point(z, x, y) * (i, j, k)
+                yield Point(x, z, y) * (i, j, k)
+                yield Point(y, x, z) * (i, j, k)
+                yield Point(z, y, x) * (i, j, k)
 
 
-def transform_points(points):
-    yield from zip(*(transform_point(point) for point in points))
+def orientations(beacons):
+    yield from zip(*(transform_point(beacon) for beacon in beacons))
 
 
-def find_matches(beacon_a, scanner_b):
-    for _, orientation in enumerate(transform_points(scanner_b[1])):
-        m = match(beacon_a, orientation)
-
-        if m:
-            pass
-
-
-def match(beacons_a, beacons_b):
-    pass
-    for i, beacon_a in enumerate(beacons_a):
-        for j, beacon_b in enumerate(beacons_b[i:]):
-            offset = beacon_a - beacon_b
-
-            set_a = set(beacons_a)
-            set_b = set(beacon + offset for beacon in beacons_b)
-
-            print(f'set_a: {set_a}\nset_b: {set_b}')
-
-            if len(set_a & set_b) >= 12:
-                print('mathc')
-
-def parse_scanner(data):
-    lines = data.split('\n')
-
-    # print(lines[0])
-    number = lines[0].split(' ')[2]
-
-    beacons = [Point(*map(int, line.split(','))) for line in lines[1:]]
-
-    return number, beacons
+def match(beacon_a, scanner_b):
+    for beacons_b in orientations(scanner_b):
+        dm = det_match(beacon_a, beacons_b)
+        if dm is not None:
+            return [dm + c for c in beacons_b], dm
 
 
+def det_match(beacons_a, beacons_b):
+    for i in range(len(beacons_a)):
+        for j in range(i):
+            diff = beacons_a[i] - beacons_b[j]
+            if commons(beacons_a, beacons_b, diff) >= 12:
+                return diff
+
+    return None
+
+
+def c_sum(x, y):
+    return (x[0] + y[0], x[1] + y[1], x[2] + y[2])
+
+
+def c_diff(x, y):
+    return (x[0] - y[0], x[1] - y[1], x[2] - y[2])
+
+
+def commons(beacons_a, beacons_b, diff):
+    s = set(beacons_a)
+
+    for beacon in beacons_b:
+        s.add(c_sum(beacon, diff))
+
+    return len(beacons_a) + len(beacons_b) - len(s)
+
+
+def full_match(scanners):
+    rotated, remaining = scanners[:1], scanners[1:]
+    diffs = []
+
+    while len(remaining):
+        print("steps left:", len(remaining))
+        step_match(remaining, rotated, diffs)
+
+    return rotated, diffs
+
+def step_match(scanners, rotated_scanners, diffs):
+    for e, i in enumerate(scanners):
+        for j in rotated_scanners:
+            vals = match(j, i)
+            if vals is not None:
+                mch, diff = vals
+                rotated_scanners.append(mch)
+                scanners.pop(e)
+                diffs.append(diff)
+                return
 
 def part1(lines):
     data = "".join(lines).rstrip()
     raw_scanners = data.split('\n\n')
     scanners = [parse_scanner(item) for item in raw_scanners]
 
-    print(f'scanners: {len(scanners)}')
-    print(f'total beacons: {sum(len(scanner[1]) for scanner in scanners)}')
-    print(f'max beacons: {sum(len(scanner[1]) for scanner in scanners) - (12 * (len(scanners) - 1))}')
+    mapped, diffs = full_match([scanner.beacons for scanner in scanners])
 
-    print(len(set(transform_point((1, 100, 32)))))
+    print(diffs)
 
-    for i, scanner in enumerate(scanners[1:2]):
-        _, beacon_a = scanner
+    beacons = set()
 
-        for j in range(i):
-            print(f'checking {i} and {j}')
-            if find_matches(beacon_a, scanners[j]):
-                pass
+    for view in mapped:
+        for point in view:
+            beacons.add(point)
 
-def part2(data):
-    pass
+    return len(beacons)
+
+
+def manhatten_distance(x, y):
+    a, b, c = x
+    d, e, f = y
+
+    return abs(a - d) + abs(b - e) + abs(c - f)
+
+
+def part2(lines):
+    data = "".join(lines).rstrip()
+    raw_scanners = data.split('\n\n')
+    scanners = [parse_scanner(item) for item in raw_scanners]
+
+    mapped, scanner_locations = full_match([beacons for _, beacons in scanners])
+    beacons = set()
+
+    for view in mapped:
+        for point in view:
+            beacons.add(point)
+
+    return max(manhatten_distance(scanner_a, scanner_b) for scanner_a, scanner_b in combinations(scanner_locations, 2))
 
 
 def main():
