@@ -13,8 +13,21 @@ class Player(Enum):
     PLAYER_2 = 2
 
 
-class State(namedtuple('State', 'player_1_location player_2_location player_1_score player_2_score current_player', defaults=(0, 0, Player.PLAYER_1))):
-    def next(self, *, player_1_location=None, player_2_location=None, player_1_score=None, player_2_score=None):
+class State(
+    namedtuple(
+        "State",
+        "player_1_location player_2_location player_1_score player_2_score current_player",
+        defaults=(0, 0, Player.PLAYER_1),
+    )
+):
+    def next(
+        self,
+        *,
+        player_1_location=None,
+        player_2_location=None,
+        player_1_score=None,
+        player_2_score=None
+    ):
         if player_1_location is None:
             player_1_location = self.player_1_location
 
@@ -32,7 +45,13 @@ class State(namedtuple('State', 'player_1_location player_2_location player_1_sc
         else:
             current_player = Player.PLAYER_1
 
-        return State(player_1_location, player_2_location, player_1_score, player_2_score, current_player)
+        return State(
+            player_1_location,
+            player_2_location,
+            player_1_score,
+            player_2_score,
+            current_player,
+        )
 
 
 def parse_player_locations(data: list[str]) -> Tuple[int, int]:
@@ -58,7 +77,9 @@ def part1(data: list[str]) -> int:
         rolls = next(dice), next(dice), next(dice)
         count += 3
 
-        player_locations[current_player] = next_location(player_locations[current_player], rolls)
+        player_locations[current_player] = next_location(
+            player_locations[current_player], rolls
+        )
         player_scores[current_player] += player_locations[current_player]
 
         if player_scores[current_player] >= 1000:
@@ -91,7 +112,10 @@ def part2(data: list[str]) -> int:
                     if player_1_score >= 21:
                         done[1] += quantity
                     else:
-                        next_state =  state.next(player_1_location = player_1_location, player_1_score = player_1_score)
+                        next_state = state.next(
+                            player_1_location=player_1_location,
+                            player_1_score=player_1_score,
+                        )
                         new_games[next_state] += quantity
             else:
                 all_rolls = product(range(1, 4), range(1, 4), range(1, 4))
@@ -104,7 +128,10 @@ def part2(data: list[str]) -> int:
                     if player_2_score >= 21:
                         done[2] += quantity
                     else:
-                        next_state =  state.next(player_2_location = player_2_location, player_2_score = player_2_score)
+                        next_state = state.next(
+                            player_2_location=player_2_location,
+                            player_2_score=player_2_score,
+                        )
                         new_games[next_state] += quantity
 
         games = new_games
