@@ -1,113 +1,115 @@
 import fileinput
-from itertools import repeat, cycle, product
+from itertools import cycle, product
 from collections import Counter, namedtuple
-from typing import Mapping
+from typing import MutableMapping, Tuple
 from enum import Enum
 
 
-State = namedtuple('State', 'player_1_location player_1_score player_2_location player_2_score current_player')
+BOARD_SPACES = 10
 
 
 class Player(Enum):
-	PLAYER_1 = 1
-	PLAYER_2 = 2
+    PLAYER_1 = 1
+    PLAYER_2 = 2
+
+
+class State(namedtuple('State', 'player_1_location player_2_location player_1_score player_2_score current_player', defaults=(0, 0, Player.PLAYER_1))):
+    def next(self, *, player_1_location=None, player_2_location=None, player_1_score=None, player_2_score=None):
+        if player_1_location is None:
+            player_1_location = self.player_1_location
+
+        if player_2_location is None:
+            player_2_location = self.player_2_location
+
+        if player_1_score is None:
+            player_1_score = self.player_1_score
+
+        if player_2_score is None:
+            player_2_score = self.player_2_score
+
+        if self.current_player == Player.PLAYER_1:
+            current_player = Player.PLAYER_2
+        else:
+            current_player = Player.PLAYER_1
+
+        return State(player_1_location, player_2_location, player_1_score, player_2_score, current_player)
+
+
+def parse_player_locations(data: list[str]) -> Tuple[int, int]:
+    player_1_location = int(data[0][28:])
+    player_2_location = int(data[1][28:])
+
+    return player_1_location, player_2_location
+
+
+def next_location(current, rolls):
+    return ((current + sum(rolls) - 1) % BOARD_SPACES) + 1
 
 
 def part1(data: list[str]) -> int:
-	player_1_location = int(data[0][28:])
-	player_2_location = int(data[1][28:])
-	print(player_1_location, player_2_location)
+    player_locations = dict(zip(Player, parse_player_locations(data)))
+    player_scores = dict(zip(Player, (0, 0)))
 
-	dice = cycle(list(range(1, 101)))
+    dice = cycle(list(range(1, 101)))
 
-	player_1_score = 0
-	player_2_score = 0
+    count = 0
 
-	count = 0
+    for current_player in cycle(Player):
+        rolls = next(dice), next(dice), next(dice)
+        count += 3
 
-	while True:
-		rolls = next(dice), next(dice), next(dice)
-		count += 3
+        player_locations[current_player] = next_location(player_locations[current_player], rolls)
+        player_scores[current_player] += player_locations[current_player]
 
-		print(rolls)
-		player_1_location += sum(rolls)
-		player_1_location %= 10
-		player_1_location = 10 if player_1_location == 0 else player_1_location
+        if player_scores[current_player] >= 1000:
+            break
 
-		player_1_score += player_1_location
-
-		if player_1_score >= 1000:
-			break
-
-		print(player_1_location)
-		rolls = next(dice), next(dice), next(dice)
-		count += 3
-
-		player_2_location += sum(rolls)
-		player_2_location %= 10
-		player_2_location = 10 if player_2_location == 0 else player_2_location
-
-		player_2_score += player_2_location
-
-		if player_2_score >= 1000:
-			break
-
-
-
-
-	print(player_1_location, player_2_location)
-	print(f'scores: {player_1_score}, {player_2_score}')
-	print(count)
-
-	return count * min(player_2_score, player_1_score)
+    return count * min(player_scores.values())
 
 
 def part2(data: list[str]) -> int:
-	player_1_location = int(data[0][28:])
-	player_2_location = int(data[1][28:])
-	player_1_score = 0
-	player_2_score = 0
-	initial_player = Player.PLAYER_1
+    player_1_start, player_2_start = parse_player_locations(data)
 
-	games: Mapping[State, int] = Counter()
-	done: Mapping[int, int] = Counter()
+    games: MutableMapping[State, int] = Counter()
+    done: Counter[int] = Counter()
 
-	games[State(player_1_location, player_1_score, player_2_location, player_2_score, initial_player)] += 1
+    games[State(player_1_start, player_2_start)] += 1
 
-	while len(games):
-		print(f'games: {len(games)}')
-		new_games = Counter()
+    while len(games):
+        # print(f'games: {len(games)}')
+        new_games: MutableMapping[State, int] = Counter()
 
-		for game, quantity in games.items():
-			if game.current_player == Player.PLAYER_1:
-				all_rolls = product(range(1, 4), range(1, 4), range(1, 4))
-				for rolls in all_rolls:
-					player_1_location = ((sum(rolls) + game.player_1_location - 1) % 10) + 1
+        for state, quantity in games.items():
+            if state.current_player == Player.PLAYER_1:
+                all_rolls = product(range(1, 4), range(1, 4), range(1, 4))
 
-					player_1_score = game.player_1_score + player_1_location
+                for rolls in all_rolls:
+                    player_1_location = next_location(state.player_1_location, rolls)
 
-					if player_1_score >= 21:
-						done[1] += quantity
-					else:
-						state = State(player_1_location, player_1_score, game.player_2_location, game.player_2_score, Player.PLAYER_2)
-						new_games[state] += quantity
-			else:
-				all_rolls = product(range(1, 4), range(1, 4), range(1, 4))
-				for rolls in all_rolls:
-					player_2_location = ((sum(rolls) + game.player_2_location - 1) % 10) + 1
+                    player_1_score = state.player_1_score + player_1_location
 
-					player_2_score = game.player_2_score + player_2_location
+                    if player_1_score >= 21:
+                        done[1] += quantity
+                    else:
+                        next_state =  state.next(player_1_location = player_1_location, player_1_score = player_1_score)
+                        new_games[next_state] += quantity
+            else:
+                all_rolls = product(range(1, 4), range(1, 4), range(1, 4))
 
-					if player_2_score >= 21:
-						done[2] += quantity
-					else:
-						state = State(game.player_1_location, game.player_1_score, player_2_location, player_2_score, Player.PLAYER_1)
-						new_games[state] += quantity
+                for rolls in all_rolls:
+                    player_2_location = next_location(state.player_2_location, rolls)
 
-		games = new_games
+                    player_2_score = state.player_2_score + player_2_location
 
-	print(done)
-	return done.most_common()[0][1]
+                    if player_2_score >= 21:
+                        done[2] += quantity
+                    else:
+                        next_state =  state.next(player_2_location = player_2_location, player_2_score = player_2_score)
+                        new_games[next_state] += quantity
+
+        games = new_games
+
+    return done.most_common()[0][1]
 
 
 def main():
