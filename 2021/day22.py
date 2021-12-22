@@ -65,8 +65,6 @@ def part1(data: list[str]) -> int:
     pass
 
 def find_new_volume(region: Region, future_regions: list[tuple[Region, bool]]):
-    # print(f'region: {region} \t{region.volume} \t{command}')
-
     volume = region.volume
     intersections = []
 
@@ -78,8 +76,6 @@ def find_new_volume(region: Region, future_regions: list[tuple[Region, bool]]):
 
     for index, (intersecting_region, _) in enumerate(intersections):
         volume -= find_new_volume(intersecting_region, future_regions=intersections[index+1:])
-
-    # print(f'region: {region} \t{volume}\t=\t{region.volume}\t-\t{region.volume - volume}')
 
     return volume
 
@@ -97,7 +93,7 @@ def part2(data: list[str]) -> int:
         y_min, y_max = map(int, parts[1][2:].split('..'))
         z_min, z_max = map(int, parts[2][2:].split('..'))
 
-        regions.append((Region(x_min, x_max, y_min, y_max, z_min, z_max), command=='on'))
+        regions.append((Region(x_min, x_max + 1, y_min, y_max + 1, z_min, z_max + 1), command=='on'))
 
     for step, (region, command) in enumerate(regions):
         print(f'step {step}')
