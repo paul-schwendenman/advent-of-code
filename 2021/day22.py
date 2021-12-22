@@ -64,22 +64,22 @@ def part1(data: list[str]) -> int:
 
     pass
 
-def find_new_volume(region: Region, command,  prev_regions: list[tuple[Region, bool]]):
-    print(f'region: {region} \t{region.volume} \t{command}')
+def find_new_volume(region: Region, future_regions: list[tuple[Region, bool]]):
+    # print(f'region: {region} \t{region.volume} \t{command}')
 
     volume = region.volume
     intersections = []
 
-    for prev_region, prev_command in prev_regions:
-        intersection = region.intersection(prev_region)
+    for future_region, _ in future_regions:
+        intersection = region.intersection(future_region)
 
         if intersection.volume > 0:
-            intersections.append((intersection, prev_command))
+            intersections.append((intersection, None))
 
-    for index, (intersecting_region, prev_command) in enumerate(intersections):
-        volume -= find_new_volume(intersecting_region, prev_command, prev_regions=intersections[:index])
+    for index, (intersecting_region, _) in enumerate(intersections):
+        volume -= find_new_volume(intersecting_region, future_regions=intersections[index+1:])
 
-    print(f'region: {region} \t{volume}\t=\t{region.volume}\t-\t{region.volume - volume}')
+    # print(f'region: {region} \t{volume}\t=\t{region.volume}\t-\t{region.volume - volume}')
 
     return volume
 
@@ -88,7 +88,7 @@ def part2(data: list[str]) -> int:
     total = 0
     regions: list[tuple[Region, bool]] = []
 
-    for line in data[:5]:
+    for line in data:
 
         command, rest = line.split(' ')
         parts = rest.split(',')
@@ -103,7 +103,7 @@ def part2(data: list[str]) -> int:
         print(f'step {step}')
 
         if command:
-            total += find_new_volume(region, command, regions[:step])
+            total += find_new_volume(region, regions[step+1:])
 
     return total
 
