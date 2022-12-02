@@ -6,6 +6,26 @@ class Choice(IntEnum):
 	PAPER = 2
 	SCISSORS = 3
 
+	def next(self):
+		'''Get the Choice which beats self'''
+		mapping = {
+			Choice.ROCK: Choice.PAPER,
+			Choice.PAPER: Choice.SCISSORS,
+			Choice.SCISSORS: Choice.ROCK
+		}
+
+		return mapping[self]
+
+	def prev(self):
+		'''Get the Choice which is beat by self'''
+		return self.next().next()
+
+	def __lt__(self, other):
+		return other == self.next()
+
+	def __gt__(self, other):
+		return other.next() == self
+
 
 class Outcome(IntEnum):
 	WIN = 6
@@ -16,11 +36,7 @@ class Outcome(IntEnum):
 def calculate_outcome(you, other):
 	if you == other:
 		return Outcome.TIE
-	if you == Choice.ROCK and other == Choice.SCISSORS:
-		return Outcome.WIN
-	if you == Choice.PAPER and other == Choice.ROCK:
-		return Outcome.WIN
-	if you == Choice.SCISSORS and other == Choice.PAPER:
+	if you > other:
 		return Outcome.WIN
 
 	return Outcome.LOSS
@@ -48,23 +64,13 @@ def score_game_part1(game):
 	return score_game(your_choice_map[you], other_choice_map[other])
 
 
-def find_choice(other, outcome):
+def find_your_choice(other, outcome):
 	if outcome == Outcome.TIE:
 		return other
 	elif outcome == Outcome.WIN:
-		if other == Choice.ROCK:
-			return Choice.PAPER
-		elif other == Choice.PAPER:
-			return Choice.SCISSORS
-		elif other == Choice.SCISSORS:
-			return Choice.ROCK
+		return other.next()
 	elif outcome == Outcome.LOSS:
-		if other == Choice.SCISSORS:
-			return Choice.PAPER
-		elif other == Choice.ROCK:
-			return Choice.SCISSORS
-		elif other == Choice.PAPER:
-			return Choice.ROCK
+		return other.prev()
 
 
 def score_game_part2(game):
@@ -83,7 +89,9 @@ def score_game_part2(game):
 	}
 
 	other = other_choice_map[other]
-	you = find_choice(other, outcome_map[goal])
+	desired_outcome = outcome_map[goal]
+
+	you = find_your_choice(other, desired_outcome)
 
 	return score_game(you, other)
 
