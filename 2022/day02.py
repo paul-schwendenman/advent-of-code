@@ -13,7 +13,24 @@ class Outcome(IntEnum):
 	LOSS = 0
 
 
-def parse_game_part1(game):
+def calculate_outcome(you, other):
+	if you == other:
+		return Outcome.TIE
+	if you == Choice.ROCK and other == Choice.SCISSORS:
+		return Outcome.WIN
+	if you == Choice.PAPER and other == Choice.ROCK:
+		return Outcome.WIN
+	if you == Choice.SCISSORS and other == Choice.PAPER:
+		return Outcome.WIN
+
+	return Outcome.LOSS
+
+
+def score_game(you, other):
+	return you + calculate_outcome(you, other)
+
+
+def score_game_part1(game):
 	other, you = game.strip().split(' ')
 
 	other_choice_map = {
@@ -28,7 +45,7 @@ def parse_game_part1(game):
 		'Z': Choice.SCISSORS
 	}
 
-	return your_choice_map[you], other_choice_map[other]
+	return score_game(your_choice_map[you], other_choice_map[other])
 
 
 def find_choice(other, outcome):
@@ -50,7 +67,7 @@ def find_choice(other, outcome):
 			return Choice.ROCK
 
 
-def parse_game_part2(game):
+def score_game_part2(game):
 	other, goal = game.strip().split(' ')
 
 	other_choice_map = {
@@ -68,32 +85,15 @@ def parse_game_part2(game):
 	other = other_choice_map[other]
 	you = find_choice(other, outcome_map[goal])
 
-	return you, other
-
-
-def calculate_outcome(you, other):
-	if you == other:
-		return Outcome.TIE
-	if you == Choice.ROCK and other == Choice.SCISSORS:
-		return Outcome.WIN
-	if you == Choice.PAPER and other == Choice.ROCK:
-		return Outcome.WIN
-	if you == Choice.SCISSORS and other == Choice.PAPER:
-		return Outcome.WIN
-
-	return Outcome.LOSS
-
-
-def score_game(you, other):
-	return you + calculate_outcome(you, other)
+	return score_game(you, other)
 
 
 def part1(data):
-	return sum(score_game(*parse_game_part1(game)) for game in data)
+	return sum(score_game_part1(game) for game in data)
 
 
 def part2(data):
-	return sum(score_game(*parse_game_part2(game)) for game in data)
+	return sum(score_game_part2(game) for game in data)
 
 
 def main():
