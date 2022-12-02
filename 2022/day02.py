@@ -6,6 +6,13 @@ class Choice(IntEnum):
 	PAPER = 2
 	SCISSORS = 3
 
+
+class Outcome(IntEnum):
+	WIN = 6
+	TIE = 3
+	LOSS = 0
+
+
 def parse_game_part1(game):
 	other, you = game.strip().split(' ')
 
@@ -23,10 +30,45 @@ def parse_game_part1(game):
 
 	return your_choice_map[you], other_choice_map[other]
 
-class Outcome(IntEnum):
-	WIN = 6
-	TIE = 3
-	LOSS = 0
+
+def find_choice(other, outcome):
+	if outcome == Outcome.TIE:
+		return other
+	elif outcome == Outcome.WIN:
+		if other == Choice.ROCK:
+			return Choice.PAPER
+		elif other == Choice.PAPER:
+			return Choice.SCISSORS
+		elif other == Choice.SCISSORS:
+			return Choice.ROCK
+	elif outcome == Outcome.LOSS:
+		if other == Choice.SCISSORS:
+			return Choice.PAPER
+		elif other == Choice.ROCK:
+			return Choice.SCISSORS
+		elif other == Choice.PAPER:
+			return Choice.ROCK
+
+
+def parse_game_part2(game):
+	other, goal = game.strip().split(' ')
+
+	other_choice_map = {
+		'A': Choice.ROCK,
+		'B': Choice.PAPER,
+		'C': Choice.SCISSORS
+	}
+
+	outcome_map = {
+		'X': Outcome.LOSS,
+		'Y': Outcome.TIE,
+		'Z': Outcome.WIN
+	}
+
+	other = other_choice_map[other]
+	you = find_choice(other, outcome_map[goal])
+
+	return you, other
 
 
 def calculate_outcome(you, other):
@@ -47,45 +89,11 @@ def score_game(you, other):
 
 
 def part1(data):
-	scores = []
-	for game in data:
-		you, other = parse_game_part1(game)
-
-		scores.append(score_game(you, other))
-	return sum(scores)
+	return sum(score_game(*parse_game_part1(game)) for game in data)
 
 
 def part2(data):
-	scores = []
-	for game in data:
-		other, outcome = game.strip().split(' ')
-
-		if outcome == 'X': # lose
-			if other == 'A': # rock
-				scores.append(3 + 0)
-			elif other == 'B': #paper
-				scores.append(1 + 0)
-			elif other == 'C': #sci
-				scores.append(2 + 0)
-		elif outcome == 'Y': # draw
-			if other == 'A':
-				scores.append(1 + 3)
-			elif other == 'B':
-				scores.append(2 + 3)
-			elif other == 'C':
-				scores.append(3 + 3)
-			pass
-		elif outcome == 'Z': # win
-			if other == 'A':
-				scores.append(2 + 6)
-			elif other == 'B':
-				scores.append(3 + 6)
-			elif other == 'C':
-				scores.append(1 + 6)
-			pass
-		else:
-			raise ValueError
-	return sum(scores)
+	return sum(score_game(*parse_game_part2(game)) for game in data)
 
 
 def main():
