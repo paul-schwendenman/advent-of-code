@@ -1,15 +1,17 @@
 from itertools import count
+from collections import defaultdict
 
 
-def part1(goal):
+def part1(goal, gifts_per_elf = 10):
+	houses = defaultdict(int)
 
-	for n in count():
-		if n % 10000 == 0:
-			print(n)
-		if sum(i for i in range(1, n+1) if n % i == 0) * 10 > goal:
-			break
+	for elf in range(1, goal // gifts_per_elf):
+		for house in range(elf, goal // gifts_per_elf, elf):
+			houses[house] += elf
 
-	return n
+	for house, score in houses.items():
+		if score * gifts_per_elf > goal:
+			return house
 
 
 def main():
