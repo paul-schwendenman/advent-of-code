@@ -21,7 +21,7 @@ def part2(goal, gifts_per_elf = 11):
 		for house in range(elf, min(elf * 51, goal // gifts_per_elf), elf):
 			houses[house] += elf
 
-	for house, score in sorted(houses.items(), key=lambda a: a[0]):
+	for house, score in sorted(houses.items()):
 		if score * gifts_per_elf > goal:
 			return house
 
