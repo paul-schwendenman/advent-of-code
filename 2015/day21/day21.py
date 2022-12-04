@@ -84,18 +84,41 @@ rings = [
 def simulate(you: Player, boss: Player) -> bool:
 	while True:
 		boss.take_hit(you.damage)
-		# print('boss:\t', boss)
+		print('boss:\t', boss)
 
 		if boss.is_dead():
 			return True
 
 		you.take_hit(boss.damage)
-		# print('you:\t', you)
+		print('you:\t', you)
 
 		if you.is_dead():
 			return False
 
 def part1(boss):
+	ring_choices = list(combinations(rings, 2))
+	costs = []
+
+	print(len(list(product(weapons, armors, ring_choices))))
+	for (weapon, armor, (ring1, ring2)) in product(weapons, armors, ring_choices):
+		you = Player(100, 0, 0)
+		you.add_item(weapon)
+		you.add_item(armor)
+		you.add_item(ring1)
+		you.add_item(ring2)
+
+		if you.gold == 91:
+			print(weapon, armor, ring1, ring2, you, simulate(copy(you), copy(boss)))
+
+		if simulate(you, copy(boss)):
+			costs.append(you.gold)
+
+	print(sorted(costs))
+	print(len(costs))
+	return min(costs)
+
+
+def part2(boss):
 	ring_choices = combinations(rings, 2)
 	costs = []
 
@@ -106,10 +129,15 @@ def part1(boss):
 		you.add_item(ring1)
 		you.add_item(ring2)
 
-		if simulate(you, copy(boss)):
+		if you.gold == 233:
+			print(weapon, armor, ring1, ring2, you, simulate(copy(you), copy(boss)))
+
+		if not simulate(copy(you), copy(boss)):
 			costs.append(you.gold)
 
-	return min(costs)
+	print(sorted(costs))
+	print(len(costs))
+	return max(costs)
 
 
 def example():
@@ -118,10 +146,17 @@ def example():
 
 	return simulate(you, boss)
 
-def main():
-	print(example())
+def example2():
+	you = Player(100, 3, 6)
 	boss = Player(100, 8, 2)
-	print(part1(boss))
+
+	return simulate(you, boss)
+
+def main():
+	print(example2())
+	# boss = Player(100, 8, 2)
+	# print(part1(boss))
+	# print(part2(boss))
 
 if __name__ == "__main__":
 	main()
