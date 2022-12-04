@@ -45,7 +45,6 @@ weapons = [
 	Item(25, 6, 0),
 	Item(40, 7, 0),
 	Item(74, 8, 0),
-	None,
 ]
 
 # Armor:      Cost  Damage  Armor
@@ -84,13 +83,13 @@ rings = [
 def simulate(you: Player, boss: Player) -> bool:
 	while True:
 		boss.take_hit(you.damage)
-		print('boss:\t', boss)
+		# print('boss:\t', boss)
 
 		if boss.is_dead():
 			return True
 
 		you.take_hit(boss.damage)
-		print('you:\t', you)
+		# print('you:\t', you)
 
 		if you.is_dead():
 			return False
@@ -153,10 +152,10 @@ def example2():
 	return simulate(you, boss)
 
 def main():
-	print(example2())
-	# boss = Player(100, 8, 2)
+	# print(example2())
+	boss = Player(100, 8, 2)
 	# print(part1(boss))
-	# print(part2(boss))
+	print(part2(boss))
 
 if __name__ == "__main__":
 	main()
