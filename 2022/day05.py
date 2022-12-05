@@ -6,7 +6,7 @@ Instruction = namedtuple('Instruction', 'count orig dest')
 
 
 def parse_input(data):
-	stack_labels = re.compile(r'( +[1-9]){9}')
+	stack_labels = re.compile(r'( +[1-9]){1,9}')
 	instrution_matcher = re.compile(r'move [0-9]+ from [1-9] to [1-9]')
 	container_matcher = re.compile(r'((?:\[[A-Z]\])|(?: {3}) )+')
 
@@ -35,7 +35,7 @@ def parse_input(data):
 					stacks[stack_index].append(value)
 			pass
 		elif line.strip():
-			raise ValueError('Parse error')
+			raise ValueError('Parse error: %s', line)
 
 	return instructions, stacks
 
@@ -80,9 +80,9 @@ def part2(data):
 
 def main():
 	print(part1(fileinput.input()))
-	assert(part1(fileinput.input()) == 'QNNTGTPFN')
+	# assert(part1(fileinput.input()) == 'QNNTGTPFN')
 	print(part2(fileinput.input()))
-	assert(part2(fileinput.input()) == 'GGNPJBTTR')
+	# assert(part2(fileinput.input()) == 'GGNPJBTTR')
 
 
 if __name__ == '__main__':
