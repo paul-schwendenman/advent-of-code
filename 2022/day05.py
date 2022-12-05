@@ -1,27 +1,46 @@
 import fileinput
+import re
+from collections import deque, namedtuple
+
+Instruction = namedtuple('Instruction', 'count orig dest')
 
 
-def part1(data):
-	instructions = list(data)[10:]
+def parse_input(data):
+	stack_labels = re.compile(r'( +[1-9]){9}')
+	instrution_matcher = re.compile(r'move [0-9]+ from [1-9] to [1-9]')
+	container_matcher = re.compile(r'((?:\[[A-Z]\])|(?: {3}) )+')
 
-	stacks = {
-		1: list("FDBZTJRN"),
-		2: list("RSNJH"),
-		3: list("CRNJGZFQ"),
-		4: list('FVNGRTQ'),
-		5: list('LTQF'),
-		6: list('QCWZBRGN'),
-		7: list('FCLSNHM'),
-		8: list('DNQMTJ'),
-		9: list('PGS'),
-	}
+	label_line = None
+	instructions = deque()
+	stacks = {}
 
-	for instruction in instructions[:]:
-		_, count, _, fromm, _, to = instruction.split(' ')
+	for line in reversed(data):
+		if stack_labels.match(line):
+			label_line = line
+			labels = line.split()
+			for label in labels:
+				stacks[label] = []
+		elif instrution_matcher.match(line):
+			_, count, _, orig, _, dest = line.split(' ')
 
-		for i in range(int(count)):
-			stacks[int(to)].append(stacks[int(fromm)].pop())
+			instructions.appendleft(Instruction(int(count), orig.rstrip(), dest.strip()))
+		elif container_matcher.match(line):
+			for stack_index in stacks.keys():
+				try:
+					value = line[label_line.index(stack_index)]
+				except IndexError:
+					value = ' '
 
+				if value != ' ':
+					stacks[stack_index].append(value)
+			pass
+		elif line.strip():
+			raise ValueError('Parse error')
+
+	return instructions, stacks
+
+
+def find_top(stacks):
 	output = []
 
 	for num, stack in sorted(stacks.items()):
@@ -31,6 +50,18 @@ def part1(data):
 			output += ' '
 
 	return ''.join(output)
+
+def part1(data):
+	data = list(data)
+	instructions, stacks = parse_input(data)
+
+	for instruction in instructions:
+		count, orig, dest = instruction
+
+		for _ in range(count):
+			stacks[dest].append(stacks[orig].pop())
+
+	return find_top(stacks)
 
 
 def part2(data):
@@ -57,20 +88,14 @@ def part2(data):
 
 		stacks[int(to)].extend(reversed(substack))
 
-	output = []
-
-	for _, stack in sorted(stacks.items()):
-		if len(stack):
-			output += stack[len(stack) - 1]
-		else:
-			output += ' '
-
-	return ''.join(output)
+	return find_top(stacks)
 
 
 def main():
 	print(part1(fileinput.input()))
+	assert(part1(fileinput.input()) == 'QNNTGTPFN')
 	print(part2(fileinput.input()))
+	assert(part2(fileinput.input()) == 'GGNPJBTTR')
 
 
 if __name__ == '__main__':
