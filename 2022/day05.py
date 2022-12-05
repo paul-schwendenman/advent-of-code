@@ -52,8 +52,7 @@ def find_top(stacks):
 	return ''.join(output)
 
 def part1(data):
-	data = list(data)
-	instructions, stacks = parse_input(data)
+	instructions, stacks = parse_input(list(data))
 
 	for instruction in instructions:
 		count, orig, dest = instruction
@@ -65,28 +64,16 @@ def part1(data):
 
 
 def part2(data):
-	instructions = list(data)[10:]
+	instructions, stacks = parse_input(list(data))
 
-	stacks = {
-		1: list("FDBZTJRN"),
-		2: list("RSNJH"),
-		3: list("CRNJGZFQ"),
-		4: list('FVNGRTQ'),
-		5: list('LTQF'),
-		6: list('QCWZBRGN'),
-		7: list('FCLSNHM'),
-		8: list('DNQMTJ'),
-		9: list('PGS'),
-	}
-
-	for instruction in instructions[:]:
-		_, count, _, fromm, _, to = instruction.split(' ')
+	for instruction in instructions:
+		count, orig, dest = instruction
 
 		substack = []
 		for i in range(int(count)):
-			substack.append(stacks[int(fromm)].pop())
+			substack.append(stacks[orig].pop())
 
-		stacks[int(to)].extend(reversed(substack))
+		stacks[dest].extend(reversed(substack))
 
 	return find_top(stacks)
 
