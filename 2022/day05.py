@@ -2,6 +2,7 @@ import fileinput
 import re
 from collections import deque, namedtuple
 
+
 Instruction = namedtuple('Instruction', 'count orig dest')
 
 
@@ -43,13 +44,14 @@ def parse_input(data):
 def find_top(stacks):
 	output = []
 
-	for num, stack in sorted(stacks.items()):
+	for _, stack in sorted(stacks.items()):
 		if len(stack):
 			output += stack[len(stack) - 1]
 		else:
-			output += ' '
+			output += '?'
 
 	return ''.join(output)
+
 
 def part1(data):
 	instructions, stacks = parse_input(list(data))
