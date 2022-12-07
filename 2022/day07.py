@@ -37,7 +37,7 @@ def part1(data):
 	dirs = []
 
 	for line in [l.strip() for l in data]:
-		print(line)
+		# print(line)
 		if line[:4] == '$ cd':
 			if line == '$ cd ..':
 				current = current.parent
@@ -50,7 +50,7 @@ def part1(data):
 					current.add_child(dir)
 
 				current = dir
-			print(current.path())
+			# print(current.path())
 		elif line == '$ ls':
 			pass
 		elif line[:4] == 'dir ':
@@ -63,13 +63,51 @@ def part1(data):
 			current.add_child(file)
 
 
-	print([(dir.name, dir.size) for dir in dirs if dir.size < 100000])
+	# print([(dir.name, dir.size) for dir in dirs if dir.size < 100000])
 	return sum(dir.size for dir in dirs if dir.size < 100000)
 	pass
 
 
 def part2(data):
-	pass
+	current = None
+	dirs = []
+
+	for line in [l.strip() for l in data]:
+		# print(line)
+		if line[:4] == '$ cd':
+			if line == '$ cd ..':
+				current = current.parent
+			else:
+				name = line.split(' ')[-1]
+
+				dir = Directory(name, current)
+				dirs.append(dir)
+				if current:
+					current.add_child(dir)
+
+				current = dir
+			# print(current.path())
+		elif line == '$ ls':
+			pass
+		elif line[:4] == 'dir ':
+
+			pass
+		else:
+			size, name = line.split(' ')
+
+			file = File(name, int(size))
+			current.add_child(file)
+
+
+	total = 70000000
+	free = 30000000
+
+	# print([(dir.name, dir.size) for dir in dirs if dir.name == '/'])
+	used = sum(dir.size for dir in dirs if dir.name == '/')
+	need = used - (total - free)
+	sizes = list(sorted([dir.size for dir in  dirs if dir.size > need]))
+
+	return sizes[0]
 
 
 def main():
