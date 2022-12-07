@@ -24,7 +24,6 @@ class Directory:
 		return sum(child.size for child in self.children)
 
 
-
 @dataclass
 class File:
 	name: str
@@ -36,7 +35,7 @@ def parse_dirs(data):
 	dirs = []
 
 	for line in [l.strip() for l in data]:
-		if line[:4] == '$ cd':
+		if line.startswith('$ cd'):
 			if line == '$ cd ..':
 				current = current.parent
 			else:
@@ -74,10 +73,13 @@ def part2(data):
 	total = 70000000
 	free = 30000000
 
-	used = sum(dir.size for dir in dirs if dir.name == '/')
+	sizes = sorted([dir.size for dir in dirs])
+
+	# used = sum(dir.size for dir in dirs if dir.name == '/')
+	used = max(sizes)
 	need = used - (total - free)
 
-	return sorted([dir.size for dir in  dirs if dir.size > need])[0]
+	return next(size for size in  sizes if size > need)
 
 
 
