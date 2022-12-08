@@ -66,9 +66,47 @@ def part1(data):
 
 	pass
 
+def directional_scenic_score(tree, neighboors, grid):
+	count = 0
+
+	for neighboor in neighboors:
+		if tree > grid[neighboor]:
+			count += 1
+		elif tree <= grid[neighboor]:
+			count += 1
+			break
+	return count
 
 def part2(data):
-	pass
+	data = list(data)
+	grid = {}
+	score = {}
+	max_x = len(data[0].rstrip())
+	max_y = len(data)
+
+	for y, line in enumerate(data):
+		for x, tree in enumerate(line.rstrip()):
+			grid[(x,y)] = int(tree)
+
+	for y in range(max_y):
+		for x in range(max_x):
+			trees_above = [(x, y2) for y2 in range(y, -1, -1)]
+
+			tas = directional_scenic_score(grid[(x, y)], trees_above, grid)
+
+			trees_below = [(x, y2) for y2 in range(y+1, max_y)]
+			tbs = directional_scenic_score(grid[(x, y)], trees_below, grid)
+
+			trees_left = [(x2, y) for x2 in range(x, -1, -1)]
+			tls = directional_scenic_score(grid[(x, y)], trees_left, grid)
+
+			trees_right = [(x2, y) for x2 in range(x+1, max_x)]
+			trs = directional_scenic_score(grid[(x, y)], trees_right, grid)
+
+			print(f"score[({x}, {y})] = {tas * tbs * tls * trs} = {tas} * {tbs} * {tls} * {trs}")
+			score[(x, y)] = tas * tbs * tls * trs
+
+	return max(score.values())
 
 
 def main():
