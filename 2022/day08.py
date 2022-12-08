@@ -90,14 +90,14 @@ def part2(data):
 
 	for y in range(max_y):
 		for x in range(max_x):
-			trees_above = [(x, y2) for y2 in range(y, -1, -1)]
+			trees_above = [(x, y2) for y2 in range(y-1, -1, -1)]
 
 			tas = directional_scenic_score(grid[(x, y)], trees_above, grid)
 
 			trees_below = [(x, y2) for y2 in range(y+1, max_y)]
 			tbs = directional_scenic_score(grid[(x, y)], trees_below, grid)
 
-			trees_left = [(x2, y) for x2 in range(x, -1, -1)]
+			trees_left = [(x2, y) for x2 in range(x-1, -1, -1)]
 			tls = directional_scenic_score(grid[(x, y)], trees_left, grid)
 
 			trees_right = [(x2, y) for x2 in range(x+1, max_x)]
