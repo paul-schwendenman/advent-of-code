@@ -52,19 +52,8 @@ def part1(data):
 				visable[(x, y)] = True
 				max_tree = tree
 
-	for x in range(max_x):
-		for y in range(max_y):
-			if not (x, y) in visable:
-				print(f"({x+1}, {y+1}): {grid[(x,y)]}")
-
-	for y in range(max_y):
-		for x in range(max_x):
-			print('T' if not visable.get((x,y), False) else ' ', end='')
-		print('')
-
 	return len(visable)
 
-	pass
 
 def directional_scenic_score(tree, neighboors, grid):
 	count = 0
@@ -103,7 +92,6 @@ def part2(data):
 			trees_right = [(x2, y) for x2 in range(x+1, max_x)]
 			trs = directional_scenic_score(grid[(x, y)], trees_right, grid)
 
-			print(f"score[({x}, {y})] = {tas * tbs * tls * trs} = {tas} * {tbs} * {tls} * {trs}")
 			score[(x, y)] = tas * tbs * tls * trs
 
 	return max(score.values())
@@ -111,9 +99,9 @@ def part2(data):
 
 def main():
 	print(part1(fileinput.input()))
-	# assert(part1(fileinput.input()) == 1912)
+	assert(part1(fileinput.input()) == 1776)
 	print(part2(fileinput.input()))
-	# assert(part2(fileinput.input()) == 2122)
+	assert(part2(fileinput.input()) == 234416)
 
 
 if __name__ == '__main__':
