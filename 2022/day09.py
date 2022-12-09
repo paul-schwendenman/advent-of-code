@@ -36,14 +36,21 @@ def calc_offest(direction):
 def calc_tail_offset(head, tail):
     diff_x = head.x - tail.x
     diff_y = head.y - tail.y
+    dx = 0
+    dy = 0
 
-    if abs(diff_x) > 1:
-        return diff_x // 2, diff_y
+    if abs(diff_x) > 1 and diff_y == 0:
+        dx = 1 if diff_x > 0 else -1
 
-    if abs(diff_y) > 1:
-        return diff_x, diff_y // 2
+    elif abs(diff_y) > 1 and diff_x == 0:
+        dy = 1 if diff_y > 0 else -1
 
-    return (0, 0)
+    elif (abs(diff_x) + abs(diff_y)) > 2:
+        dx = 1 if diff_x > 0 else -1
+        dy = 1 if diff_y > 0 else -1
+
+
+    return (dx, dy)
 
 
 def get_moves(data):
@@ -120,9 +127,9 @@ def part2(data):
 
 def main():
     print(part1(fileinput.input()))
-    # assert(part1(fileinput.input()) == 1776)
+    assert(part1(fileinput.input()) == 5858)
     print(part2(fileinput.input()))
-    # assert(part2(fileinput.input()) == 234416)
+    assert(part2(fileinput.input()) == 2602)
 
 
 if __name__ == '__main__':
