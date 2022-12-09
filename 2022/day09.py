@@ -62,15 +62,27 @@ def part1(data):
             tail += calc_tail_offset(head, tail)
             tail_locations.add(tail)
 
-
-        print(head, tail)
-        pass
     return len(tail_locations)
 
 
 
 def part2(data):
-    pass
+    knots = [Point(0, 0) for _ in range(10)]
+    tail_locations = set([knots[-1]])
+
+    for move in list(get_moves(data))[:]:
+        for _ in range(move.distance):
+            knots[0] += calc_offest(move.direction)
+
+            for index, knot in enumerate(knots[1:]):
+                # print(index, knots[index], knot, calc_tail_offset(knots[index], knot))
+                knots[index+1] = knot + calc_tail_offset(knots[index], knot)
+                # print("after:", knots)
+
+            tail_locations.add(knots[-1])
+            # print('-----')
+
+    return len(tail_locations)
 
 
 def main():
