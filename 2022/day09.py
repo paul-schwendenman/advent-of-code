@@ -65,12 +65,37 @@ def part1(data):
     return len(tail_locations)
 
 
+def print_knots(knots, size=15):
+    display = 'H123456789'
+    for y in range(size, -size, -1):
+        for x in range(-size, size):
+            if (x, y) in knots:
+                print(display[knots.index((x,y))], end="")
+            elif (0, 0) == (x, y):
+                print('s', end="")
+            else:
+                print('.', end="")
+        print('')
+
+
+def print_locations(locations, size=15):
+    for y in range(size, -size, -1):
+        for x in range(-size, size):
+            if (0, 0) == (x, y):
+                print('s', end="")
+            elif (x, y) in locations:
+                print("#", end="")
+            else:
+                print('.', end="")
+        print('')
+
 
 def part2(data):
     knots = [Point(0, 0) for _ in range(10)]
     tail_locations = set([knots[-1]])
 
     for move in list(get_moves(data))[:]:
+        # print(f'\n------- {move} -------\n')
         for _ in range(move.distance):
             knots[0] += calc_offest(move.direction)
 
@@ -79,8 +104,16 @@ def part2(data):
                 knots[index+1] = knot + calc_tail_offset(knots[index], knot)
                 # print("after:", knots)
 
+            # print_knots(knots, 6)
+            # print()
+
+
             tail_locations.add(knots[-1])
             # print('-----')
+        # print_knots(knots)
+
+    # print('\n --------------------\n')
+    # print_locations(tail_locations, 6)
 
     return len(tail_locations)
 
