@@ -131,7 +131,6 @@ def part1(data):
     # monkeys = deepcopy(sample_monkeys)
     monkeys = deepcopy(monkeys2)
     for round in range(20):
-        print(f'------------ round {round + 1}')
         for monkey in monkeys:
             for item in monkey.items:
                 monkey.inspections += 1
@@ -142,11 +141,8 @@ def part1(data):
                 else:
                     monkeys[monkey.no].items.append(relief)
             monkey.items = []
-    pass
+
     inspections = sorted([monkey.inspections for monkey in monkeys])
-    print(inspections)
-    for monkey in monkeys:
-        print(f"monkey {monkey.id}: {monkey.items}")
 
     return inspections[-1] * inspections[-2]
 
@@ -155,7 +151,6 @@ def part1(data):
 def part2(data):
     # monkeys = sample_monkeys.copy()
     monkeys = deepcopy(monkeys2)
-    print(0, [monkey.inspections for monkey in monkeys])
     max_worry = math.prod(monkey.test for monkey in monkeys)
     for round in range(10_000):
         # print(f'------------ round {round + 1}')
@@ -170,14 +165,9 @@ def part2(data):
                     monkeys[monkey.no].items.append(relief)
             monkey.items = []
 
-        if (round + 1) in [1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]:
-            print(round+1, [monkey.inspections for monkey in monkeys])
-    pass
     inspections = sorted([monkey.inspections for monkey in monkeys])
-    print(inspections)
 
     return inspections[-1] * inspections[-2]
-    pass
 
 
 def main():
