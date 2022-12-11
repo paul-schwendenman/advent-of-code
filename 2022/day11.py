@@ -1,11 +1,16 @@
 import fileinput
 from dataclasses import dataclass, field
 from types import FunctionType
+from typing import TypeVar
+from collections import deque
+from collections.abc import Sequence, Iterator, Iterable, Callable
 import math
 import re
 
+Item = TypeVar('Item')
 
-def chunk(array, size=1):
+
+def chunk(array: Sequence[Item], size=1) -> Iterator[Sequence[Item]]:
     for i in range(0, len(array), size):
         yield array[i:i+size]
 
@@ -13,19 +18,41 @@ def chunk(array, size=1):
 @dataclass
 class Monkey:
     id: int
-    operation: FunctionType
+    operation: Callable[[int], int]
     test: int
     yes: int
     no: int
-    items: list = field(default_factory=list)
-    inspections: int = 0
+    items: deque = field(default_factory=deque)
+    inspections: int = field(default = 0, init=False)
+
+    def add(self, item):
+        self.items.append(item)
+
+    def pop(self):
+        try:
+            return self.items.popleft()
+        except IndexError:
+            return None
+
+    def test_item(self, item):
+        return item % self.test == 0
+
+    def inspect(self, item):
+        self.inspections += 1
+        return self.operation(item)
+
+    def pass_item(self, monkeys, item):
+        if self.test_item(item):
+            return monkeys[self.yes].add(item)
+        else:
+            return monkeys[self.no].add(item)
 
 
-def extract_ints(line):
+def extract_ints(line: str) -> Sequence[int]:
     return list(map(int, re.findall(r'-?[0-9]+', line)))
 
 
-def parse_operation(line):
+def parse_operation(line: str) -> Callable[[int], int]:
     _, new, eq, old, op, value = line.strip().split(" ")
     assert new == 'new'
     assert eq == '='
@@ -42,9 +69,9 @@ def parse_operation(line):
         raise ValueError("Invalid op '%s'", op)
 
 
-def parse_monkey(raw_monkey):
+def parse_monkey(raw_monkey: Sequence[str]) -> Monkey:
     id = extract_ints(raw_monkey[0])[0]
-    items = extract_ints(raw_monkey[1])
+    items = deque(extract_ints(raw_monkey[1]))
     operation = parse_operation(raw_monkey[2])
     test = extract_ints(raw_monkey[3])[0]
     yes = extract_ints(raw_monkey[4])[0]
@@ -53,7 +80,7 @@ def parse_monkey(raw_monkey):
     return Monkey(id, operation, test, yes, no, items)
 
 
-def parse_monkeys(data):
+def parse_monkeys(data) -> Iterable[Monkey]:
     monkeys = []
     for raw_monkey in chunk(list(data), 7):
         monkeys.append(parse_monkey(raw_monkey))
@@ -62,46 +89,40 @@ def parse_monkeys(data):
 
 
 def part1(data):
-    monkeys = parse_monkeys(data)
+    monkeys:Iterable[Monkey] = parse_monkeys(data)
 
     for round in range(20):
         for monkey in monkeys:
-            for item in monkey.items:
-                monkey.inspections += 1
-                new = monkey.operation(item)
+            while item := monkey.pop():
+                new = monkey.inspect(item)
+
                 relief = new // 3
-                if relief % monkey.test == 0:
-                    monkeys[monkey.yes].items.append(relief)
-                else:
-                    monkeys[monkey.no].items.append(relief)
-            monkey.items = []
+
+                monkey.pass_item(monkeys, relief)
 
     inspections = sorted([monkey.inspections for monkey in monkeys])
 
-    return inspections[-1] * inspections[-2]
-
+    return math.prod(inspections[-2:])
 
 
 def part2(data):
-    monkeys = parse_monkeys(data)
+    monkeys:Iterable[Monkey] = parse_monkeys(data)
 
     max_worry = math.prod(monkey.test for monkey in monkeys)
+
     for round in range(10_000):
-        # print(f'------------ round {round + 1}')
         for monkey in monkeys:
-            for item in monkey.items:
-                monkey.inspections += 1
-                new = monkey.operation(item)
+            while item := monkey.pop():
+                new = monkey.inspect(item)
+
                 relief = new % max_worry
-                if relief % monkey.test == 0:
-                    monkeys[monkey.yes].items.append(relief)
-                else:
-                    monkeys[monkey.no].items.append(relief)
-            monkey.items = []
+
+                monkey.pass_item(monkeys, relief)
 
     inspections = sorted([monkey.inspections for monkey in monkeys])
 
-    return inspections[-1] * inspections[-2]
+    # return inspections[-1] * inspections[-2]
+    return math.prod(inspections[-2:])
 
 
 def main():
