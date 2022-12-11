@@ -8,7 +8,7 @@ import math
 class Monkey:
     id: int
     operation: FunctionType
-    test: FunctionType
+    test: int
     yes: int
     no: int
     items: list = field(default_factory=list)
@@ -19,7 +19,7 @@ sample_monkeys = [
     Monkey(
         id=0,
         operation =lambda a: a * 19,
-        test = lambda a: a % 23 == 0,
+        test = 23,
         yes = 2,
         no = 3,
         items = [79, 98]
@@ -27,7 +27,7 @@ sample_monkeys = [
     Monkey(
         id=1,
         operation =lambda a: a + 6,
-        test = lambda a: a % 19 == 0,
+        test = 19,
         yes = 2,
         no = 0,
         items = [54, 65, 75, 74]
@@ -35,7 +35,7 @@ sample_monkeys = [
     Monkey(
         id=2,
         operation =lambda a: a * a,
-        test = lambda a: a % 13 == 0,
+        test = 13,
         yes = 1,
         no = 3,
         items = [79, 60, 97]
@@ -43,7 +43,7 @@ sample_monkeys = [
     Monkey(
         id=3,
         operation =lambda a: a + 3,
-        test = lambda a: a % 17 == 0,
+        test = 17,
         yes = 0,
         no = 1,
         items = [74]
@@ -54,7 +54,7 @@ monkeys = [
     Monkey(
         id=0,
         operation =lambda a: a * 7,
-        test = lambda a: a % 17 == 0,
+        test = 17,
         yes = 5,
         no = 3,
         items = [54, 61, 97, 63, 74]
@@ -62,7 +62,7 @@ monkeys = [
     Monkey(
         id=1,
         operation =lambda a: a + 8,
-        test = lambda a: a % 2 == 0,
+        test = 2,
         yes = 7,
         no = 6,
         items = [61, 70, 97, 64, 99, 83, 52, 87]
@@ -70,7 +70,7 @@ monkeys = [
     Monkey(
         id=2,
         operation =lambda a: a * 13,
-        test = lambda a: a % 5 == 0,
+        test = 5,
         yes = 1,
         no = 6,
         items = [60, 67, 80, 65]
@@ -78,7 +78,7 @@ monkeys = [
     Monkey(
         id=3,
         operation =lambda a: a + 7,
-        test = lambda a: a % 3 == 0,
+        test = 3,
         yes = 5,
         no = 2,
         items = [61, 70, 76, 69, 82, 56]
@@ -86,7 +86,7 @@ monkeys = [
     Monkey(
         id=4,
         operation =lambda a: a + 2,
-        test = lambda a: a % 7 == 0,
+        test = 7,
         yes = 0,
         no = 3,
         items = [79, 98]
@@ -94,7 +94,7 @@ monkeys = [
     Monkey(
         id=5,
         operation =lambda a: a + 1,
-        test = lambda a: a % 13 == 0,
+        test = 13,
         yes = 2,
         no = 1,
         items = [72, 79, 55]
@@ -102,7 +102,7 @@ monkeys = [
     Monkey(
         id=6,
         operation =lambda a: a + 4,
-        test = lambda a: a % 19 == 0,
+        test = 19,
         yes = 7,
         no = 4,
         items = [63]
@@ -110,14 +110,12 @@ monkeys = [
     Monkey(
         id=7,
         operation =lambda a: a * a,
-        test = lambda a: a % 11 == 0,
+        test = 11,
         yes = 0,
         no = 4,
         items = [72, 51, 93, 63, 80, 86, 81]
     ),
 ]
-sample_tests = [23, 19, 13, 17,]
-tests = [17, 2, 5, 3, 7, 13, 19, 11]
 
 
 def parse_monkey():
@@ -137,7 +135,7 @@ def part1(data):
                 monkey.inspections += 1
                 new = monkey.operation(item)
                 relief = new // 3
-                if monkey.test(relief):
+                if relief % monkey.test == 0:
                     monkeys[monkey.yes].items.append(relief)
                 else:
                     monkeys[monkey.no].items.append(relief)
@@ -162,7 +160,7 @@ def part2(data):
                 monkey.inspections += 1
                 new = monkey.operation(item)
                 relief = new % max_worry
-                if monkey.test(relief):
+                if relief % monkey.test == 0:
                     monkeys[monkey.yes].items.append(relief)
                 else:
                     monkeys[monkey.no].items.append(relief)
