@@ -2,6 +2,7 @@ import fileinput
 from dataclasses import dataclass, field
 from types import FunctionType
 import math
+from copy import copy, deepcopy
 
 
 @dataclass
@@ -50,7 +51,7 @@ sample_monkeys = [
     ),
 ]
 
-monkeys = [
+monkeys2 = [
     Monkey(
         id=0,
         operation =lambda a: a * 7,
@@ -127,7 +128,8 @@ def parse_monkeys():
 
 
 def part1(data):
-    monkeys = sample_monkeys.copy()
+    # monkeys = deepcopy(sample_monkeys)
+    monkeys = deepcopy(monkeys2)
     for round in range(20):
         print(f'------------ round {round + 1}')
         for monkey in monkeys:
@@ -152,6 +154,7 @@ def part1(data):
 
 def part2(data):
     # monkeys = sample_monkeys.copy()
+    monkeys = deepcopy(monkeys2)
     print(0, [monkey.inspections for monkey in monkeys])
     max_worry = math.prod(monkey.test for monkey in monkeys)
     for round in range(10_000):
@@ -178,10 +181,10 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
-    # assert(part1(fileinput.input()) == 1912)
+    print(part1(fileinput.input()))
+    assert(part1(fileinput.input()) == 50172)
     print(part2(fileinput.input()))
-    # assert(part2(fileinput.input()) == 2122)
+    assert(part2(fileinput.input()) == 11614682178)
 
 
 if __name__ == '__main__':
