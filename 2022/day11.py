@@ -1,6 +1,7 @@
 import fileinput
 from dataclasses import dataclass, field
 from types import FunctionType
+import math
 
 
 @dataclass
@@ -115,6 +116,8 @@ monkeys = [
         items = [72, 51, 93, 63, 80, 86, 81]
     ),
 ]
+sample_tests = [23, 19, 13, 17,]
+tests = [17, 2, 5, 3, 7, 13, 19, 11]
 
 
 def parse_monkey():
@@ -150,6 +153,28 @@ def part1(data):
 
 
 def part2(data):
+    # monkeys, tests = sample_monkeys, sample_tests
+    max_worry = math.prod(tests)
+    for round in range(10_000):
+        # print(f'------------ round {round + 1}')
+        for monkey in monkeys:
+            for item in monkey.items:
+                monkey.inspections += 1
+                new = monkey.operation(item)
+                relief = new % max_worry
+                if monkey.test(relief):
+                    monkeys[monkey.yes].items.append(relief)
+                else:
+                    monkeys[monkey.no].items.append(relief)
+            monkey.items = []
+
+        if (round + 1) in [1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]:
+            print([monkey.inspections for monkey in monkeys])
+    pass
+    inspections = sorted([monkey.inspections for monkey in monkeys])
+    print(inspections)
+
+    return inspections[-1] * inspections[-2]
     pass
 
 
