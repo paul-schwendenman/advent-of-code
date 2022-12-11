@@ -2,7 +2,12 @@ import fileinput
 from dataclasses import dataclass, field
 from types import FunctionType
 import math
-from copy import copy, deepcopy
+import re
+
+
+def chunk(array, size=1):
+    for i in range(0, len(array), size):
+        yield array[i:i+size]
 
 
 @dataclass
@@ -16,120 +21,49 @@ class Monkey:
     inspections: int = 0
 
 
-sample_monkeys = [
-    Monkey(
-        id=0,
-        operation =lambda a: a * 19,
-        test = 23,
-        yes = 2,
-        no = 3,
-        items = [79, 98]
-    ),
-    Monkey(
-        id=1,
-        operation =lambda a: a + 6,
-        test = 19,
-        yes = 2,
-        no = 0,
-        items = [54, 65, 75, 74]
-    ),
-    Monkey(
-        id=2,
-        operation =lambda a: a * a,
-        test = 13,
-        yes = 1,
-        no = 3,
-        items = [79, 60, 97]
-    ),
-    Monkey(
-        id=3,
-        operation =lambda a: a + 3,
-        test = 17,
-        yes = 0,
-        no = 1,
-        items = [74]
-    ),
-]
-
-monkeys2 = [
-    Monkey(
-        id=0,
-        operation =lambda a: a * 7,
-        test = 17,
-        yes = 5,
-        no = 3,
-        items = [54, 61, 97, 63, 74]
-    ),
-    Monkey(
-        id=1,
-        operation =lambda a: a + 8,
-        test = 2,
-        yes = 7,
-        no = 6,
-        items = [61, 70, 97, 64, 99, 83, 52, 87]
-    ),
-    Monkey(
-        id=2,
-        operation =lambda a: a * 13,
-        test = 5,
-        yes = 1,
-        no = 6,
-        items = [60, 67, 80, 65]
-    ),
-    Monkey(
-        id=3,
-        operation =lambda a: a + 7,
-        test = 3,
-        yes = 5,
-        no = 2,
-        items = [61, 70, 76, 69, 82, 56]
-    ),
-    Monkey(
-        id=4,
-        operation =lambda a: a + 2,
-        test = 7,
-        yes = 0,
-        no = 3,
-        items = [79, 98]
-    ),
-    Monkey(
-        id=5,
-        operation =lambda a: a + 1,
-        test = 13,
-        yes = 2,
-        no = 1,
-        items = [72, 79, 55]
-    ),
-    Monkey(
-        id=6,
-        operation =lambda a: a + 4,
-        test = 19,
-        yes = 7,
-        no = 4,
-        items = [63]
-    ),
-    Monkey(
-        id=7,
-        operation =lambda a: a * a,
-        test = 11,
-        yes = 0,
-        no = 4,
-        items = [72, 51, 93, 63, 80, 86, 81]
-    ),
-]
+def extract_ints(line):
+    return list(map(int, re.findall(r'-?[0-9]+', line)))
 
 
-def parse_monkey():
-    pass
+def parse_operation(line):
+    _, new, eq, old, op, value = line.strip().split(" ")
+    assert new == 'new'
+    assert eq == '='
+    assert old == 'old'
+
+    if value == 'old':
+        return lambda num: num * num
+
+    if op == '*':
+        return lambda num: num * int(value)
+    elif op == '+':
+        return lambda num: num + int(value)
+    else:
+        raise ValueError("Invalid op '%s'", op)
 
 
-def parse_monkeys():
-    pass
+def parse_monkey(raw_monkey):
+    id = extract_ints(raw_monkey[0])[0]
+    items = extract_ints(raw_monkey[1])
+    operation = parse_operation(raw_monkey[2])
+    test = extract_ints(raw_monkey[3])[0]
+    yes = extract_ints(raw_monkey[4])[0]
+    no = extract_ints(raw_monkey[5])[0]
+
+    return Monkey(id, operation, test, yes, no, items)
+
+
+def parse_monkeys(data):
+    monkeys = []
+    for raw_monkey in chunk(list(data), 7):
+        monkeys.append(parse_monkey(raw_monkey))
+
+    return monkeys
 
 
 def part1(data):
-    # monkeys = deepcopy(sample_monkeys)
-    monkeys = deepcopy(monkeys2)
+    monkeys = parse_monkeys(data)
+
     for round in range(20):
         for monkey in monkeys:
             for item in monkey.items:
@@ -149,8 +83,8 @@ def part1(data):
 
 
 def part2(data):
-    # monkeys = sample_monkeys.copy()
-    monkeys = deepcopy(monkeys2)
+    monkeys = parse_monkeys(data)
+
     max_worry = math.prod(monkey.test for monkey in monkeys)
     for round in range(10_000):
         # print(f'------------ round {round + 1}')
