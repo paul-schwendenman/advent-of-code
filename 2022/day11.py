@@ -127,7 +127,7 @@ def parse_monkeys():
 
 
 def part1(data):
-    # monkeys = sample_monkeys
+    monkeys = sample_monkeys.copy()
     for round in range(20):
         print(f'------------ round {round + 1}')
         for monkey in monkeys:
@@ -151,8 +151,9 @@ def part1(data):
 
 
 def part2(data):
-    # monkeys, tests = sample_monkeys, sample_tests
-    max_worry = math.prod(tests)
+    # monkeys = sample_monkeys.copy()
+    print(0, [monkey.inspections for monkey in monkeys])
+    max_worry = math.prod(monkey.test for monkey in monkeys)
     for round in range(10_000):
         # print(f'------------ round {round + 1}')
         for monkey in monkeys:
@@ -167,7 +168,7 @@ def part2(data):
             monkey.items = []
 
         if (round + 1) in [1, 20, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]:
-            print([monkey.inspections for monkey in monkeys])
+            print(round+1, [monkey.inspections for monkey in monkeys])
     pass
     inspections = sorted([monkey.inspections for monkey in monkeys])
     print(inspections)
@@ -177,7 +178,7 @@ def part2(data):
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     # assert(part1(fileinput.input()) == 1912)
     print(part2(fileinput.input()))
     # assert(part2(fileinput.input()) == 2122)
