@@ -59,7 +59,7 @@ def solve_maze(start, goal, grid, tracker={}, path=[]):
     )
 
 
-def bfs(grid, start, end):
+def bfs(grid, starts, end):
     def check_neighbor(start, end):
         # if end in grid and abs(ord(grid[start]) - ord(grid[end])) <= 1:
         if end in grid and (ord(grid[end]) - ord(grid[start])) <= 1:
@@ -68,7 +68,7 @@ def bfs(grid, start, end):
 
     seen = set()
 
-    todo = deque([Step(start, 0)])
+    todo = deque(Step(start, 0) for start in starts)
 
     while todo:
         position, step = todo.popleft()
@@ -89,7 +89,7 @@ def bfs(grid, start, end):
 def part1(data):
     grid, start, end = parse_grid(data)
 
-    return bfs(grid, start, end)
+    return bfs(grid, [start], end)
 
 
 def part2(data):
@@ -97,7 +97,7 @@ def part2(data):
 
     starts = [key for key, value in grid.items() if value == 'a']
 
-    return min(bfs(grid, start, end) for start in starts)
+    return bfs(grid, starts, end)
 
 
 def main():
