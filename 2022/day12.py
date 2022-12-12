@@ -1,5 +1,6 @@
 import fileinput
 from collections import namedtuple, defaultdict, deque
+import math
 
 class Point(namedtuple('Point', 'x y')):
     __slots__ = ()
@@ -14,6 +15,27 @@ class Point(namedtuple('Point', 'x y')):
 
 
 Step = namedtuple('Step', 'point step')
+
+
+def parse_grid(data):
+    grid = {}
+    start = None
+    end = None
+
+    for j, line in enumerate(data):
+        for i, char in enumerate(line.rstrip()):
+            here = Point(i, j)
+
+            if char == 'S':
+                start = here
+                grid[here] = 'a'
+            elif char == 'E':
+                end = here
+                grid[here] = 'z'
+            else:
+                grid[here] = char
+
+    return grid, start, end
 
 
 def solve_maze(start, goal, grid, tracker={}, path=[]):
@@ -61,31 +83,21 @@ def bfs(grid, start, end):
             if check_neighbor(position, neighbor):
                 todo.append(Step(neighbor, step + 1))
 
+    return math.inf
+
 
 def part1(data):
-    grid = {}
-    start = None
-    end = None
-
-    for j, line in enumerate(data):
-        for i, char in enumerate(line.rstrip()):
-            here = Point(i, j)
-
-            if char == 'S':
-                start = here
-                grid[here] = 'a'
-            elif char == 'E':
-                end = here
-                grid[here] = 'z'
-            else:
-                grid[here] = char
-
+    grid, start, end = parse_grid(data)
 
     return bfs(grid, start, end)
 
 
 def part2(data):
-    pass
+    grid, _, end = parse_grid(data)
+
+    starts = [key for key, value in grid.items() if value == 'a']
+
+    return min(bfs(grid, start, end) for start in starts)
 
 
 def main():
