@@ -1,4 +1,5 @@
 import fileinput
+import functools
 
 
 def compare(a, b):
@@ -48,7 +49,12 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    packets = [eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]]
+
+    a = sum(1 for packet in packets if compare(packet, [[2]])) + 1
+    b = sum(1 for packet in packets if compare(packet, [[6]])) + 1
+
+    return a * b
 
 
 def main():
