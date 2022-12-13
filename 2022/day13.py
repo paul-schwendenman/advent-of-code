@@ -1,5 +1,6 @@
 import fileinput
-import functools
+import json
+from functools import cmp_to_key
 
 
 def compare(a, b):
@@ -26,6 +27,8 @@ def compare(a, b):
                 if (result := compare(a[i], b[i])) == 0:
                     continue
                 return result
+        else:
+            return 0
     else:
         raise ValueError("Types: %s", types)
 
@@ -44,19 +47,27 @@ def part1(data):
 
 
 def part2(data):
-    packets = [eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]]
+    packets = sorted([eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare), reverse=True)
 
-    a = sum(1 for packet in packets if 1 == compare(packet, [[2]])) + 1
-    b = sum(1 for packet in packets if 1 == compare(packet, [[6]])) + 1
+    a = packets.index([[2]]) + 1
+    b = packets.index([[6]]) + 1
+
+    # print(a, b)
+
+    # a = sum(1 for packet in packets if 1 == compare(packet, [[2]])) + 1
+    # b = sum(1 for packet in packets if 1 == compare(packet, [[6]])) + 1
+
+    # print(a, b)
+    # print(packets)
 
     return a * b
 
 
 def main():
-    print(part1(fileinput.input()))
-    assert(part1(fileinput.input()) == 6568)
-    print(part2(fileinput.input()))
-    assert(part2(fileinput.input()) == 19493)
+    print(result := part1(fileinput.input()))
+    assert(result == 6568)
+    print(result := part2(fileinput.input()))
+    assert(result == 19493)
 
 
 if __name__ == '__main__':
