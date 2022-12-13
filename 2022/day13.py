@@ -1,6 +1,12 @@
 import fileinput
 import json
 from functools import cmp_to_key
+from enum import IntEnum
+
+class Comp(IntEnum):
+    LT = -1
+    EQ = 0
+    GT = 1
 
 
 def compare(a, b):
@@ -9,26 +15,26 @@ def compare(a, b):
 
     if types == (int, int):
         if a < b:
-            return 1
+            return Comp.LT
         elif a > b:
-            return -1
-        return 0
+            return Comp.GT
+        return Comp.EQ
     elif types == (list, int):
         return compare(a, [b])
     elif types == (int, list):
         return compare([a], b)
     elif types == (list, list):
-        for i in range(max(len(a), len(b))):
-            if len(a) <= i:
-                return 1
-            elif len(b) <= i:
-                return -1
+        for i in range(max(size_a := len(a), size_b := len(b))):
+            if size_a <= i:
+                return Comp.LT
+            elif size_b <= i:
+                return Comp.GT
             else:
-                if (result := compare(a[i], b[i])) == 0:
+                if (result := compare(a[i], b[i])) == Comp.EQ:
                     continue
                 return result
         else:
-            return 0
+            return Comp.EQ
     else:
         raise ValueError("Types: %s", types)
 
@@ -39,7 +45,7 @@ def part1(data):
     correct_pairs = []
 
     for i, pair in enumerate(pairs):
-        if (compare(*pair) != -1):
+        if (compare(*pair) != Comp.GT):
             count += 1
             correct_pairs.append(i)
 
@@ -47,18 +53,10 @@ def part1(data):
 
 
 def part2(data):
-    packets = sorted([eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare), reverse=True)
+    packets = sorted([eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare))
 
     a = packets.index([[2]]) + 1
     b = packets.index([[6]]) + 1
-
-    # print(a, b)
-
-    # a = sum(1 for packet in packets if 1 == compare(packet, [[2]])) + 1
-    # b = sum(1 for packet in packets if 1 == compare(packet, [[6]])) + 1
-
-    # print(a, b)
-    # print(packets)
 
     return a * b
 
