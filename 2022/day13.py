@@ -40,7 +40,7 @@ def compare(a, b):
 
 
 def part1(data):
-    pairs = (tuple(eval(pairing.strip()) for pairing in pair.split('\n')) for pair in ''.join(data).strip().split('\n\n'))
+    pairs = (tuple(json.loads(pairing.strip()) for pairing in pair.split('\n')) for pair in ''.join(data).strip().split('\n\n'))
     count = 0
     correct_pairs = []
 
@@ -53,7 +53,7 @@ def part1(data):
 
 
 def part2(data):
-    packets = sorted([eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare))
+    packets = sorted([json.loads(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare))
 
     a = packets.index([[2]]) + 1
     b = packets.index([[6]]) + 1
