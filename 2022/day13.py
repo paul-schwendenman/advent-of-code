@@ -1,7 +1,9 @@
 import fileinput
 import json
+import math
 from functools import cmp_to_key
 from enum import IntEnum
+
 
 class Comp(IntEnum):
     LT = -1
@@ -9,28 +11,27 @@ class Comp(IntEnum):
     GT = 1
 
 
-def compare(a, b):
-    types = type(a), type(b)
-    # print(a, b, types)
+def compare(left, right):
+    types = type(left), type(right)
 
     if types == (int, int):
-        if a < b:
+        if left < right:
             return Comp.LT
-        elif a > b:
+        elif left > right:
             return Comp.GT
         return Comp.EQ
     elif types == (list, int):
-        return compare(a, [b])
+        return compare(left, [right])
     elif types == (int, list):
-        return compare([a], b)
+        return compare([left], right)
     elif types == (list, list):
-        for i in range(max(size_a := len(a), size_b := len(b))):
+        for i in range(max(size_a := len(left), size_b := len(right))):
             if size_a <= i:
                 return Comp.LT
             elif size_b <= i:
                 return Comp.GT
             else:
-                if (result := compare(a[i], b[i])) == Comp.EQ:
+                if (result := compare(left[i], right[i])) == Comp.EQ:
                     continue
                 return result
         else:
@@ -41,24 +42,22 @@ def compare(a, b):
 
 def part1(data):
     pairs = (tuple(json.loads(pairing.strip()) for pairing in pair.split('\n')) for pair in ''.join(data).strip().split('\n\n'))
-    count = 0
-    correct_pairs = []
 
-    for i, pair in enumerate(pairs):
+    accumulator = 0
+
+    for index, pair in enumerate(pairs, start=1):
         if (compare(*pair) != Comp.GT):
-            count += 1
-            correct_pairs.append(i)
+            accumulator += index
 
-    return sum(correct_pairs) + len(correct_pairs)
+    return accumulator
 
 
 def part2(data):
-    packets = sorted([json.loads(packet) for packet in data if packet.strip()] + [[[2]], [[6]]], key=cmp_to_key(compare))
+    divider_packets = [[[2]], [[6]]]
 
-    a = packets.index([[2]]) + 1
-    b = packets.index([[6]]) + 1
+    packets = sorted([json.loads(packet) for packet in data if packet.strip()] + divider_packets, key=cmp_to_key(compare))
 
-    return a * b
+    return math.prod(map(lambda packet: packets.index(packet) + 1, divider_packets))
 
 
 def main():
