@@ -17,7 +17,6 @@ def compare(a, b):
     elif types == (int, list):
         return compare([a], b)
     elif types == (list, list):
-        # print('sublist:', len(a), len(b), max(len(a), len(b)))
         for i in range(max(len(a), len(b))):
             if len(a) <= i:
                 return 1
@@ -37,13 +36,11 @@ def part1(data):
     correct_pairs = []
 
     for i, pair in enumerate(pairs):
-        if result := (compare(*pair) != -1):
+        if (compare(*pair) != -1):
             count += 1
             correct_pairs.append(i)
-        print(i, pair, result)
 
     return sum(correct_pairs) + len(correct_pairs)
-    pass
 
 
 def part2(data):
@@ -57,7 +54,9 @@ def part2(data):
 
 def main():
     print(part1(fileinput.input()))
+    assert(part1(fileinput.input()) == 6568)
     print(part2(fileinput.input()))
+    assert(part2(fileinput.input()) == 19493)
 
 
 if __name__ == '__main__':
