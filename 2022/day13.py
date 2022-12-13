@@ -2,6 +2,7 @@ import fileinput
 import json
 import math
 from functools import cmp_to_key
+from itertools import zip_longest
 from enum import IntEnum
 
 
@@ -25,15 +26,14 @@ def compare(left, right):
     elif types == (int, list):
         return compare([left], right)
     elif types == (list, list):
-        for i in range(max(size_a := len(left), size_b := len(right))):
-            if size_a <= i:
+        for sub_left, sub_right in zip_longest(left, right):
+            if sub_left is None:
                 return Comp.LT
-            elif size_b <= i:
+            elif sub_right is None:
                 return Comp.GT
-            else:
-                if (result := compare(left[i], right[i])) == Comp.EQ:
-                    continue
-                return result
+            elif (result := compare(sub_left, sub_right)) == Comp.EQ:
+                continue
+            return result
         else:
             return Comp.EQ
     else:
