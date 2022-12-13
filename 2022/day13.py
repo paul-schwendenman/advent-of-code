@@ -8,10 +8,10 @@ def compare(a, b):
 
     if types == (int, int):
         if a < b:
-            return True
+            return 1
         elif a > b:
-            return False
-        return None
+            return -1
+        return 0
     elif types == (list, int):
         return compare(a, [b])
     elif types == (int, list):
@@ -20,15 +20,13 @@ def compare(a, b):
         # print('sublist:', len(a), len(b), max(len(a), len(b)))
         for i in range(max(len(a), len(b))):
             if len(a) <= i:
-                return True
+                return 1
             elif len(b) <= i:
-                return False
+                return -1
             else:
-                sub = compare(a[i], b[i])
-
-                if sub is None:
+                if (result := compare(a[i], b[i])) == 0:
                     continue
-                return sub
+                return result
     else:
         raise ValueError("Types: %s", types)
 
@@ -39,7 +37,7 @@ def part1(data):
     correct_pairs = []
 
     for i, pair in enumerate(pairs):
-        if result := compare(*pair):
+        if result := (compare(*pair) != -1):
             count += 1
             correct_pairs.append(i)
         print(i, pair, result)
@@ -51,8 +49,8 @@ def part1(data):
 def part2(data):
     packets = [eval(packet) for packet in data if packet.strip()] + [[[2]], [[6]]]
 
-    a = sum(1 for packet in packets if compare(packet, [[2]])) + 1
-    b = sum(1 for packet in packets if compare(packet, [[6]])) + 1
+    a = sum(1 for packet in packets if 1 == compare(packet, [[2]])) + 1
+    b = sum(1 for packet in packets if 1 == compare(packet, [[6]])) + 1
 
     return a * b
 
