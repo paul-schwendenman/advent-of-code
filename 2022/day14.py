@@ -68,6 +68,7 @@ def print_grid(grid):
         for x in range(min_x, max_x):
             print(str(grid.get(Point(x, y), Display.AIR)), end='')
         print('')
+    print("#" * (max_x - min_x))
 
 
 
@@ -100,13 +101,37 @@ def part1(data):
     return sum(1 for point in grid.values() if point == Display.STABLE_SAND)
 
 
-
-    print_grid(grid)
-    pass
-
-
 def part2(data):
-    pass
+    grid = parse_input(data)
+
+    rocks = grid.keys()
+    max_y_rock = max(p.y for p in rocks) + 1
+
+
+    kill_switch = False
+
+    while True:
+        sand = Point(500, 0)
+        while not kill_switch:
+            for next_spot in sand.points_below():
+                if next_spot.y > max_y_rock:
+                    continue
+                    # kill_switch = True
+                    # break
+                elif next_spot not in grid:
+                    sand = next_spot
+                    break
+            else:
+                grid[sand] = Display.STABLE_SAND
+                break
+
+        if sand == Point(500, 0):
+            break
+
+        # print_grid(grid)
+        # input()
+
+    return sum(1 for point in grid.values() if point == Display.STABLE_SAND)
 
 
 def main():
