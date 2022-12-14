@@ -12,15 +12,15 @@ class Comp(IntEnum):
     GT = 1
 
 
+def compare_int(left, right):
+    return (left > right) - (right > left)
+
+
 def compare(left, right):
     types = type(left), type(right)
 
     if types == (int, int):
-        if left < right:
-            return Comp.LT
-        elif left > right:
-            return Comp.GT
-        return Comp.EQ
+        return Comp(compare_int(left, right))
     elif types == (list, int):
         return compare(left, [right])
     elif types == (int, list):
