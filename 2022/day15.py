@@ -108,25 +108,16 @@ def part2_old(data, min_coord=0, max_coord=4000000):
 
 
 def part2(data, min_coord=0, max_coord=4000000):
-    grid = defaultdict(dict)
-
     sensors = list(parse_input(data))
 
-    spaces = set()
-
-    for sensor in sensors:
-        spaces = spaces.union(sensor.uncovered_spaces())
-
-    for index, space in enumerate(spaces, start=1):
-        if index % (len(spaces) // 100) == 0:
-            print(f'------ {index} -------')
-        if not (min_coord <= space.x <= max_coord) or not (min_coord <= space.y <= max_coord):
-            continue
-        if all(not sensor.can_detect(space) for sensor in sensors):
-            print(space)
-            return space.x * 4_000_000 + space.y
-
-
+    for index, sensor in enumerate(sensors, start=1):
+        print(f'---- Sensor {index} ----')
+        for space in sensor.uncovered_spaces():
+            if not (min_coord <= space.x <= max_coord) or not (min_coord <= space.y <= max_coord):
+                continue
+            if all(not sensor.can_detect(space) for sensor in sensors):
+                print(space)
+                return space.x * 4_000_000 + space.y
 
 
 def main():
