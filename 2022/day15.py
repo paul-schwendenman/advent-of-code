@@ -43,19 +43,20 @@ class Sensor:
                 if self.distance_from(point) <= self.manhattan_distance:
                     yield point
 
-    def covered_spaces2(self, min_coord, max_coord):
-        max_x = min(self.sensor.x + self.manhattan_distance + 1, max_coord)
-        min_x = max(self.sensor.x - self.manhattan_distance, min_coord)
-        max_y = min(self.sensor.y + self.manhattan_distance + 1, max_coord)
-        min_y = max(self.sensor.y - self.manhattan_distance, min_coord)
+    def uncovered_spaces(self):
+        sx, sy, md = self.sensor.x, self.sensor.y, self.manhattan_distance + 1
 
-        for x in range(min_x, max_x):
-            for y in range(min_y, max_y):
-                point = Point(x, y)
-                # if point == self.beacon or point == self.sensor:
-                    # continue
-                if self.distance_from(point) <= self.manhattan_distance:
-                    yield point
+
+        for x in range(sx-md, sx+md+1):
+            ty = sy - (md - abs(sx - x))
+            by = sy + (md - abs(sx - x))
+
+            assert self.distance_from(Point(x, ty)) - 1 == self.manhattan_distance
+            assert self.distance_from(Point(x, by)) - 1 == self.manhattan_distance
+
+            yield Point(x, ty)
+            yield Point(x, by)
+
 
 
 
@@ -75,17 +76,17 @@ def part1(data, goal_y=2_000_000):
 
     for index, sensor in enumerate(sensors, start=1):
         print(f'---- Sensor {index} ----')
-        for point in sensor.covered_spaces(goal_y):
+        # for point in sensor.covered_spaces(goal_y):
+        for point in sensor.covered_spaces2(0, 21):
             grid[point.y][point.x] = 'X'
 
-    print(''.join('X' if x in grid[9] else '.' for x in range(-5, 30)))
-    print(''.join('X' if x in grid[10] else '.' for x in range(-5, 30)))
-    print(''.join('X' if x in grid[11] else '.' for x in range(-5, 30)))
+    for y in range(0, 21):
+        print(''.join('X' if x in grid[y] else '.' for x in range(0, 21)))
 
     return len(grid[goal_y])
 
 
-def part2(data, min_coord=0, max_coord=4000000):
+def part2_old(data, min_coord=0, max_coord=4000000):
     grid = defaultdict(dict)
 
     sensors = parse_input(data)
@@ -95,9 +96,8 @@ def part2(data, min_coord=0, max_coord=4000000):
         for point in sensor.covered_spaces2(min_coord, max_coord):
             grid[point.y][point.x] = 'X'
 
-    print(''.join('X' if x in grid[9] else '.' for x in range(-5, 30)))
-    print(''.join('X' if x in grid[10] else '.' for x in range(-5, 30)))
-    print(''.join('X' if x in grid[11] else '.' for x in range(-5, 30)))
+    for y in range(0, 21):
+        print(''.join('X' if x in grid[y] else '.' for x in range(0, 21)))
 
     for y, row in grid.items():
         if len(row) < max_coord:
@@ -106,7 +106,27 @@ def part2(data, min_coord=0, max_coord=4000000):
                     print(x, y)
                     return x * 4_000_000 + y
 
-    pass
+
+def part2(data, min_coord=0, max_coord=4000000):
+    grid = defaultdict(dict)
+
+    sensors = list(parse_input(data))
+
+    spaces = set()
+
+    for sensor in sensors:
+        spaces = spaces.union(sensor.uncovered_spaces())
+
+    for index, space in enumerate(spaces, start=1):
+        if index % (len(spaces) // 100) == 0:
+            print(f'------ {index} -------')
+        if not (min_coord <= space.x <= max_coord) or not (min_coord <= space.y <= max_coord):
+            continue
+        if all(not sensor.can_detect(space) for sensor in sensors):
+            print(space)
+            return space.x * 4_000_000 + space.y
+
+
 
 
 def main():
