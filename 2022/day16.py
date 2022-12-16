@@ -52,9 +52,9 @@ def solve(valves, max_time):
             for neighbor in valves[location].neighbors:
                 next_states.append(State(neighbor, open_valves, pressure_released, path+[f'{time}: move {neighbor} pressure {calc_pressure_released(valves, open_valves)}']))
 
-        states = next_states
+        # states = next_states
+        states = next_states if next_states else states
 
-    # return max(state.pressure_released for state in states)
     top_state = sorted(states, key = lambda state: state.pressure_released, reverse=True)
 
     return top_state[0]
@@ -68,11 +68,26 @@ def part1(data, max_time=30, init_open_valves=frozenset(), debug=False):
 
 
 def part2(data):
+    valves = dict([parse_line(line) for line in data])
+
+    print(valves)
+
+    value = solve(valves, 26)
+    print(value.open_valves)
+
+    for name in valves:
+        valves[name].rate = 0
+
+    print(valves)
+
+    value2 = solve(valves, 26)
+
+    return value.pressure_released + value2.pressure_released
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
