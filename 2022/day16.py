@@ -29,14 +29,10 @@ def calc_pressure_released(valves, open_valves):
     return sum(valve.rate for valve in valves.values() if valve.name in open_valves)
 
 
-def part1(data, max_time=30):
-
-    valves = dict([parse_line(line) for line in data])
-
+def solve(valves, max_time):
     states = [State('AA', frozenset(), 0, [])]
 
-
-    best = {} #defaultdict(int)
+    best = {}
 
     for time in range(1, max_time + 1, 1):
         print(f'time: {time:2d}\t states: {len(states)}\t best: {len(best)}')
@@ -46,8 +42,7 @@ def part1(data, max_time=30):
         for state in states:
             location, open_valves, pressure_released, path = state
 
-            # if 0 < best[(location, open_valves)] <= pressure_released:
-            if (key := (location, open_valves)) in best and best[key] >= pressure_released:
+            if (key := (location, open_valves)) in best and pressure_released <= best[key]:
                 continue
 
             best[(location, open_valves)] = pressure_released
@@ -67,7 +62,13 @@ def part1(data, max_time=30):
     #         print(state.path)
     #         break
 
-    return top
+    return top, open_valves
+
+
+def part1(data, max_time=30, init_open_valves=frozenset(), debug=False):
+    valves = dict([parse_line(line) for line in data])
+
+    return solve(valves, max_time)[0]
 
 
 
