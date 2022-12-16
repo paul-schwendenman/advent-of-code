@@ -55,20 +55,15 @@ def solve(valves, max_time):
         states = next_states
 
     # return max(state.pressure_released for state in states)
-    top = max(state.pressure_released for state in states)
+    top_state = sorted(states, key = lambda state: state.pressure_released, reverse=True)
 
-    # for state in states:
-    #     if state.pressure_released == top:
-    #         print(state.path)
-    #         break
-
-    return top, open_valves
+    return top_state[0]
 
 
 def part1(data, max_time=30, init_open_valves=frozenset(), debug=False):
     valves = dict([parse_line(line) for line in data])
 
-    return solve(valves, max_time)[0]
+    return solve(valves, max_time).pressure_released
 
 
 
