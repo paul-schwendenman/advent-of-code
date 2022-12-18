@@ -128,12 +128,36 @@ def print_grid(grid, rock=set(), height=0):
 
 
 def part2(data):
-    pass
+    gusts = cycle(next(data).strip())
+    rocks = parse_rocks()
+    grid = set(Point(x, 0) for x in range(1, 8))
+
+    height = 1
+
+    for _index, rock_base in tqdm(zip(range(1_000_000_000_000), cycle(rocks)), total=1_000_000_000_000):
+        start = Point(3, height + 3)
+        rock = Rock(rock_base, start)
+
+        for j in count():
+            gust = parse_gust(next(gusts))
+            if not (rock.calc_move(gust) & grid):
+                rock.move(gust)
+
+            down = (0, -1)
+
+            if rock.calc_move(down) & grid:
+                grid |= rock.pieces
+                break
+            else:
+                rock.move(down)
+
+        height = max(p.y for p in grid) + 1
+    return height - 1
 
 
 def main():
-    print(part1(fileinput.input()))
-    # print(part2(fileinput.input()))
+    # print(part1(fileinput.input()))
+    print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
