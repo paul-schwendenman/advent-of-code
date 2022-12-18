@@ -28,22 +28,33 @@ def part1(data):
 
 def part2(data):
     count = 0
-    # internal_air = 0
+
+    all_spaces = {Cube(x, y, z) for x in range(20) for y in range(20) for z in range(20)}
     cubes = {Cube(*extract_ints(line)) for line in data}
+
+    assert len(cubes) == len(all_spaces & cubes)
+
     air_pockets = set()
 
     for cube in cubes:
         count += sum(1 for c in cube.neighbors() if c not in cubes)
         air_pockets |= {c for c in cube.neighbors() if c not in cubes}
 
-    for air_pocket in air_pockets:
-        if all(apn in cubes for apn in air_pocket.neighbors()):
-            count -= 6
 
+    empty = all_spaces - cubes
+    queue = deque([Cube(0, 0, 0)])
 
+    while queue:
+        pass
+        air = queue.popleft()
+        if air in empty:
+            empty.remove(air)
+            queue.extend(air.neighbors())
+
+    for cube in empty:
+        count -= sum(1 for c in cube.neighbors() if c in cubes)
 
     return count
-    pass
 
 
 def main():
