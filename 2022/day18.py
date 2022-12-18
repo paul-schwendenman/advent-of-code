@@ -27,6 +27,22 @@ def part1(data):
 
 
 def part2(data):
+    count = 0
+    # internal_air = 0
+    cubes = {Cube(*extract_ints(line)) for line in data}
+    air_pockets = set()
+
+    for cube in cubes:
+        count += sum(1 for c in cube.neighbors() if c not in cubes)
+        air_pockets |= {c for c in cube.neighbors() if c not in cubes}
+
+    for air_pocket in air_pockets:
+        if all(apn in cubes for apn in air_pocket.neighbors()):
+            count -= 6
+
+
+
+    return count
     pass
 
 
