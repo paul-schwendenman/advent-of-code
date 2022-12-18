@@ -80,12 +80,12 @@ def part1(data):
 
     height = 1
 
-    for index, rock_base in tqdm(zip(range(2023), cycle(rocks))):
+    for _index, rock_base in tqdm(zip(range(1, 2023), cycle(rocks))):
         start = Point(3, height + 3)
         rock = Rock(rock_base, start)
 
         # print(f'----------- {index} ----------')
-        # print_grid(grid | rock.pieces)
+        # print_grid(grid, rock.pieces, height=height)
         # input()
 
         for j in count():
@@ -102,7 +102,7 @@ def part1(data):
             else:
                 rock.move(down)
 
-            # print_grid(grid | rock.pieces, height)
+            # print_grid(grid, rock.pieces, height=height)
             # input()
 
 
@@ -113,14 +113,14 @@ def part1(data):
 
         height = max(p.y for p in grid) + 1
     # print_grid(grid, height - 20)
-    return height - 3
+    return height - 1
 
 
-def print_grid(grid, height=0):
-    for y in range(20 + height, height-1, -1):
-        print('|', end='')
+def print_grid(grid, rock=set(), height=0):
+    for y in range(6 + height, max(height - 14, -1), -1):
+        print(f'{y:4d}\t |', end='')
         for x in range(1, 8):
-            print('#' if (x, y) in grid else '.', end='')
+            print('@' if ((x, y) in rock) else ('#' if (x, y) in grid else '.'), end='')
         print('|')
     # if height <= 1:
     #     print(''.join('-' if (x, 0) in grid else '+' for x in range(0, 9)))
