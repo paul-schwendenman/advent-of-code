@@ -4,18 +4,22 @@ from tqdm import *
 
 class Rock:
     def __init__(self, pieces, start):
-        self.pieces = self.calc_move(pieces)
+        self.pieces = pieces
+        self.pieces = self.calc_move(start)
         self.position = start
-        # self.position = start
         self.width = max(piece.x for piece in pieces)
         self.height = max(piece.y for piece in pieces)
 
     def move(self, shift):
-        if self.calc_move(shift):
-            print(f'moving {shift=} {self.pieces}')
+        if self.check_move(shift):
+            # print(f'moving {shift=} {self.pieces}')
             self.pieces = self.calc_move(shift)
-            print(f'moved {shift=} {self.pieces}')
             self.position += shift
+        else:
+            pass
+            # print(f'skippin {shift=} {self.pieces}')
+
+        return self.pieces
 
     def check_move(self, shift):
         if shift[0] + self.position.x + self.width > 7:
@@ -27,6 +31,10 @@ class Rock:
 
     def calc_move(self, shift):
         return {piece + shift for piece in self.pieces}
+
+
+def parse_gust(str):
+    return (1, 0) if str == '>' else (-1, 0)
 
 
 def parse_rocks():
@@ -66,57 +74,56 @@ def parse_rocks():
     ]
 
 def part1(data):
-    gusts = next(data).strip()
-    gust_size = len(gusts)
+    gusts = cycle(next(data).strip())
     rocks = parse_rocks()
     grid = set(Point(x, 0) for x in range(1, 8))
 
     height = 1
 
-    for index, rock_base in list(zip(range(2023), cycle(rocks))):
+    for index, rock_base in tqdm(zip(range(2023), cycle(rocks))):
         start = Point(3, height + 3)
         rock = Rock(rock_base, start)
 
-        print_grid(grid | rock.pieces)
-        input()
+        # print(f'----------- {index} ----------')
+        # print_grid(grid | rock.pieces)
+        # input()
 
         for j in count():
-            if gusts[index % gust_size] == '>':
-                rock.move((1, 0))
-            else:
-                rock.move((-1, 0))
+            gust = parse_gust(next(gusts))
+            if not (rock.calc_move(gust) & grid):
+                rock.move(gust)
 
-            print_grid(grid | rock.pieces)
-            input()
+            down = (0, -1)
 
-            if (pieces := rock.predict_move((0, -1))) & grid:
-                grid |= pieces
+            if rock.calc_move(down) & grid:
+                # print(rock.calc_move(down) & grid)
+                grid |= rock.pieces
                 break
             else:
-                rock.move((0, -1))
+                rock.move(down)
 
-            print_grid(grid | rock.pieces)
-            input()
+            # print_grid(grid | rock.pieces, height)
+            # input()
 
 
-            print(f'{j=}')
+            # print(f'{j=}')
 
-        print_grid(grid)
-        input()
+        # print_grid(grid)
+        # input()
 
-        height = max(p.y for p in grid)
-    return height
+        height = max(p.y for p in grid) + 1
+    # print_grid(grid, height - 20)
+    return height - 3
 
 
 def print_grid(grid, height=0):
-
-    for y in range(10  + height, height, -1):
+    for y in range(20 + height, height-1, -1):
         print('|', end='')
         for x in range(1, 8):
             print('#' if (x, y) in grid else '.', end='')
         print('|')
-    if height <= 1:
-        print(''.join('-' if (x, 0) in grid else '+' for x in range(0, 9)))
+    # if height <= 1:
+    #     print(''.join('-' if (x, 0) in grid else '+' for x in range(0, 9)))
 
 
 
@@ -126,7 +133,7 @@ def part2(data):
 
 def main():
     print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
+    # print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
