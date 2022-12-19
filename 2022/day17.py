@@ -149,6 +149,11 @@ def simulate_rock(grid, rock_base, gusts, gust_index):
             rock.move(down)
     new_height = max(p.y for p in grid) + 1
 
+    if new_height > 40:
+        grid = {space + (0, min(0,  -(new_height - 40))) for space in grid}
+
+    # print(f'after={max(p.y for p in grid) + 1}')
+
     return grid, new_height - height, gust_index
 
 
@@ -163,16 +168,25 @@ def part2(data, loops=1_000_000_000_000):
     for _index, rock_base in tqdm(zip(range(loops), cycle(rocks)), total=loops):
         grid, height_diff, gust_index = simulate_rock(grid, rock_base, gusts, gust_index)
 
-        # grid = {space for space in grid if space.y >= height-13}
+        grid = frozenset(space for space in grid if space.y > 0)
+        # print(len(grid))
+
         height += height_diff
+
     return height - 1
 
 
 def main():
-    # print(part1(fileinput.input()))
-    print(part2(fileinput.input(), 2022))
-    print(simulate_rock.cache_info())
-    # print(part2(fileinput.input()))
+    try:
+        # print(part1(fileinput.input()))
+        # print(part2(fileinput.input(), 60))
+        # print(part2(fileinput.input(), 2022))
+        # print(part2(fileinput.input(), 100_000))
+        print(part2(fileinput.input()))
+    except KeyboardInterrupt:
+        pass
+    finally:
+        print(simulate_rock.cache_info())
 
 
 if __name__ == '__main__':
