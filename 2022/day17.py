@@ -2,6 +2,7 @@ import fileinput
 from helper import *
 from tqdm import *
 
+
 class Rock:
     def __init__(self, pieces, start):
         self.pieces = pieces
@@ -127,14 +128,10 @@ def print_grid(grid, rock=set(), height=0):
 
 
 
-def part2(data):
-    gusts = cycle(next(data).strip())
-    rocks = parse_rocks()
-    grid = set(Point(x, 0) for x in range(1, 8))
 
-    height = 1
-
-    for _index, rock_base in tqdm(zip(range(1_000_000_000_000), cycle(rocks)), total=1_000_000_000_000):
+def part2(data, loops=1_000_000_000_000):
+    def simulate_rock(grid, rock_base):
+        height = max(p.y for p in grid) + 1
         start = Point(3, height + 3)
         rock = Rock(rock_base, start)
 
@@ -150,14 +147,27 @@ def part2(data):
                 break
             else:
                 rock.move(down)
+        new_height = max(p.y for p in grid) + 1
 
-        height = max(p.y for p in grid) + 1
+        return grid, new_height - height
+    gusts = cycle(next(data).strip())
+    rocks = parse_rocks()
+    grid = set(Point(x, 0) for x in range(1, 8))
+
+    height = 1
+
+    for _index, rock_base in tqdm(zip(range(loops), cycle(rocks)), total=loops):
+        grid, height_diff = simulate_rock(grid, rock_base)
+
+        # grid = {space for space in grid if space.y >= height-13}
+        height += height_diff
     return height - 1
 
 
 def main():
     # print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
+    print(part2(fileinput.input(), 2022))
+    # print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
