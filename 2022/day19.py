@@ -102,11 +102,11 @@ def part1(data):
 
     quality_levels = 0
 
-    for blueprint in blueprints[1:]:
+    for blueprint in blueprints[:]:
         geodes = simulate_blueprint(blueprint)
         print(f'blueprint {blueprint.index} produces {geodes}')
 
-        quality_levels = blueprint.index * geodes
+        quality_levels += blueprint.index * geodes
 
     return quality_levels
 
