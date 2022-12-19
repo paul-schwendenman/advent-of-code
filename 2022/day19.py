@@ -3,7 +3,7 @@ from helper import *
 from enum import auto
 
 
-class State(namedtuple('State', 'ore cla obi geo b_ore b_clay b_obi b_geo')):
+class State(namedtuple('State', 'ore clay obi geo b_ore b_clay b_obi b_geo')):
     __slots__ = ()
 
     @classmethod
@@ -23,13 +23,13 @@ class State(namedtuple('State', 'ore cla obi geo b_ore b_clay b_obi b_geo')):
         return (
             Counter({
                 RobotTypes.ORE: self.ore,
-                RobotTypes.CLAY: self.cla,
+                RobotTypes.CLAY: self.clay,
                 RobotTypes.OBSIDEAN: self.obi,
                 RobotTypes.GEODE: self.geo,
             }),
             Counter({
                 RobotTypes.ORE: self.b_ore,
-                RobotTypes.CLAY: self.b_cla,
+                RobotTypes.CLAY: self.b_clay,
                 RobotTypes.OBSIDEAN: self.b_obi,
                 RobotTypes.GEODE: self.b_geo,
             })
@@ -62,6 +62,60 @@ def parse_blueprint(line):
     assert len(values) == 7
 
     return Blueprint(*values)
+
+
+
+def build_geode_robots(blueprint: Blueprint, state: State):
+    supplies, robots = state.extract()
+    new_robots = Counter()
+
+    if supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean and supplies[RobotTypes.ORE] >= blueprint.geode_robot_ore:
+        supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
+        supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
+        robots[RobotTypes.GEODE] += 1
+
+        return State.build(supplies + robots, robots + new_robots)
+
+    return None
+
+
+def build_obsidean_robots(blueprint: Blueprint, state: State):
+    supplies, robots = state.extract()
+    new_robots = Counter()
+
+    if supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
+        supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
+        supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
+        robots[RobotTypes.OBSIDEAN] += 1
+
+        return State.build(supplies + robots, robots + new_robots)
+
+    return None
+
+def build_clay_robots(blueprint: Blueprint, state: State):
+    supplies, robots = state.extract()
+    new_robots = Counter()
+
+    if supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
+        supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
+        robots[RobotTypes.CLAY] += 1
+
+        return State.build(supplies + robots, robots + new_robots)
+
+    return None
+
+
+def build_ore_robots(blueprint: Blueprint, state: State):
+    supplies, robots = state.extract()
+    new_robots = Counter()
+
+    if supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
+        supplies[RobotTypes.ORE] -= blueprint.ore_robot_ore
+        new_robots[RobotTypes.ORE] += 1
+
+        return State.build(supplies + robots, robots + new_robots)
+
+    return None
 
 
 def build_robots(supplies, blueprint: Blueprint, robots = None):
@@ -105,18 +159,53 @@ def simulate_blueprint(blueprint):
         # RobotTypes.GEODE: 0
     })
 
+    states = deque([State.build(supplies, robots)])
+
 
     for i in range(24):
-        print(f'minute {i + 1}\n{robots=}\n{supplies=}\n')
-        new_robots, _ = build_robots(supplies, blueprint)
-        print(f'{new_robots=}\n{supplies=}\n')
+        min_potiental = 0
+        # min_potiental = max(state.geo + state.b_geo * (24 - i) for state in states)
+        print(f'{i}: {len(states)}')
 
-        supplies += robots
-        robots += new_robots
+        next_states = deque()
 
-        print(f'{robots=}\n{supplies=}\n------------\n')
-        # input()
-        pass
+
+        while states:
+            state = states.popleft()
+            supplies, robots = state.extract()
+
+            if (potiential := (state.geo + state.b_geo * (24 - i))) < min_potiental:
+                continue
+            elif potiential > min_potiental:
+                min_potiental = potiential
+                print(f'best: {potiential}')
+
+            if geode_bot := build_geode_robots(blueprint, state):
+                next_states.append(geode_bot)
+            if obsidean_bot := build_obsidean_robots(blueprint, state):
+                next_states.append(obsidean_bot)
+            if clay_bot := build_clay_robots(blueprint, state):
+                next_states.append(clay_bot)
+            if ore_bot := build_ore_robots(blueprint, state):
+                next_states.append(ore_bot)
+
+            next_states.append(State.build(supplies+robots, robots))
+
+        states = next_states
+
+    supplies, _ = sorted(states, key= lambda state: state.geo, reverse=True)[0].extract()
+
+
+        # print(f'minute {i + 1}\n{robots=}\n{supplies=}\n')
+        # new_robots, _ = build_robots(supplies, blueprint)
+        # print(f'{new_robots=}\n{supplies=}\n')
+
+        # supplies += robots
+        # robots += new_robots
+
+        # print(f'{robots=}\n{supplies=}\n------------\n')
+        # # input()
+        # pass
 
     return supplies[RobotTypes.GEODE]
 
