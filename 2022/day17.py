@@ -3,6 +3,10 @@ from helper import *
 from tqdm import tqdm
 
 
+class State(namedtuple('State', 'grid gust_index rock_index')):
+    __slots__ = ()
+
+
 class Rock:
     def __init__(self, pieces, start):
         self.pieces = pieces
@@ -39,7 +43,7 @@ def parse_gust(str):
 
 
 def parse_rocks():
-    return [
+    return tuple([
         tuple([
             Point(0, 0),
             Point(1, 0),
@@ -72,7 +76,7 @@ def parse_rocks():
             Point(1, 0),
             Point(1, 1)
         ]),
-    ]
+    ])
 
 def part1(data):
     gusts = cycle(next(data).strip())
@@ -157,19 +161,37 @@ def simulate_rock(grid, rock_base, gusts, gust_index):
     return grid, new_height - height, gust_index
 
 
+@cache
+def simulate_rocks(count, rocks, gusts, state):
+    grid, gust_index, rock_index = state
+    height = 0
+
+    for _ in range(count):
+        rock_base = rocks[rock_index]
+        grid, height_diff, gust_index = simulate_rock(grid, rock_base, gusts, gust_index)
+        height += height_diff
+        rock_index += 1
+        rock_index %= len(rocks)
+        grid = frozenset(space for space in grid if space.y > 0)
+
+    return height, State(grid, gust_index, rock_index)
+
+
 def part2(data, loops=1_000_000_000_000):
+    loop_size = 100_000
     gusts = tuple(next(data).strip())
+    print(f'# of gusts: {len(gusts)}')
     gust_index = 0
+    rock_index = 0
     rocks = parse_rocks()
     grid = frozenset(Point(x, 0) for x in range(1, 8))
 
+    state = State(grid, gust_index, rock_index)
+
     height = 1
 
-    for _index, rock_base in tqdm(zip(range(loops), cycle(rocks)), total=loops):
-        grid, height_diff, gust_index = simulate_rock(grid, rock_base, gusts, gust_index)
-
-        grid = frozenset(space for space in grid if space.y > 0)
-        # print(len(grid))
+    for _index in tqdm(range(loops // loop_size)):
+        height_diff, state = simulate_rocks(loop_size, rocks, gusts, state)
 
         height += height_diff
 
@@ -187,6 +209,7 @@ def main():
         pass
     finally:
         print(simulate_rock.cache_info())
+        print(simulate_rocks.cache_info())
 
 
 if __name__ == '__main__':
