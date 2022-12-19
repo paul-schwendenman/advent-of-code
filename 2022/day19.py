@@ -35,27 +35,31 @@ def build_robots(supplies, blueprint: Blueprint, robots = None):
     if not robots:
         robots = Counter()
     need_ore = False
-    while supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
+    # while supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
+    if supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
         if supplies[RobotTypes.ORE] >= blueprint.geode_robot_ore:
             supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
             supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
             robots[RobotTypes.GEODE] += 1
         else:
             need_ore = True
-            break
-    while supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and not need_ore:
+            # break
+    # while supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and not need_ore:
+    if supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and not need_ore:
         if supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
             supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
             supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
             robots[RobotTypes.OBSIDEAN] += 1
         else:
             need_ore = True
-            break
-    while supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and not need_ore:
+            # break
+    # while supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and not need_ore:
+    if supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and not need_ore:
         print(f'{supplies[RobotTypes.ORE]} -= {blueprint.clay_robot_ore}')
         supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
         robots[RobotTypes.CLAY] += 1
-    while supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
+    # while supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
+    if supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.ore_robot_ore
         robots[RobotTypes.ORE] += 1
 
@@ -98,7 +102,7 @@ def part1(data):
 
     quality_levels = 0
 
-    for blueprint in blueprints[:1]:
+    for blueprint in blueprints[1:]:
         geodes = simulate_blueprint(blueprint)
         print(f'blueprint {blueprint.index} produces {geodes}')
 
