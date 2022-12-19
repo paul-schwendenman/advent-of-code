@@ -1,6 +1,6 @@
 import fileinput
 from helper import *
-from tqdm import *
+from tqdm import tqdm
 
 
 class Rock:
@@ -40,38 +40,38 @@ def parse_gust(str):
 
 def parse_rocks():
     return [
-        [
+        tuple([
             Point(0, 0),
             Point(1, 0),
             Point(2, 0),
             Point(3, 0),
-        ],
-        [
+        ]),
+        tuple([
             Point(0, 1),
             Point(1, 0),
             Point(1, 1),
             Point(1, 2),
             Point(2, 1),
-        ],
-        [
+        ]),
+        tuple([
             Point(0, 0),
             Point(1, 0),
             Point(2, 0),
             Point(2, 1),
             Point(2, 2),
-        ],
-        [
+        ]),
+        tuple([
             Point(0, 0),
             Point(0, 1),
             Point(0, 2),
             Point(0, 3),
-        ],
-        [
+        ]),
+        tuple([
             Point(0, 0),
             Point(0, 1),
             Point(1, 0),
             Point(1, 1)
-        ]
+        ]),
     ]
 
 def part1(data):
@@ -127,37 +127,41 @@ def print_grid(grid, rock=set(), height=0):
     #     print(''.join('-' if (x, 0) in grid else '+' for x in range(0, 9)))
 
 
+@cache
+def simulate_rock(grid, rock_base, gusts, gust_index):
+    height = max(p.y for p in grid) + 1
+    start = Point(3, height + 3)
+    rock = Rock(rock_base, start)
+
+    for j in count():
+        gust = parse_gust(gusts[gust_index])
+        gust_index += 1
+        gust_index %= len(gusts)
+        if not (rock.calc_move(gust) & grid):
+            rock.move(gust)
+
+        down = (0, -1)
+
+        if rock.calc_move(down) & grid:
+            grid |= rock.pieces
+            break
+        else:
+            rock.move(down)
+    new_height = max(p.y for p in grid) + 1
+
+    return grid, new_height - height, gust_index
 
 
 def part2(data, loops=1_000_000_000_000):
-    def simulate_rock(grid, rock_base):
-        height = max(p.y for p in grid) + 1
-        start = Point(3, height + 3)
-        rock = Rock(rock_base, start)
-
-        for j in count():
-            gust = parse_gust(next(gusts))
-            if not (rock.calc_move(gust) & grid):
-                rock.move(gust)
-
-            down = (0, -1)
-
-            if rock.calc_move(down) & grid:
-                grid |= rock.pieces
-                break
-            else:
-                rock.move(down)
-        new_height = max(p.y for p in grid) + 1
-
-        return grid, new_height - height
-    gusts = cycle(next(data).strip())
+    gusts = tuple(next(data).strip())
+    gust_index = 0
     rocks = parse_rocks()
-    grid = set(Point(x, 0) for x in range(1, 8))
+    grid = frozenset(Point(x, 0) for x in range(1, 8))
 
     height = 1
 
     for _index, rock_base in tqdm(zip(range(loops), cycle(rocks)), total=loops):
-        grid, height_diff = simulate_rock(grid, rock_base)
+        grid, height_diff, gust_index = simulate_rock(grid, rock_base, gusts, gust_index)
 
         # grid = {space for space in grid if space.y >= height-13}
         height += height_diff
@@ -167,6 +171,7 @@ def part2(data, loops=1_000_000_000_000):
 def main():
     # print(part1(fileinput.input()))
     print(part2(fileinput.input(), 2022))
+    print(simulate_rock.cache_info())
     # print(part2(fileinput.input()))
 
 
