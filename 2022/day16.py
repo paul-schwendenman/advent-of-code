@@ -86,6 +86,9 @@ def solve2(valves, max_time):
         for state in states:
             location, elephant, open_valves, pressure_released, path = state
 
+            if not(valves.keys() - open_valves):
+                continue
+
             if (key := (location, elephant, open_valves)) in best and pressure_released <= best[key]:
                 continue
             if (key := (elephant, location, open_valves)) in best and pressure_released <= best[key]:
@@ -110,7 +113,10 @@ def solve2(valves, max_time):
                     next_states.append(State2(neighbor, elephant_neighbor, open_valves, pressure_released, path+[f'{time}: move {neighbor} {elephant_neighbor}']))
 
         # states = next_states
-        states = next_states if next_states else states
+        if next_states:
+            states = next_states
+        else:
+            break
 
     top_state = sorted(states, key = lambda state: state.pressure_released, reverse=True)
 
