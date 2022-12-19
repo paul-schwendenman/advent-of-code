@@ -2,6 +2,39 @@ import fileinput
 from helper import *
 from enum import auto
 
+
+class State(namedtuple('State', 'ore cla obi geo b_ore b_clay b_obi b_geo')):
+    __slots__ = ()
+
+    @classmethod
+    def build(cls, supplies, robots):
+        return cls(
+            supplies[RobotTypes.ORE],
+            supplies[RobotTypes.CLAY],
+            supplies[RobotTypes.OBSIDEAN],
+            supplies[RobotTypes.GEODE],
+            robots[RobotTypes.ORE],
+            robots[RobotTypes.CLAY],
+            robots[RobotTypes.OBSIDEAN],
+            robots[RobotTypes.GEODE],
+        )
+
+    def extract(self):
+        return (
+            Counter({
+                RobotTypes.ORE: self.ore,
+                RobotTypes.CLAY: self.cla,
+                RobotTypes.OBSIDEAN: self.obi,
+                RobotTypes.GEODE: self.geo,
+            }),
+            Counter({
+                RobotTypes.ORE: self.b_ore,
+                RobotTypes.CLAY: self.b_cla,
+                RobotTypes.OBSIDEAN: self.b_obi,
+                RobotTypes.GEODE: self.b_geo,
+            })
+        )
+
 class RobotTypes(Enum):
     ORE = auto()
     CLAY = auto()
@@ -34,32 +67,19 @@ def parse_blueprint(line):
 def build_robots(supplies, blueprint: Blueprint, robots = None):
     if not robots:
         robots = Counter()
-    need_ore = False
-    # while supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
-    if supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
-        if supplies[RobotTypes.ORE] >= blueprint.geode_robot_ore:
-            supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
-            supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
-            robots[RobotTypes.GEODE] += 1
-        else:
-            need_ore = True
-            # break
-    # while supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and not need_ore:
-    if supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and not need_ore:
-        if supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
-            supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
-            supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
-            robots[RobotTypes.OBSIDEAN] += 1
-        else:
-            need_ore = True
-            # break
-    # while supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and not need_ore:
-    if supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and not need_ore:
-        print(f'{supplies[RobotTypes.ORE]} -= {blueprint.clay_robot_ore}')
+
+    if supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean and supplies[RobotTypes.ORE] >= blueprint.geode_robot_ore:
+        supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
+        supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
+        robots[RobotTypes.GEODE] += 1
+    elif supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
+        supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
+        supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
+        robots[RobotTypes.OBSIDEAN] += 1
+    elif supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
         robots[RobotTypes.CLAY] += 1
-    # while supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
-    if supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
+    elif supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.ore_robot_ore
         robots[RobotTypes.ORE] += 1
 
