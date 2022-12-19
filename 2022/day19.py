@@ -72,10 +72,14 @@ def build_robots(supplies, blueprint: Blueprint, robots = None):
         supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
         supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
         robots[RobotTypes.GEODE] += 1
+    elif supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean:
+        pass
     elif supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
         supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
         supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
         robots[RobotTypes.OBSIDEAN] += 1
+    elif supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay:
+        pass
     elif supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
         robots[RobotTypes.CLAY] += 1
