@@ -155,7 +155,7 @@ def build_robots(supplies, blueprint: Blueprint, robots = None):
 
 
 
-def simulate_blueprint(blueprint):
+def simulate_blueprint(blueprint, steps=24):
     robots = Counter({
         RobotTypes.ORE: 1,
         # RobotTypes.CLAY: 0,
@@ -173,7 +173,7 @@ def simulate_blueprint(blueprint):
 
     min_potiental = 0
 
-    for i in range(24):
+    for i in range(steps):
         # min_potiental = max(state.geo + state.b_geo * (24 - i) for state in states)
         print(f'step {i+1}: {len(states)} states')
 
@@ -185,7 +185,7 @@ def simulate_blueprint(blueprint):
             supplies, robots = state.extract()
             # print(f'supplies=\t{supplies}\nrobot=\t\t{robots}\n')
 
-            if (potiential := (state.geo + state.b_geo * (24 - i))) < min_potiental:
+            if (potiential := (state.geo + state.b_geo * (steps - i))) < min_potiental:
                 continue
             elif potiential > min_potiental:
                 min_potiental = potiential
@@ -240,11 +240,21 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    blueprints = [parse_blueprint(line) for line in data]
+
+    geodes_produced = []
+
+    for blueprint in blueprints[:3]:
+        geodes = simulate_blueprint(blueprint, steps=32)
+        print(f'blueprint {blueprint.index} produces {geodes}')
+
+        geodes_produced.append(geodes)
+
+    return prod(geodes_produced)
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
