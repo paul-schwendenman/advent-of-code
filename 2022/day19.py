@@ -44,6 +44,9 @@ class RobotTypes(Enum):
     def __str__(self):
         return f'{self.name}'
 
+    def __repr__(self) -> str:
+        return f'{self.name}'
+
 
 @dataclass
 class Blueprint():
@@ -72,7 +75,7 @@ def build_geode_robots(blueprint: Blueprint, state: State):
     if supplies[RobotTypes.OBSIDEAN] >= blueprint.geode_robot_obsidean and supplies[RobotTypes.ORE] >= blueprint.geode_robot_ore:
         supplies[RobotTypes.OBSIDEAN] -= blueprint.geode_robot_obsidean
         supplies[RobotTypes.ORE] -= blueprint.geode_robot_ore
-        robots[RobotTypes.GEODE] += 1
+        new_robots[RobotTypes.GEODE] += 1
 
         return State.build(supplies + robots, robots + new_robots)
 
@@ -86,7 +89,7 @@ def build_obsidean_robots(blueprint: Blueprint, state: State):
     if supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay and supplies[RobotTypes.ORE] >= blueprint.obsidian_robot_ore:
         supplies[RobotTypes.CLAY] -= blueprint.obsidian_robot_clay
         supplies[RobotTypes.ORE] -= blueprint.obsidian_robot_ore
-        robots[RobotTypes.OBSIDEAN] += 1
+        new_robots[RobotTypes.OBSIDEAN] += 1
 
         return State.build(supplies + robots, robots + new_robots)
 
@@ -96,9 +99,14 @@ def build_clay_robots(blueprint: Blueprint, state: State):
     supplies, robots = state.extract()
     new_robots = Counter()
 
-    if supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
+    if robots[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay:
+        pass
+
+    elif supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
-        robots[RobotTypes.CLAY] += 1
+        new_robots[RobotTypes.CLAY] += 1
+
+        # print(f'built clay: {supplies} {robots} {new_robots}')
 
         return State.build(supplies + robots, robots + new_robots)
 
@@ -109,7 +117,9 @@ def build_ore_robots(blueprint: Blueprint, state: State):
     supplies, robots = state.extract()
     new_robots = Counter()
 
-    if supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
+    if robots[RobotTypes.ORE] >= max(blueprint.geode_robot_ore, blueprint.obsidian_robot_ore, blueprint.clay_robot_ore):
+        pass
+    elif supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
         supplies[RobotTypes.ORE] -= blueprint.ore_robot_ore
         new_robots[RobotTypes.ORE] += 1
 
@@ -134,7 +144,7 @@ def build_robots(supplies, blueprint: Blueprint, robots = None):
         robots[RobotTypes.OBSIDEAN] += 1
     elif supplies[RobotTypes.CLAY] >= blueprint.obsidian_robot_clay:
         pass
-    elif supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore:
+    elif supplies[RobotTypes.ORE] >= blueprint.clay_robot_ore and robots[RobotTypes.CLAY] < blueprint.obsidian_robot_clay:
         supplies[RobotTypes.ORE] -= blueprint.clay_robot_ore
         robots[RobotTypes.CLAY] += 1
     elif supplies[RobotTypes.ORE] >= blueprint.ore_robot_ore:
@@ -161,11 +171,11 @@ def simulate_blueprint(blueprint):
 
     states = deque([State.build(supplies, robots)])
 
+    min_potiental = 0
 
     for i in range(24):
-        min_potiental = 0
         # min_potiental = max(state.geo + state.b_geo * (24 - i) for state in states)
-        print(f'{i}: {len(states)}')
+        print(f'step {i+1}: {len(states)} states')
 
         next_states = deque()
 
@@ -173,6 +183,7 @@ def simulate_blueprint(blueprint):
         while states:
             state = states.popleft()
             supplies, robots = state.extract()
+            # print(f'supplies=\t{supplies}\nrobot=\t\t{robots}\n')
 
             if (potiential := (state.geo + state.b_geo * (24 - i))) < min_potiental:
                 continue
@@ -182,6 +193,8 @@ def simulate_blueprint(blueprint):
 
             if geode_bot := build_geode_robots(blueprint, state):
                 next_states.append(geode_bot)
+                continue
+
             if obsidean_bot := build_obsidean_robots(blueprint, state):
                 next_states.append(obsidean_bot)
             if clay_bot := build_clay_robots(blueprint, state):
