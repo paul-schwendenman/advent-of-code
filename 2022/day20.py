@@ -1,21 +1,23 @@
 import fileinput
 from helper import *
-from copy import copy
 
-# class Wrapper(namedtuple())
+# @dataclass
+class Wrapper:
+    def __init__(self, number):
+        self.number = number
+    # number: int
 
 def parse_all_ints(s):
     return list(map(int, s.split()))
 
 
 def part1(data):
-    # sequence = tuple(extract_ints(line)[0] for line in data)
-    sequence = parse_all_ints(open('day20.in').read())
-    working = deque(sequence)
+    sequence = tuple(extract_ints(line)[0] for line in data)
+    working = deque(map(Wrapper, sequence))
 
     # print(sequence)
 
-    for item in sequence:
+    for item in tuple(working):
         item_index = working.index(item)
         # start = working[0]
         # print(f'{item=} {item_index=}')
@@ -28,7 +30,7 @@ def part1(data):
         piece = working.popleft()
 
         # print(f'4. {working=} rotating {-piece}')
-        working.rotate(-item)
+        working.rotate(-item.number)
 
         # print(f'5. {working=} adding {piece}')
         working.appendleft(item)
@@ -44,10 +46,11 @@ def part1(data):
         # input()
 
     # print(f'F. {working=}')
-    offset = working.index(0)
+    answer = [item.number for item in working]
+    offset = answer.index(0)
     # print(f'{offset=}')
 
-    coords = [working[(offset + n) % len(sequence)] for n in (1000, 2000, 3000)]
+    coords = [answer[(offset + n) % len(answer)] for n in (1000, 2000, 3000)]
 
     print(f'{coords=}')
 
