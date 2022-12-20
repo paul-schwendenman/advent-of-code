@@ -8,8 +8,10 @@ from enum import Enum
 from dataclasses import dataclass, field
 
 
-def extract_ints(line: str) -> Sequence[int]:
+def extract_ints(line):
     return list(map(int, re.findall(r'-?[0-9]+', line)))
+# def extract_ints(line: str) -> Sequence[int]:
+#     return list(map(int, re.findall(r'-?[0-9]+', line)))
 
 
 class Point(namedtuple('Point', 'x y')):

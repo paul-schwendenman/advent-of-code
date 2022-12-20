@@ -197,6 +197,8 @@ def simulate_blueprint(blueprint):
 
             if obsidean_bot := build_obsidean_robots(blueprint, state):
                 next_states.append(obsidean_bot)
+                continue
+
             if clay_bot := build_clay_robots(blueprint, state):
                 next_states.append(clay_bot)
             if ore_bot := build_ore_robots(blueprint, state):
