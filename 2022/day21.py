@@ -40,6 +40,7 @@ def part1(data):
 def part2(data):
     hash = parse_input(data)
 
+    @lru_cache
     def solve(start):
         value = hash[start]
         if start == 'humn':
@@ -48,6 +49,16 @@ def part2(data):
             return value
         elif start == 'root':
             return f'({solve(value[0])} = {solve(value[2])})'
+        if isinstance(solve(value[0]), int) and isinstance(solve(value[2]), int):
+            if value[1] == '+':
+                return solve(value[0]) + solve(value[2])
+            elif value[1] == '-':
+                return solve(value[0]) - solve(value[2])
+            elif value[1] == '*':
+                return solve(value[0]) * solve(value[2])
+            elif value[1] == '/':
+                return int(solve(value[0]) / solve(value[2]))
+
         elif value[1] == '+':
             return f'({solve(value[0])} + {solve(value[2])})'
         elif value[1] == '-':
