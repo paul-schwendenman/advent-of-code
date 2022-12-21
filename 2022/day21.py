@@ -62,7 +62,11 @@ def part2(data):
     left = hash['root'][0]
     right = hash['root'][2]
 
-    target = solve(right)
+    try:
+        target = solve(right)
+    except TypeError:
+        target = solve(left)
+        left, right = right, left
 
     lower_bound = 0
     upper_bound = int(1e20)
