@@ -38,6 +38,28 @@ def part1(data):
 
 
 def part2(data):
+    hash = parse_input(data)
+
+    def solve(start):
+        value = hash[start]
+        if start == 'humn':
+            return 'X'
+        elif isinstance(value, int):
+            return value
+        elif start == 'root':
+            return f'({solve(value[0])} = {solve(value[2])})'
+        elif value[1] == '+':
+            return f'({solve(value[0])} + {solve(value[2])})'
+        elif value[1] == '-':
+            return f'({solve(value[0])} - {solve(value[2])})'
+        elif value[1] == '*':
+            return f'({solve(value[0])} * {solve(value[2])})'
+        elif value[1] == '/':
+            return f'({solve(value[0])} / {solve(value[2])})'
+        else:
+            raise ValueError(f"{start} {hash[start]}")
+
+    return solve('root')
     pass
 
 
