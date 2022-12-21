@@ -40,37 +40,43 @@ def part1(data):
 def part2(data):
     hash = parse_input(data)
 
-    @lru_cache
-    def solve(start):
+    def solve(start, human=None):
         value = hash[start]
         if start == 'humn':
-            return 'X'
+            return human
         elif isinstance(value, int):
             return value
         elif start == 'root':
-            return f'({solve(value[0])} = {solve(value[2])})'
-        if isinstance(solve(value[0]), int) and isinstance(solve(value[2]), int):
-            if value[1] == '+':
-                return solve(value[0]) + solve(value[2])
-            elif value[1] == '-':
-                return solve(value[0]) - solve(value[2])
-            elif value[1] == '*':
-                return solve(value[0]) * solve(value[2])
-            elif value[1] == '/':
-                return int(solve(value[0]) / solve(value[2]))
-
-        elif value[1] == '+':
-            return f'({solve(value[0])} + {solve(value[2])})'
+            raise ValueError('Found root')
+        if value[1] == '+':
+            return solve(value[0], human) + solve(value[2], human)
         elif value[1] == '-':
-            return f'({solve(value[0])} - {solve(value[2])})'
+            return solve(value[0], human) - solve(value[2], human)
         elif value[1] == '*':
-            return f'({solve(value[0])} * {solve(value[2])})'
+            return solve(value[0], human) * solve(value[2], human)
         elif value[1] == '/':
-            return f'({solve(value[0])} / {solve(value[2])})'
+            return int(solve(value[0], human) / solve(value[2], human))
         else:
             raise ValueError(f"{start} {hash[start]}")
 
-    return solve('root')
+    left = hash['root'][0]
+    right = hash['root'][2]
+
+    target = solve(right)
+
+    lower_bound = 0
+    upper_bound = int(1e20)
+
+    while lower_bound < upper_bound:
+        middle = (lower_bound + upper_bound) // 2
+        diff = solve(left, middle) - target
+        if diff == 0:
+            return middle
+        elif diff > 0:
+            lower_bound = middle
+        else:
+            upper_bound = middle
+
     pass
 
 
