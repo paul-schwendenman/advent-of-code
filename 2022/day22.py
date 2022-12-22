@@ -19,6 +19,21 @@ def parse_input(data):
     return instructions, grid
 
 
+def build_cube(grid, cube_size):
+    cube = defaultdict(dict)
+
+    for y in range(1, cube_size+1):
+        for x in range(1, cube_size+1):
+            cube[1][Point(x, y)] = grid[(x + cube_size * 2, y)]
+            cube[2][Point(x, y)] = grid[(x, y + cube_size)]
+            cube[3][Point(x, y)] = grid[(x + cube_size, y + cube_size)]
+            cube[4][Point(x, y)] = grid[(x + cube_size * 2, y + cube_size)]
+            cube[5][Point(x, y)] = grid[(x + cube_size * 2, y + cube_size * 2)]
+            cube[6][Point(x, y)] = grid[(x + cube_size * 3, y + cube_size * 2)]
+
+    return cube
+
+
 def find_row(grid, location, reverse=False):
     print(sorted((point for point in grid if point.y == location.y), reverse=reverse))
     return cycle(sorted((point for point in grid if point.y == location.y), reverse=reverse))
@@ -49,6 +64,19 @@ def rotate(facing, direction):
             return 'D'
     else:
         raise ValueError(direction)
+
+
+def find_next(grid, location, facing, cube_size):
+    while True:
+        move = {'R': (0, 1), 'D': (1, 0), 'L': (0, -1), 'U': (-1, 0)}[facing]
+
+        if location + move in grid:
+            yield location + move
+
+
+
+
+
 
 def score(location, facing):
     facing_score = {'R': 0, 'D': 1, 'L': 2, 'U': 3}
@@ -102,15 +130,63 @@ def part1(data):
 
     return score(location, facing)
 
-    pass
-
 
 def part2(data):
-    pass
+    instructions, grid = parse_input(data)
+
+    print(instructions)
+
+    location = min(point for point in grid.keys() if point.y == 1)
+
+    cube_size = location.x
+
+    build_cube(grid, location.x // 2)
+
+    print(f'start: {location}')
+    facing = 'R'
+
+    for instruction in instructions:
+        print(f'{location=}')
+        print(f'{instruction=}')
+        try:
+            distance = int(instruction)
+            print(f'moving {distance}')
+        except:
+            distance = None
+
+        if distance:
+            if facing in ('U', 'D'):
+                pathway = find_column(grid, location, reverse=facing=='U')
+
+            else:
+                pathway = find_row(grid, location, reverse=facing=='L')
+            while (space := next(pathway)) != location:
+                print(f'{space} {location}')
+                pass
+
+            traveled = 0
+            while traveled < distance:
+                space = next(pathway)
+                print(f'{space=} {grid[space]=}')
+
+                if grid[space] == '#':
+                    break
+                elif grid[space] == '.':
+                    location = space
+                    traveled += 1
+        else:
+            if instruction == 'L':
+                facing = rotate(facing, instruction)
+            elif instruction == 'R':
+                facing = rotate(facing, instruction)
+
+    print(f'final location = {location}')
+
+    return score(location, facing)
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
