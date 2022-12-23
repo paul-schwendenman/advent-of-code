@@ -28,11 +28,11 @@ class Elf(namedtuple('Elf', 'x y')):
 
 
 def parse_input(data):
-    grid = defaultdict(bool)
+    grid = set()
     for y, line in enumerate(data):
         for x, value in enumerate(line):
             if value == '#':
-                grid[Elf(x, y)] = True
+                grid.add(Elf(x, y))
 
     return grid
 
@@ -64,13 +64,13 @@ def part1(data):
 
     for _ in tqdm(range(10)):
         next_locations = defaultdict(list)
-        new_grid = {}
+        new_grid = set()
 
-        for elf in grid.keys():
-            has_neighbors_n = (set(elf.neighbors_n()) & set(grid.keys()))
-            has_neighbors_s = (set(elf.neighbors_s()) & set(grid.keys()))
-            has_neighbors_w = (set(elf.neighbors_w()) & set(grid.keys()))
-            has_neighbors_e = (set(elf.neighbors_e()) & set(grid.keys()))
+        for elf in grid:
+            has_neighbors_n = (set(elf.neighbors_n()) & grid)
+            has_neighbors_s = (set(elf.neighbors_s()) & grid)
+            has_neighbors_w = (set(elf.neighbors_w()) & grid)
+            has_neighbors_e = (set(elf.neighbors_e()) & grid)
 
             # print(f'{elf=} {has_neighbors_n=} {has_neighbors_s=} {has_neighbors_w=} {has_neighbors_e=}')
 
@@ -103,11 +103,11 @@ def part1(data):
 
         for location, elves in next_locations.items():
             if len(elves) == 1:
-                new_grid[location] = True
+                new_grid.add(location)
             else:
                 # print(f'multiple elves: {location} {elves}')
                 for elf in elves:
-                    new_grid[elf] = True
+                    new_grid.add(elf)
 
         directions.rotate(-1)
         # print(f'{len(new_grid)=}') #, new_grid)
@@ -144,13 +144,13 @@ def part2(data):
 
     for i in tqdm(count()):
         next_locations = defaultdict(list)
-        new_grid = {}
+        new_grid = set()
 
-        for elf in grid.keys():
-            has_neighbors_n = (set(elf.neighbors_n()) & set(grid.keys()))
-            has_neighbors_s = (set(elf.neighbors_s()) & set(grid.keys()))
-            has_neighbors_w = (set(elf.neighbors_w()) & set(grid.keys()))
-            has_neighbors_e = (set(elf.neighbors_e()) & set(grid.keys()))
+        for elf in grid:
+            has_neighbors_n = (set(elf.neighbors_n()) & grid)
+            has_neighbors_s = (set(elf.neighbors_s()) & grid)
+            has_neighbors_w = (set(elf.neighbors_w()) & grid)
+            has_neighbors_e = (set(elf.neighbors_e()) & grid)
 
             # print(f'{elf=} {has_neighbors_n=} {has_neighbors_s=} {has_neighbors_w=} {has_neighbors_e=}')
 
@@ -183,15 +183,15 @@ def part2(data):
 
         for location, elves in next_locations.items():
             if len(elves) == 1:
-                new_grid[location] = True
+                new_grid.add(location)
             else:
                 # print(f'multiple elves: {location} {elves}')
                 for elf in elves:
-                    new_grid[elf] = True
+                    new_grid.add(elf)
 
         directions.rotate(-1)
         # print(f'{len(new_grid)=}') #, new_grid)
-        if set(grid.keys()) == set(new_grid.keys()):
+        if grid == new_grid:
             break
             # return i + 1
         grid = new_grid
@@ -216,7 +216,7 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
