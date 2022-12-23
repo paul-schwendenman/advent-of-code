@@ -56,13 +56,9 @@ def part1(data):
     grid = (parse_input(data))
     total_elves = len(grid)
 
-    print(f'{total_elves}')
-
-    print_grid(grid)
-
     directions = deque(['N', 'S', 'W', 'E'])
 
-    for _ in tqdm(range(10)):
+    for _ in range(10):
         next_locations = defaultdict(list)
         new_grid = set()
 
@@ -117,13 +113,9 @@ def part2(data):
     grid = (parse_input(data))
     total_elves = len(grid)
 
-    print(f'{total_elves}')
-
-    print_grid(grid)
-
     directions = deque(['N', 'S', 'W', 'E'])
 
-    for i in tqdm(count()):
+    for i in count():
         next_locations = defaultdict(list)
         new_grid = set()
 
@@ -168,7 +160,6 @@ def part2(data):
 
         assert len(new_grid) == total_elves
 
-    print()
     return i + 1
 
 
