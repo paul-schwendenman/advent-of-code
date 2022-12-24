@@ -59,7 +59,7 @@ def move_blizzards(cachable, min_x, max_x, min_y, max_y):
 
 @cache
 def in_blizzard(all_blizzards, location):
-    return any(location in blizzards for blizzards in all_blizzards)
+    return any(location in blizzards[1] for blizzards in all_blizzards)
 
 
 def cache_blizzards(blizzards):
