@@ -121,7 +121,7 @@ def solve(grid, blizzards, start, goal, min_x, max_x, min_y, max_y):
 
         if max_t < state.time:
             max_t = state.time
-            print(f'{max_t=}, # of states: {len(states)}, first: {states[0].time}, last: {states[-1].score} {set((state.score) for state in states)}')
+            # print(f'{max_t=}, # of states: {len(states)}, first: {states[0].time}, last: {states[-1].score} {set((state.score) for state in states)}')
 
         if goal == state.location:
             best_t = state.time
@@ -135,7 +135,6 @@ def solve(grid, blizzards, start, goal, min_x, max_x, min_y, max_y):
         for next_location in moves(state.location):
             if next_location in grid and grid[next_location] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_location):
                 heappush(states, State.build(state.path + (next_location,), new_blizzards, goal, state.time + 1))
-
 
     return best_t, blizzards
 
@@ -156,12 +155,28 @@ def part1(data):
 
 
 def part2(data):
+    grid, blizzards = parse_input(data)
+
+    max_x = max((point.x for point in grid.keys()))
+    min_x = min((point.x for point in grid.keys()))
+    max_y = max((point.y for point in grid.keys()))
+    min_y = min((point.y for point in grid.keys()))
+    # print(f'{min_x}-{max_x} {min_y}-{max_y}')
+
+    end = Point(max_x - 1, max_y)
+    start = Point(min_x + 1, min_y)
+
+    leg_1 = solve(grid, blizzards, start, end, min_x, max_x, min_y, max_y)
+    leg_2 = solve(grid, leg_1[1], end, start, min_x, max_x, min_y, max_y)
+    leg_3 = solve(grid, leg_2[1], start, end, min_x, max_x, min_y, max_y)
     pass
+    print(leg_1[0], leg_2[0], leg_3[0])
+    return sum([leg_1[0], leg_2[0], leg_3[0]])
 
 def main():
     try:
         print(part1(fileinput.input()))
-        # print(part2(fileinput.input()))
+        print(part2(fileinput.input()))
     finally:
         print(f'move_blizzards: {move_blizzards.cache_info()}')
         print(f'in_blizzard: {in_blizzard.cache_info()}')
