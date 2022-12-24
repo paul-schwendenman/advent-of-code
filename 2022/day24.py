@@ -73,30 +73,30 @@ def replay(grid, initial_blizzards, path):
     max_y = max((point.y for point in grid.keys()))
     min_y = min((point.y for point in grid.keys()))
 
-    for location in path:
-        print(f'---- {location} ----')
+    for index, location in enumerate(path):
+        print(f'---- {index} {location} ----')
         for y in range(min_y, max_y + 1):
             for x in range(min_x, max_x + 1):
                 if (x, y) in grid and grid[(x, y)] == '#':
                     if (x,y) == location:
                         raise ValueError
                     print('#', end='')
+                elif len(matching := [dir for dir, spots in blizzard.items() if (x, y) in spots]) > 0:
+                    if Point(x, y) == location:
+                        print('X', end='')
+                    if len(matching) == 1:
+                        print(f'{matching[0]}', end='')
+                    else:
+                        print(f'{len(matching)}', end='')
                 elif Point(x, y) == location:
                     print('E', end='')
-                elif (x,y) in blizzard['>']:
-                    print('>', end='')
-                elif (x,y) in blizzard['<']:
-                    print('<', end='')
-                elif (x,y) in blizzard['^']:
-                    print('^', end='')
-                elif (x,y) in blizzard['v']:
-                    print('v', end='')
                 else:
                     print('.', end='')
             print()
         cachable_blizzards = cache_blizzards(blizzard)
         blizzard = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
         print()
+
 
 def part1(data):
     grid, blizzards = parse_input(data)
@@ -109,8 +109,6 @@ def part1(data):
     # print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     goal = Point(max_x - 1, max_y)
-
-    replay(grid, blizzards, [location, (2,2)])
 
     states = [State.build((location,), blizzards, goal, 0)]
     heapify(states)
@@ -127,10 +125,10 @@ def part1(data):
         if best_t < state.time:
             continue
 
-        if (state.location, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
-            continue
+        # if (state.location, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
+        #     continue
 
-        best[(state.location, combined)] = state.time
+        # best[(state.location, combined)] = state.time
 
         if max_t < state.time:
             max_t = state.time
@@ -138,6 +136,7 @@ def part1(data):
 
         if goal == state.location:
             best_t = state.time
+            replay(grid, blizzards, state.path)
             print(state.path)
             print(f'found! {best_t}')
             break
