@@ -1,6 +1,14 @@
 import fileinput
 from helper import *
+from heapq import heapify, heappop, heappush
 
+
+class State(namedtuple('State', 'score time location blizzards')):
+    __slots__ = ()
+
+    @classmethod
+    def build(cls, location, blizzards, goal, time):
+        return cls(calc_manhatten_distance(goal, location) + time, time, location, blizzards)
 
 def moves(point):
     for diff in [(0, 0), (1, 0), (-1, 0), (0, -1), (0, 1)]:
@@ -66,33 +74,64 @@ def part1(data):
 
     goal = Point(max_x - 1, max_y)
 
-    states = deque([location])
+    states = [State.build(location, blizzards, goal, 0)]
+    heapify(states)
 
+    max_t = 0
+    best_t = inf
     best = {}
 
-    for i in count():
-        print(f'------- step {i} states {len(states)} ----------')
-        next_states = deque()
+    while states:
+        state = heappop(states)
+        cachable_blizzards = cache_blizzards(state.blizzards)
+        new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
-        while states:
-            state = states.popleft()
-            cachable_blizzards = cache_blizzards(blizzards)
-            new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+        if best_t < state.time:
+            continue
 
-            if (state, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
-                continue
+        if (state.location, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
+            continue
 
-            best[(state, combined)] = i
+        best[(state.location, combined)] = state.time
 
-            if state == goal:
-                return i
+        if max_t < state.time:
+            max_t = state.time
+            print(max_t, len(states))
 
-            for next_state in moves(state):
-                if next_state in grid and grid[next_state] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_state):
-                    next_states.append(next_state)
-                pass
-        states = next_states
-        blizzards = new_blizzards
+        if goal == state.location:
+            best_t = state.time
+            print(f'found! {best_t}')
+            continue
+
+        for next_location in moves(state.location):
+            if next_location in grid and grid[next_location] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_location):
+                heappush(states, State.build(next_location, new_blizzards, goal, state.time + 1))
+
+
+    return best_t
+    # for i in count():
+    #     print(f'------- step {i} states {len(states)} ----------')
+    #     next_states = deque()
+
+    #     while states:
+    #         state = states.popleft()
+    #         cachable_blizzards = cache_blizzards(blizzards)
+    #         new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+
+    #         if (state, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
+    #             continue
+
+    #         best[(state, combined)] = i
+
+    #         if state == goal:
+    #             return i
+
+    #         for next_state in moves(state):
+    #             if next_state in grid and grid[next_state] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_state):
+    #                 next_states.append(next_state)
+    #             pass
+    #     states = next_states
+    #     blizzards = new_blizzards
 
 
 def part2(data):
@@ -103,8 +142,8 @@ def main():
     try:
         print(part1(fileinput.input()))
     finally:
-        print(move_blizzards.cache_info())
-        print(f'{in_blizzard.cache_info()=}')
+        print(f'move_blizzards: {move_blizzards.cache_info()}')
+        print(f'in_blizzard: {in_blizzard.cache_info()}')
     print(part2(fileinput.input()))
 
 
