@@ -59,12 +59,20 @@ def part1(data):
 
     states = deque([location])
 
+    best = {}
+
     for i in count():
+        print(f'------- step {i} states {len(states)} ----------')
         next_states = deque()
 
         while states:
             state = states.popleft()
             new_blizzards = move_blizzards(blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+
+            if (state, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
+                continue
+
+            best[(state, combined)] = i
 
             if state == goal:
                 return i
@@ -75,11 +83,6 @@ def part1(data):
                 pass
         states = next_states
         blizzards = new_blizzards
-
-
-
-
-
 
 
 def part2(data):
