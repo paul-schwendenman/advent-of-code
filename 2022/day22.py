@@ -7,7 +7,7 @@ def parse_input(data):
 
     grid = {}
 
-    print(f'{lines[-1].strip()}')
+    # print(f'{lines[-1].strip()}')
 
     instructions = re.findall(r'([0-9]+|L|R)', lines[-1].rstrip())
 
@@ -32,6 +32,21 @@ def build_cube(grid, cube_size):
             cube[6][Point(x, y)] = grid[(x, y + cube_size * 3)]
 
     return cube
+
+
+def calc_coords(cube_index, location):
+    if cube_index == 1:
+        return location + (50, 0)
+    if cube_index == 2:
+        return location + (100, 0)
+    if cube_index == 3:
+        return location + (50, 50)
+    if cube_index == 4:
+        return location + (50, 100)
+    if cube_index == 5:
+        return location + (0, 100)
+    if cube_index == 6:
+        return location + (0, 150)
 
 
 def find_row(grid, location, reverse=False):
@@ -66,6 +81,9 @@ def rotate(facing, direction):
         raise ValueError(direction)
 
 
+def find_next_location(facing):
+    pass
+
 def next_face(face, facing):
     '''
      12
@@ -74,18 +92,30 @@ def next_face(face, facing):
     6
     '''
     return {
-        (1, 'U'): (6, 'R'),
-        (1, 'R'): (2, 'R'),
-        (1, 'L'): (6, 'R'),
-        (1, 'D'): (3, 'D'),
-        (2, 'U'): (6, 'R'),
-        (2, 'R'): (2, 'R'),
-        (2, 'L'): (6, 'R'),
-        (2, 'D'): (3, 'D'),
-        (3, 'U'): (6, 'R'),
-        (3, 'R'): (2, 'R'),
-        (3, 'L'): (6, 'R'),
-        (3, 'D'): (3, 'D'),
+        (1, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (1, 'R'): (2, 'R', [[1, 0], [0, 1]]),
+        (1, 'L'): (5, 'R', [[0, 0], [0, 0]]),
+        (1, 'D'): (3, 'D', [[1, 0], [0, 1]]),
+        (2, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (2, 'R'): (2, 'R', [[0, 0], [0, 0]]),
+        (2, 'L'): (6, 'R', [[0, 0], [0, 0]]),
+        (2, 'D'): (3, 'D', [[0, 0], [0, 0]]),
+        (3, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (3, 'R'): (2, 'R', [[0, 0], [0, 0]]),
+        (3, 'L'): (6, 'R', [[0, 0], [0, 0]]),
+        (3, 'D'): (3, 'D', [[0, 0], [0, 0]]),
+        (4, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (4, 'R'): (2, 'R', [[0, 0], [0, 0]]),
+        (4, 'L'): (6, 'R', [[0, 0], [0, 0]]),
+        (4, 'D'): (3, 'D', [[0, 0], [0, 0]]),
+        (5, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (5, 'R'): (2, 'R', [[0, 0], [0, 0]]),
+        (5, 'L'): (6, 'R', [[0, 0], [0, 0]]),
+        (5, 'D'): (3, 'D', [[0, 0], [0, 0]]),
+        (6, 'U'): (6, 'R', [[0, 0], [0, 0]]),
+        (6, 'R'): (2, 'R', [[0, 0], [0, 0]]),
+        (6, 'L'): (6, 'R', [[0, 0], [0, 0]]),
+        (6, 'D'): (3, 'D', [[0, 0], [0, 0]]),
 
 
     }
@@ -98,17 +128,13 @@ def find_next(cube, face, location, facing):
         if location + move in cube[face]:
             yield location + move, face, facing
         elif face == 1:
-
-
-
-
-
-
+            pass
 
 
 def score(location, facing):
     facing_score = {'R': 0, 'D': 1, 'L': 2, 'U': 3}
     return location.y * 1000 + location.x * 4 + facing_score[facing]
+
 
 def part1(data):
     instructions, grid = parse_input(data)
@@ -159,14 +185,80 @@ def part1(data):
     return score(location, facing)
 
 
+def calc_change(facing):
+    if facing == 'U':
+        return (0, -1)
+    elif facing == 'D':
+        return (0, 1)
+    elif facing == 'L':
+        return (-1, 0)
+    elif facing == 'R':
+        return (1, 0)
+
+def transform(cube, location, next_spot, facing):
+    if cube == 1 and facing == 'U':
+        return Point(0, location.x), 'R', 6
+    elif cube == 1 and facing == 'D':
+        return Point(location.x, 0), 'D', 3
+    elif cube == 1 and facing == 'R':
+        return Point(0, location.y), 'R', 2
+    elif cube == 1 and facing == 'L':
+        return Point(0, 49 - location.y), 'R', 5
+    elif cube == 2 and facing == 'U':
+        return Point(location.x, 49), 'U', 6
+    elif cube == 2 and facing == 'L':
+        return Point(49, location.y), 'L', 1
+    elif cube == 2 and facing == 'D':
+        return Point(49, location.x), 'L', 3
+    elif cube == 2 and facing == 'R':
+        return Point(49, 49-location.y), 'L', 4
+    elif cube == 3 and facing == 'U':
+        return Point(location.x, 49), 'U', 1
+    elif cube == 3 and facing == 'L':
+        return Point(location.y, 0), 'D', 5
+    elif cube == 3 and facing == 'D':
+        return Point(location.x, 0), 'D', 4
+    elif cube == 3 and facing == 'R':
+        return Point(location.y, 0), 'U', 2
+    elif cube == 4 and facing == 'U':
+        return Point(location.x, 49), 'U', 3
+    elif cube == 4 and facing == 'L':
+        return Point(49, location.y), 'L', 5
+    elif cube == 4 and facing == 'D':
+        return Point(49, location.x), 'L', 6
+    elif cube == 4 and facing == 'R':
+        return Point(49, 49 - location.y), 'L', 2
+    elif cube == 5 and facing == 'R':
+        return Point(0, location.y), 'R', 4
+    elif cube == 5 and facing == 'L':
+        return Point(0, 49 - location.y), 'R', 1
+    elif cube == 5 and facing == 'D':
+        return Point(location.x, 0), 'D', 6
+    elif cube == 5 and facing == 'U':
+        return Point(0, location.x), 'R', 3
+    elif cube == 6 and facing == 'U':
+        return Point(location.x, 49), 'U', 5
+    elif cube == 6 and facing == 'D':
+        return Point(location.x, 0), 'D', 2
+    elif cube == 6 and facing == 'L':
+        return Point(location.y, 0), 'D', 1
+    elif cube == 6 and facing == 'R':
+        return Point(location.y, 49), 'U', 4
+    raise ValueError(f'{cube=} {location=} {next_spot=} {facing=}')
+
+
 def part2(data):
     instructions, grid = parse_input(data)
 
     # print(instructions)
 
-    location = min(point for point in grid.keys() if point.y == 1)
+    # location = min(point for point in grid.keys() if point.y == 1)
+    location = Point(0, 0) #min(point for point in grid.keys() if point.y == 1)
+    facing = 'R'
+    cube_index = 1
+    cube_size = 50
+    print(f'start: {location}')
 
-    cube_size = location.x
 
     print(f'{cube_size=}')
 
@@ -179,45 +271,48 @@ def part2(data):
 
     print([len(cube[i]) for i in range(1, 7)])
 
-    print(f'start: {location}')
     facing = 'R'
 
-    # for instruction in instructions:
-    #     print(f'{location=}')
-    #     print(f'{instruction=}')
-    #     try:
-    #         distance = int(instruction)
-    #         print(f'moving {distance}')
-    #     except:
-    #         distance = None
+    for index, instruction in enumerate(instructions, start=1):
+        # print(f'{location=}')
+        # print(f'{instruction=}')
+        try:
+            distance = int(instruction)
+            # print(f'moving {distance}')
+        except:
+            distance = None
 
-    #     if distance:
-    #         if facing in ('U', 'D'):
-    #             pathway = find_column(grid, location, reverse=facing=='U')
+        if distance:
 
-    #         else:
-    #             pathway = find_row(grid, location, reverse=facing=='L')
-    #         while (space := next(pathway)) != location:
-    #             print(f'{space} {location}')
-    #             pass
+            traveled = 0
+            while traveled < distance:
+                next_spot = location + calc_change(facing)
 
-    #         traveled = 0
-    #         while traveled < distance:
-    #             space = next(pathway)
-    #             print(f'{space=} {grid[space]=}')
+                if next_spot not in cube[cube_index]:
+                    print(f'{cube_index} {facing}')
+                    next_spot, facing, cube_index = transform(cube_index, location, next_spot, facing)
+                    print(f'{cube_index} {facing}')
+                    pass
+                elif cube[cube_index][next_spot] == '#':
+                    # print('hit wall')
+                    break
 
-    #             if grid[space] == '#':
-    #                 break
-    #             elif grid[space] == '.':
-    #                 location = space
-    #                 traveled += 1
-    #     else:
-    #         if instruction == 'L':
-    #             facing = rotate(facing, instruction)
-    #         elif instruction == 'R':
-    #             facing = rotate(facing, instruction)
+                location = next_spot
+                traveled += 1
 
-    # print(f'final location = {location}')
+
+
+        else:
+            if instruction == 'L':
+                facing = rotate(facing, instruction)
+            elif instruction == 'R':
+                facing = rotate(facing, instruction)
+
+        print(f'{index:3d}. location={tuple(calc_coords(cube_index, location))} move={instruction}\t\tlocation={location} cube={cube_index}')
+        if index % 20 == 0 and index >= 340:
+            input()
+
+    print(f'final location = {location}')
 
     return score(location, facing)
 
