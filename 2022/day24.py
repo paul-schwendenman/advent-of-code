@@ -20,11 +20,13 @@ def parse_input(data):
     return grid, blizzards
 
 
-def move_blizzards(all_blizzards, min_x, max_x, min_y, max_y):
+@cache
+def move_blizzards(cachable, min_x, max_x, min_y, max_y):
     offset = {'<': (-1, 0), '>': (1, 0), '^': (0, -1), 'v': (0, 1)}
+
     new_blizzards = defaultdict(list)
 
-    for direction, blizzards in all_blizzards.items():
+    for direction, blizzards in cachable:
         for blizzard in blizzards:
             next_blizzard = blizzard + offset[direction]
             if direction == '<' and next_blizzard.x == min_x:
@@ -67,7 +69,8 @@ def part1(data):
 
         while states:
             state = states.popleft()
-            new_blizzards = move_blizzards(blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
+            cachable_blizzards = tuple((key, tuple(value)) for key, value in blizzards.items())
+            new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
             if (state, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
                 continue
@@ -90,7 +93,10 @@ def part2(data):
 
 
 def main():
-    print(part1(fileinput.input()))
+    try:
+        print(part1(fileinput.input()))
+    finally:
+        print(move_blizzards.cache_info())
     print(part2(fileinput.input()))
 
 
