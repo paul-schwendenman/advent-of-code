@@ -14,6 +14,7 @@ class State(namedtuple('State', 'score time path blizzards')):
     def location(self):
         return self.path[-1]
 
+
 def moves(point):
     for diff in [(0, 0), (1, 0), (-1, 0), (0, -1), (0, 1)]:
         yield point + diff
@@ -146,7 +147,6 @@ def part1(data):
     min_x = min((point.x for point in grid.keys()))
     max_y = max((point.y for point in grid.keys()))
     min_y = min((point.y for point in grid.keys()))
-    # print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     end = Point(max_x - 1, max_y)
     start = Point(min_x + 1, min_y)
@@ -161,7 +161,6 @@ def part2(data):
     min_x = min((point.x for point in grid.keys()))
     max_y = max((point.y for point in grid.keys()))
     min_y = min((point.y for point in grid.keys()))
-    # print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     end = Point(max_x - 1, max_y)
     start = Point(min_x + 1, min_y)
@@ -169,7 +168,7 @@ def part2(data):
     leg_1 = solve(grid, blizzards, start, end, min_x, max_x, min_y, max_y)
     leg_2 = solve(grid, leg_1[1], end, start, min_x, max_x, min_y, max_y)
     leg_3 = solve(grid, leg_2[1], start, end, min_x, max_x, min_y, max_y)
-    pass
+
     print(leg_1[0], leg_2[0], leg_3[0])
     return sum([leg_1[0], leg_2[0], leg_3[0]])
 
