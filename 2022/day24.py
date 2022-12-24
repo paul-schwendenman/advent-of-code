@@ -3,12 +3,12 @@ from helper import *
 from heapq import heapify, heappop, heappush
 
 
-class State(namedtuple('State', 'score time path blizzards')):
+class State(namedtuple('State', 'goals score time path blizzards')):
     __slots__ = ()
 
     @classmethod
-    def build(cls, path, blizzards, goal, time):
-        return cls(calc_manhatten_distance(goal, path[-1]) + time, time, path, blizzards)
+    def build(cls, path, blizzards, goals, time):
+        return cls(len(goals), calc_manhatten_distance(goals[0], path[-1]) + time, time, path, blizzards)
 
     @property
     def location(self):
@@ -108,9 +108,9 @@ def part1(data):
     min_y = min((point.y for point in grid.keys()))
     # print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
-    goal = Point(max_x - 1, max_y)
+    goals = [Point(max_x - 1, max_y)]
 
-    states = [State.build((location,), blizzards, goal, 0)]
+    states = [State.build((location,), blizzards, goals, 0)]
     heapify(states)
 
     max_t = 0
@@ -134,7 +134,7 @@ def part1(data):
             max_t = state.time
             print(f'{max_t=}, # of states: {len(states)}, first: {states[0].time}, last: {states[-1].score} {set((state.score) for state in states)}')
 
-        if goal == state.location:
+        if goals[0] == state.location:
             best_t = state.time
             # replay(grid, blizzards, state.path)
             print(state.path)
@@ -144,7 +144,7 @@ def part1(data):
 
         for next_location in moves(state.location):
             if next_location in grid and grid[next_location] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_location):
-                heappush(states, State.build(state.path + (next_location,), new_blizzards, goal, state.time + 1))
+                heappush(states, State.build(state.path + (next_location,), new_blizzards, goals, state.time + 1))
 
 
     return best_t
