@@ -1,9 +1,11 @@
 import fileinput
 from helper import *
 
+
 def moves(point):
     for diff in [(0, 0), (1, 0), (-1, 0), (0, -1), (0, 1)]:
         yield point + diff
+
 
 def parse_input(data):
     grid = {}
@@ -43,8 +45,13 @@ def move_blizzards(cachable, min_x, max_x, min_y, max_y):
     return new_blizzards
 
 
+@cache
 def in_blizzard(all_blizzards, location):
-    return any(location in blizzards for blizzards in all_blizzards.values())
+    return any(location in blizzards for blizzards in all_blizzards)
+
+
+def cache_blizzards(blizzards):
+    return tuple((key, tuple(value)) for key, value in blizzards.items())
 
 
 def part1(data):
@@ -69,7 +76,7 @@ def part1(data):
 
         while states:
             state = states.popleft()
-            cachable_blizzards = tuple((key, tuple(value)) for key, value in blizzards.items())
+            cachable_blizzards = cache_blizzards(blizzards)
             new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
             if (state, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
@@ -81,7 +88,7 @@ def part1(data):
                 return i
 
             for next_state in moves(state):
-                if next_state in grid and grid[next_state] != '#' and not in_blizzard(new_blizzards, next_state):
+                if next_state in grid and grid[next_state] != '#' and not in_blizzard(cache_blizzards(new_blizzards), next_state):
                     next_states.append(next_state)
                 pass
         states = next_states
@@ -97,6 +104,7 @@ def main():
         print(part1(fileinput.input()))
     finally:
         print(move_blizzards.cache_info())
+        print(f'{in_blizzard.cache_info()=}')
     print(part2(fileinput.input()))
 
 
