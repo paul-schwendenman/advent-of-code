@@ -79,7 +79,7 @@ def replay(grid, initial_blizzards, path):
             for x in range(min_x, max_x + 1):
                 if (x, y) in grid and grid[(x, y)] == '#':
                     if (x,y) == location:
-                        raise ValueError
+                        raise ValueError('In wall!')
                     print('#', end='')
                 elif len(matching := [dir for dir, spots in blizzard.items() if (x, y) in spots]) > 0:
                     if Point(x, y) == location:
@@ -122,21 +122,21 @@ def part1(data):
         cachable_blizzards = cache_blizzards(state.blizzards)
         new_blizzards = move_blizzards(cachable_blizzards, min_x=min_x, max_x=max_x, min_y=min_y, max_y=max_y)
 
-        if best_t < state.time:
+        if best_t <= state.time:
             continue
 
-        # if (state.location, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
-        #     continue
+        if (state.location, combined := frozenset(chain.from_iterable(new_blizzards.values()))) in best:
+            continue
 
-        # best[(state.location, combined)] = state.time
+        best[(state.location, combined)] = state.time
 
         if max_t < state.time:
             max_t = state.time
-            print(max_t, len(states))
+            print(f'{max_t=}, # of states: {len(states)}, first: {states[0].time}, last: {states[-1].score} {set((state.score) for state in states)}')
 
         if goal == state.location:
             best_t = state.time
-            replay(grid, blizzards, state.path)
+            # replay(grid, blizzards, state.path)
             print(state.path)
             print(f'found! {best_t}')
             break
