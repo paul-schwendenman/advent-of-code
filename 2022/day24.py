@@ -21,14 +21,14 @@ def moves(point):
 
 def parse_input(data):
     grid = {}
-    blizzards = defaultdict(list)
+    blizzards = defaultdict(tuple)
 
     for y, line in enumerate(data, start=1):
         for x, value in enumerate(line.rstrip(), start=1):
             if value in ('#', '.'):
                 grid[Point(x, y)] = value
             if value in ('<', '>', '^', 'v'):
-                blizzards[value].append(Point(x, y))
+                blizzards[value] += (Point(x, y),)
                 grid[Point(x, y)] = '.'
 
     return grid, blizzards
@@ -38,21 +38,21 @@ def parse_input(data):
 def move_blizzards(cachable, min_x, max_x, min_y, max_y):
     offset = {'<': (-1, 0), '>': (1, 0), '^': (0, -1), 'v': (0, 1)}
 
-    new_blizzards = defaultdict(list)
+    new_blizzards = defaultdict(tuple)
 
     for direction, blizzards in cachable:
         for blizzard in blizzards:
             next_blizzard = blizzard + offset[direction]
             if direction == '<' and next_blizzard.x == min_x:
-                new_blizzards[direction].append(Point(max_x - 1, next_blizzard.y))
+                new_blizzards[direction] += (Point(max_x - 1, next_blizzard.y),)
             elif direction == '>' and next_blizzard.x == max_x:
-                new_blizzards[direction].append(Point(min_x + 1, next_blizzard.y))
+                new_blizzards[direction] += (Point(min_x + 1, next_blizzard.y),)
             elif direction == '^' and next_blizzard.y == min_y:
-                new_blizzards[direction].append(Point(next_blizzard.x, max_y - 1))
+                new_blizzards[direction] += (Point(next_blizzard.x, max_y - 1),)
             elif direction == 'v' and next_blizzard.y == max_y:
-                new_blizzards[direction].append(Point(next_blizzard.x, min_y + 1))
+                new_blizzards[direction] += (Point(next_blizzard.x, min_y + 1),)
             else:
-                new_blizzards[direction].append(next_blizzard)
+                new_blizzards[direction] += (next_blizzard,)
 
     return new_blizzards
 
