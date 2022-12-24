@@ -219,7 +219,7 @@ def transform(cube, location, next_spot, facing):
     elif cube == 3 and facing == 'D':
         return Point(location.x, 0), 'D', 4
     elif cube == 3 and facing == 'R':
-        return Point(location.y, 0), 'U', 2
+        return Point(location.y, 49), 'U', 2
     elif cube == 4 and facing == 'U':
         return Point(location.x, 49), 'U', 3
     elif cube == 4 and facing == 'L':
@@ -245,6 +245,18 @@ def transform(cube, location, next_spot, facing):
     elif cube == 6 and facing == 'R':
         return Point(location.y, 49), 'U', 4
     raise ValueError(f'{cube=} {location=} {next_spot=} {facing=}')
+
+
+def transform_facing(cube_index, facing):
+    if cube_index in (1, 2, 3, 4):
+        return facing
+    elif cube_index in (5,):
+        return {'U': 'D', 'L': 'R', 'R': 'L', 'D': 'U'}[facing]
+    elif cube_index in (6,):
+        return {'U': 'L', 'L': 'U', 'R': 'D', 'D': 'R'}[facing]
+    else:
+        raise ValueError(cube_index, facing)
+
 
 
 def part2(data):
@@ -290,7 +302,13 @@ def part2(data):
 
                 if next_spot not in cube[cube_index]:
                     print(f'{cube_index} {facing}')
-                    next_spot, facing, cube_index = transform(cube_index, location, next_spot, facing)
+                    next_spot, next_facing, next_cube_index = transform(cube_index, location, next_spot, facing)
+
+                    if cube[next_cube_index][next_spot] == '#':
+                        break
+                    else:
+                        facing = next_facing
+                        cube_index = next_cube_index
                     print(f'{cube_index} {facing}')
                     pass
                 elif cube[cube_index][next_spot] == '#':
@@ -300,16 +318,16 @@ def part2(data):
                 location = next_spot
                 traveled += 1
 
-
-
         else:
             if instruction == 'L':
                 facing = rotate(facing, instruction)
             elif instruction == 'R':
                 facing = rotate(facing, instruction)
 
-        print(f'{index:3d}. location={tuple(calc_coords(cube_index, location))} move={instruction}\t\tlocation={location} cube={cube_index}')
-        if index % 20 == 0 and index >= 340:
+        print(f'{index:3d}. location={tuple(calc_coords(cube_index, location))} move={instruction} facing={facing, transform_facing(cube_index, facing)}\t\tlocation={location} cube={cube_index}')
+
+        if index % 1000 == 0 and index >= 3000:
+            pass
             input()
 
     print(f'final location = {location}')
