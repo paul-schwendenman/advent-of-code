@@ -28,12 +28,10 @@ def from_snafu(number):
 
 
 def part1(data):
-    acc = 0
-    for line in data:
-        acc += from_snafu(line.rstrip())
+    numbers = (from_snafu(line.rstrip()) for line in data)
+    total = sum(numbers)
 
-    print(acc)
-    return to_snafu(acc)
+    return to_snafu(total)
 
 
 def main():
