@@ -1,8 +1,11 @@
 import fileinput
-from helper import *
+
+
+DIGITS = ((0, '0'), (1, '1'), (2, '2'), (-2, '='), (-1, '-'))
+
 
 def to_snafu(number):
-    digits = {0: '0', 1: '1', 2: '2', -2: '=', -1: '-' }
+    digits = dict(DIGITS)
 
     if number == 0:
         return ''
@@ -14,11 +17,14 @@ def to_snafu(number):
 
 
 def from_snafu(number):
-    digits = {'0': 0, '1': 1, '2': 2, '=': -2, '-': -1 }
+    digits = dict((v, k) for k, v in DIGITS)
+
     if not number:
         return 0
 
-    return 5 * from_snafu(number[:-1]) +  digits[number[-1]]
+    rest, current = number[:-1], number[-1]
+
+    return 5 * from_snafu(rest) +  digits[current]
 
 
 def part1(data):
