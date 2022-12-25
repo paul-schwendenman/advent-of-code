@@ -1,5 +1,6 @@
 import fileinput
 from helper import *
+from heapq import heapify, heappop, heappush
 
 
 @dataclass
@@ -13,7 +14,7 @@ class Valve:
 class State(namedtuple('State', 'location open_valves pressure_released path')):
     __slots__ = ()
 
-class State2(namedtuple('State2', 'location elephant open_valves pressure_released path')):
+class State2(namedtuple('State2', 'pressure_released location elephant open_valves path')):
     __slots__ = ()
 
 
@@ -73,7 +74,12 @@ def part1(data, max_time=30, init_open_valves=frozenset(), debug=False):
 
 
 def solve2(valves, max_time):
-    states = [State2('AA', 'AA', frozenset(), 0, [])]
+    states = [0, State2('AA', 'AA', frozenset(), [])]
+
+    heapify(states)
+
+    while states:
+        state = heappop(states)
 
     best = {}
 
@@ -125,30 +131,69 @@ def solve2(valves, max_time):
     return top_state[0]
 
 
+def find_path(start, end, valves):
+    queue = deque([(start, 0)])
+    distances = defaultdict(lambda: inf)
+
+    while queue:
+        location, distance = queue.popleft()
+
+        if distance >= distances[location]:
+            continue
+
+        distances[location] = distance
+
+        if location == end:
+            break
+
+        for neighbor in valves[location].neighbors:
+            queue.append((neighbor, distance + 1))
+
+    return distances[end]
+
+
+
 def part2(data, max_time=26):
     valves = dict([parse_line(line) for line in data])
 
-    return solve2(valves, max_time).pressure_released
-    # valves = dict([parse_line(line) for line in data])
+    non_empty_valves = {valve.name for valve in valves.values() if valve.rate > 0 or valve.name == 'AA'}
 
-    # print(valves)
+    short_paths = defaultdict(dict)
 
-    # value = solve(valves, 26)
-    # print(value.open_valves)
+    for start, end in combinations(non_empty_valves, r=2):
 
-    # for name in valves:
-    #     valves[name].rate = 0
+        distance = find_path(start, end, valves)
 
-    # print(valves)
+        short_paths[start][end] = distance
+        short_paths[end][start] = distance
 
-    # value2 = solve(valves, 26)
+    pressures = defaultdict(lambda: -inf)
+    queue = deque([(0, 'AA', max_time, set())])
 
-    # return value.pressure_released + value2.pressure_released
-    # pass
+    while queue:
+        pressure_released, location, time, visited = queue.popleft()
 
+        neighbors = (
+            neighbor for neighbor in short_paths[location]
+            if neighbor not in visited
+            and short_paths[location][neighbor] < time
+        )
+
+        if pressures[frozenset(visited)] >= pressure_released:
+            continue
+
+        pressures[frozenset(visited)] = pressure_released
+
+        for neighbor in neighbors:
+            next_time = time - short_paths[location][neighbor] - 1
+            release = next_time * valves[neighbor].rate
+
+            queue.append((pressure_released + release, neighbor, next_time, visited | {neighbor}))
+
+    return max(you[1] + elephant[1] for you, elephant in combinations(pressures.items(), r=2) if not you[0] & elephant[0])
 
 def main():
-    # print(part1(fileinput.input()))
+    # print(part1(fisleinput.input()))
     print(part2(fileinput.input()))
 
 
