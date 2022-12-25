@@ -2,41 +2,23 @@ import fileinput
 from helper import *
 
 def to_snafu(number):
-    digits = {
-        0: '0',
-        1: '1',
-        2: '2',
-        3: '=',
-        4: '-',
-    }
+    digits = {0: '0', 1: '1', 2: '2', -2: '=', -1: '-' }
 
-    def inner(number):
-        if number == 0:
-            return tuple()
-        remainder = number % 5
-        rest = (number + 2) // 5
+    if number == 0:
+        return ''
 
-        return inner(rest) + (digits[remainder],)
+    remainder = (number + 2) % 5 - 2
+    quotient = (number + 2) // 5
 
-    return ''.join(inner(number))
+    return to_snafu(quotient) + digits[remainder]
 
 
-def from_snafu(digits):
-    acc = 0
-    for digit in digits:
-        acc *= 5
-        if digit == '1':
-            acc += 1
-        elif digit == '2':
-            acc += 2
-        elif digit == '3':
-            acc += 3
-        elif digit == '-':
-            acc -= 1
-        elif digit == '=':
-            acc -= 2
+def from_snafu(number):
+    digits = {'0': 0, '1': 1, '2': 2, '=': -2, '-': -1 }
+    if not number:
+        return 0
 
-    return acc
+    return 5 * from_snafu(number[:-1]) +  digits[number[-1]]
 
 
 def part1(data):
@@ -48,13 +30,8 @@ def part1(data):
     return to_snafu(acc)
 
 
-def part2(data):
-    pass
-
-
 def main():
     print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
