@@ -4,10 +4,8 @@ import re
 def part1(data):
     acc = 0
     for line in data:
-        print(line)
         chars = [c for c in line if c in '0123456789']
-        print(chars)
-        acc += int(chars[0]) * 10 + int(chars[-1])
+        acc += int(chars[0] + chars[-1])
 
     return acc
 
@@ -27,7 +25,6 @@ def string_swap(line):
 def part2(data):
     acc = 0
     for line in data:
-        print(line)
         # re.split('[0-9]', line)
         first = re.match(r'^.*?(one|two|three|four|five|six|seven|eight|nine|[1-9]).*', line).groups()[0]
         last = re.match(r'.*(one|two|three|four|five|six|seven|eight|nine|[1-9]).*?$', line).groups()[0]
@@ -35,14 +32,12 @@ def part2(data):
         first = string_swap(first)
         last = string_swap(last)
 
-        print(first, last)
-
-        acc += int(first) * 10 + int(last)
+        acc += int(first + last)
 
     return acc
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
