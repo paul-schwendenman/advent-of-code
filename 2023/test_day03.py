@@ -1,12 +1,21 @@
 import pytest
-import fileinput
 from day03 import part1, part2
 
 
 @pytest.fixture
 def example_data():
-    with fileinput.input("day03.example") as data:
-        yield data
+    yield [
+        '467..114..\n',
+        '...*......\n',
+        '..35..633.\n',
+        '......#...\n',
+        '617*......\n',
+        '.....+.58.\n',
+        '..592.....\n',
+        '......755.\n',
+        '...$.*....\n',
+        '.664.598..\n'
+    ]
 
 
 def test_part1_example(example_data):
