@@ -31,37 +31,24 @@ def part1(data):
             else:
                 symbols.append(loc)
 
-    print(symbols)
-
     acc = 0
 
     for symbol in symbols:
-        print(f'{symbol=} {grid[symbol]}')
         labels = set()
         for neighbor in (neighbors := symbol.get_neighbors()):
             if grid[neighbor].isdigit():
-                print(f'{neighbor=} {grid[neighbor]}')
-                if True or (next_neighbor := neighbor + (1, 0)) not in neighbors or (not grid.get(next_neighbor, '.').isdigit()):
-                    for j in count(neighbor.x):
-                        if not grid.get((j, neighbor.y), '').isdigit():
-                            break
+                for j in count(neighbor.x):
+                    if not grid.get((j, neighbor.y), '').isdigit():
+                        break
 
-                    slice = lines[neighbor.y][:j]
-                    print(f'{slice=}')
-                    # print(re.match(r'(?:[0-9.]*\.+){0,1}(\d+)$', slice))
-                    print(num := int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0]))
+                slice = lines[neighbor.y][:j]
 
-                    # num = int(re.match(r'\.*(\d+)', slice).groups()[0])
-                    # print(num)
-                    # acc += num
-                    labels.add(num)
+                num = int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0])
 
-                else:
-                    print('skip')
-        print(f'{labels=} {sum(labels)=}')
+                labels.add(num)
+
         acc += sum(labels)
 
-    # print(f'{grid=}')
     return acc
 
 
@@ -80,44 +67,31 @@ def part2(data):
             else:
                 symbols.append(loc)
 
-    print(symbols)
-
     acc = 0
 
     for symbol in symbols:
-        # print(f'{symbol=} {grid[symbol]}')
         if grid[symbol] != '*':
             continue
-        print(f'{symbol=} {grid[symbol]}')
         labels = set()
         for neighbor in (neighbors := symbol.get_neighbors()):
             if grid[neighbor].isdigit():
-                print(f'{neighbor=} {grid[neighbor]}')
                 for j in count(neighbor.x):
                     if not grid.get((j, neighbor.y), '').isdigit():
                         break
 
                 slice = lines[neighbor.y][:j]
-                print(f'{slice=}')
-                # print(re.match(r'(?:[0-9.]*\.+){0,1}(\d+)$', slice))
-                print(num := int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0]))
+                num = int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0])
 
-                # num = int(re.match(r'\.*(\d+)', slice).groups()[0])
-                # print(num)
-                # acc += num
                 labels.add(num)
 
-        print(f'{labels=} {prod(labels)=}')
         if len(labels) == 2:
             acc += prod(labels)
 
-    # print(f'{grid=}')
     return acc
-    pass
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
