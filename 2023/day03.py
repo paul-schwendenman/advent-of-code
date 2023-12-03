@@ -5,6 +5,8 @@ from itertools import count
 from math import prod
 
 
+line_parser = re.compile(r'(?:.*[^0-9]+){0,1}(\d+)$')
+
 class Point(namedtuple('Point', 'x y')):
     __slots__ = ()
 
@@ -16,34 +18,35 @@ class Point(namedtuple('Point', 'x y')):
         return Point(self.x + other[0], self.y + other[1])
 
 
+def is_symbol(char: str) -> bool:
+    return char != '.' and not char.isdigit()
+
+
 def part1(data):
-    grid = defaultdict(str)
+    grid: dict[Point, str] = defaultdict(str)
     symbols: list[Point] = []
-    lines = list(data)
+    lines: list[str] = list(data)
+    acc: int = 0
 
     for y, line in enumerate(lines):
         for x, space in enumerate(line.strip()):
-            loc = Point(x, y)
-            grid[loc] = space
+            position = Point(x, y)
+            grid[position] = space
 
-            if space == '.' or space.isdigit():
-                pass
-            else:
-                symbols.append(loc)
-
-    acc = 0
+            if is_symbol(space):
+                symbols.append(position)
 
     for symbol in symbols:
         labels = set()
-        for neighbor in (neighbors := symbol.get_neighbors()):
+        for neighbor in symbol.get_neighbors():
             if grid[neighbor].isdigit():
-                for j in count(neighbor.x):
-                    if not grid.get((j, neighbor.y), '').isdigit():
+                for dx in count():
+                    if not grid[neighbor + (dx, 0)].isdigit():
                         break
 
-                slice = lines[neighbor.y][:j]
+                slice = lines[neighbor.y][:(neighbor.x + dx)]
 
-                num = int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0])
+                num = int(line_parser.match(slice).groups()[0])
 
                 labels.add(num)
 
@@ -53,34 +56,32 @@ def part1(data):
 
 
 def part2(data):
-    grid = defaultdict(str)
+    grid: dict[Point, str] = defaultdict(str)
     symbols: list[Point] = []
-    lines = list(data)
+    lines: list[str] = list(data)
+    acc: int = 0
 
     for y, line in enumerate(lines):
         for x, space in enumerate(line.strip()):
             loc = Point(x, y)
             grid[loc] = space
 
-            if space == '.' or space.isdigit():
-                pass
-            else:
+            if is_symbol(space):
                 symbols.append(loc)
 
-    acc = 0
 
     for symbol in symbols:
         if grid[symbol] != '*':
             continue
         labels = set()
-        for neighbor in (neighbors := symbol.get_neighbors()):
+        for neighbor in symbol.get_neighbors():
             if grid[neighbor].isdigit():
                 for j in count(neighbor.x):
                     if not grid.get((j, neighbor.y), '').isdigit():
                         break
 
                 slice = lines[neighbor.y][:j]
-                num = int(re.match(r'(?:.*[^0-9]+){0,1}(\d+)$', slice).groups()[0])
+                num = int(line_parser.match(slice).groups()[0])
 
                 labels.add(num)
 
