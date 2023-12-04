@@ -25,16 +25,17 @@ def score_matches(matches):
     return 2 ** (matches - 1) if matches else 0
 
 
+def score_card(line):
+    _, winning, yours = parse_card(line)
+
+    matches = match_card(winning, yours)
+
+    return score_matches(matches)
+
+
 def part1(data):
-    acc = 0
-    for line in data:
-        _, winning, yours = parse_card(line)
+    return sum(score_card(card) for card in data)
 
-        matches = match_card(winning, yours)
-
-        acc += score_matches(matches)
-
-    return acc
 
 def part2(data):
     cards = defaultdict(int)
