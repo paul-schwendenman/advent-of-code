@@ -1,71 +1,61 @@
 import fileinput
+import re
 from collections import defaultdict
 
-# def score_cards(winning, yours):
-#     # winning = {int(item) for item in winning.strip().split(' ') if item}
-#     # yours = {int(item) for item in yours.strip().split(' ') if item}
 
-#     matches = (len(winning & yours))
+def extract_numbers(string):
+    return set(map(int, re.findall(r'\d+', string)))
 
-#     score = 2 ** (matches - 1) if matches else 0
 
-#     return score
+def parse_card(line):
+    card_no, winning, yours = re.match(r'Card +(\d+): ([0-9 ]+) \| ([0-9 ]+)', line).groups()
+
+    card_no = int(card_no)
+    winning = extract_numbers(winning)
+    yours = extract_numbers(yours)
+
+    return card_no, winning, yours
+
+
+def match_card(winning, yours):
+    return len(winning & yours)
+
+
+def score_matches(matches):
+    return 2 ** (matches - 1) if matches else 0
 
 
 def part1(data):
     acc = 0
     for line in data:
-        _, rest = line.split(': ')
-        winning, yours = rest.split('|')
-        # print(f'{winning=}, {yours=}')
-        winning = {int(item) for item in winning.strip().split(' ') if item}
-        yours = {int(item) for item in yours.strip().split(' ') if item}
+        _, winning, yours = parse_card(line)
 
-        matches = (len(winning & yours))
+        matches = match_card(winning, yours)
 
-        score = 2 ** (matches - 1) if matches else 0
-        # print(score)
-        acc += score
+        acc += score_matches(matches)
 
     return acc
 
 def part2(data):
     cards = defaultdict(int)
 
-    acc = 0
     for line in data:
-        card, rest = line.split(': ')
-        winning, yours = rest.split('|')
-        # print(f'{winning=}, {yours=}')
-        winning = {int(item) for item in winning.strip().split(' ') if item}
-        yours = {int(item) for item in yours.strip().split(' ') if item}
-        # print(f'{card=}')
-        card = int(card[4:])
-        # print(f'{card=}')
+        card_no, winning, yours = parse_card(line)
 
-        cards[card] += 1
+        matches = match_card(winning, yours)
+
+        cards[card_no] += 1
 
         matches = (len(winning & yours))
 
-        # score = 2 ** (matches - 1) if matches else 0
-        # print(f'{score=}')
-        # acc += score
-
-        if matches == 0:
-            continue
-
-        for i in range(1, matches + 1):
-            cards[card + i] += cards[card]
-
-    print(f'{cards=}')
+        for offset in range(1, matches + 1):
+            cards[card_no + offset] += cards[card_no]
 
     return sum(cards.values())
 
-    # return acc
-    pass
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
