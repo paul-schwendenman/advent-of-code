@@ -1,7 +1,7 @@
 import fileinput
 import re
 from collections import defaultdict, namedtuple
-from itertools import islice
+from itertools import islice, count
 from tqdm import tqdm
 
 
@@ -110,7 +110,7 @@ def make_seeds(seed_pairs):
 
 def make_sparse_seeds(seed_pairs):
     for start, length in seed_pairs:
-        for offset in range(length, step=10_000):
+        for offset in range(0, length, 10_000):
             yield start + offset
 
 def part2(data):
@@ -207,10 +207,84 @@ def part2(data):
         raise ValueError("Not found")
 
 
+    # locations = []
+    # for seed in tqdm(range(start, start + length), total=length):
+    #     value = seed
+    #     for src, dest in (
+    #         ('seed', 'soil'),
+    #         ('soil', 'fertilizer'),
+    #         ('fertilizer', 'water'),
+    #         ('water', 'light'),
+    #         ('light', 'temperature'),
+    #         ('temperature', 'humidity'),
+    #         ('humidity', 'location')
+    #     ):
+    #         # value = maps[src][dest].get(value, value)
+    #         # print(f'{src} {value} to {dest}:')
+    #         for transform in maps[src][dest]:
+    #             if value in transform.range:
+    #                 # print(f'{src} {value} to {dest}: {value + transform.delta}')
+    #                 value += transform.delta
+    #                 break
+    #         else:
+    #             # print(f'{src} {value} to {dest}: {value}')
+    #             value = value
+    #     # print(f'location={value}')
+    #     locations.append(value)
+    #     # print()
+
+    # print(f'{locations=}')
+    # return min(locations)
+
+
+    pass
+
+def part2_new(data):
+    seeds = []
+    seed_map = {}
+    maps = defaultdict(lambda: defaultdict(list))
+
+    seed_pairs = list(batched(extract_ints(next(data)), 2))
+    seed_ranges = [range(s, s + l) for s, l in seed_pairs]
+    # print(f'{seeds=}')
+
+    assert '\n' == next(data)
+
+    try:
+        while True:
+            line = next(data)
+            # print(f'{line=}')
+            source_name, dest_name = re.match(r'([a-z]+)-to-([a-z]+) map:\n', line).groups()
+
+            # print(f'{source_name=} {dest_name=}')
+            while True:
+                line = next(data)
+                # print(f'{line=}')
+                if line == '\n':
+                    break
+
+                # source_start, dest_start, range_length = extract_ints(line)
+                dest_start, source_start, range_length = extract_ints(line)
+                # print(f'{source_start=} {dest_start=} {range_length=}')
+
+                source_end = source_start + range_length + 1
+                source_range = range(source_start, source_end)
+                delta = dest_start - source_start
+
+
+                # for offset in range(range_length):
+                #     maps[source_name][dest_name][source_start + offset] = dest_start + offset
+                maps[source_name][dest_name].append(Transform(source_range, delta))
+
+            # break
+    except Exception as e:
+        print(e)
+    pass
+
     locations = []
-    for seed in tqdm(range(start, start + length), total=length):
-        value = seed
-        for src, dest in (
+    for location in (count()):
+        value = location
+        for src, dest in reversed([
             ('seed', 'soil'),
             ('soil', 'fertilizer'),
             ('fertilizer', 'water'),
@@ -218,30 +292,33 @@ def part2(data):
             ('light', 'temperature'),
             ('temperature', 'humidity'),
             ('humidity', 'location')
-        ):
+        ]):
             # value = maps[src][dest].get(value, value)
             # print(f'{src} {value} to {dest}:')
             for transform in maps[src][dest]:
-                if value in transform.range:
+                if (value - transform.delta) in transform.range:
                     # print(f'{src} {value} to {dest}: {value + transform.delta}')
-                    value += transform.delta
+                    value -= transform.delta
                     break
             else:
                 # print(f'{src} {value} to {dest}: {value}')
                 value = value
         # print(f'location={value}')
-        locations.append(value)
+        if any(map(lambda t_range: value in t_range, seed_ranges)):
+            winner = location
+            print(f'{value=} {location=}')
+            break
+        # seeds.append(value)
         # print()
 
-    print(f'{locations=}')
-    return min(locations)
-
-
-    pass
+    # print(f'{locations=}')
+    # return min(locations)
+    return winner
 
 def main():
     # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
+    print(part2_new(fileinput.input()))
 
 
 if __name__ == '__main__':
