@@ -105,14 +105,20 @@ def part1(data):
 
 def make_seeds(seed_pairs):
     for start, length in seed_pairs:
-        for offset in range(length):
+        for offset in range(length, step=10_000):
+            yield start + offset
+
+def make_sparse_seeds(seed_pairs):
+    for start, length in seed_pairs:
+        for offset in range(length, step=10_000):
             yield start + offset
 
 def part2(data):
     seeds = []
+    seed_map = {}
     maps = defaultdict(lambda: defaultdict(list))
 
-    seed_pairs = batched(extract_ints(next(data)), 2)
+    seed_pairs = list(batched(extract_ints(next(data)), 2))
     # print(f'{seeds=}')
 
     assert '\n' == next(data)
@@ -161,7 +167,48 @@ def part2(data):
     #     print(f'{src}->{dest}:\t\t{maps[src][dest]}')
 
     locations = []
-    for seed in tqdm(make_seeds(seed_pairs)):
+    # for seed in tqdm(make_seeds(seed_pairs), total=2398198298):
+    for seed in tqdm(make_sparse_seeds(seed_pairs)):
+        value = seed
+        for src, dest in (
+            ('seed', 'soil'),
+            ('soil', 'fertilizer'),
+            ('fertilizer', 'water'),
+            ('water', 'light'),
+            ('light', 'temperature'),
+            ('temperature', 'humidity'),
+            ('humidity', 'location')
+        ):
+            # value = maps[src][dest].get(value, value)
+            # print(f'{src} {value} to {dest}:')
+            for transform in maps[src][dest]:
+                if value in transform.range:
+                    # print(f'{src} {value} to {dest}: {value + transform.delta}')
+                    value += transform.delta
+                    break
+            else:
+                # print(f'{src} {value} to {dest}: {value}')
+                value = value
+        # print(f'location={value}')
+        locations.append(value)
+        seed_map[value] = seed
+        # print()
+
+    # print(f'{locations=}')
+    # print(len(list(make_seeds(seed_pairs))))
+    rough_location =  min(locations)
+
+    for start, length in seed_pairs:
+        print(f'seed: {seed_map[rough_location]}')
+        if start <= seed_map[rough_location] <= start + length:
+            print(f'{start=} {length=}')
+            break
+    else:
+        raise ValueError("Not found")
+
+
+    locations = []
+    for seed in tqdm(range(start, start + length), total=length):
         value = seed
         for src, dest in (
             ('seed', 'soil'),
@@ -186,8 +233,7 @@ def part2(data):
         locations.append(value)
         # print()
 
-    # print(f'{locations=}')
-    # print(len(list(make_seeds(seed_pairs))))
+    print(f'{locations=}')
     return min(locations)
 
 
