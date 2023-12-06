@@ -1,4 +1,8 @@
 import fileinput
+import re
+import itertools
+import math
+import functools
 
 def part1(data):
     pass
