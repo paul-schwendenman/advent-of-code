@@ -3,6 +3,7 @@ import re
 import itertools
 import math
 import functools
+import collections
 
 def part1(data):
     pass

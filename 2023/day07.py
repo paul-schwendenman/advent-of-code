@@ -5,6 +5,8 @@ import math
 import functools
 import enum
 import collections
+import dataclasses
+
 
 class CardRank(enum.IntEnum):
     JOKER = 1
@@ -31,6 +33,17 @@ class HandRank(enum.IntEnum):
     FULL_HOUSE = 5
     FOUR_OF_KIND = 6
     FIVE_OF_KIND = 7
+
+@dataclasses.dataclass
+class HandBid:
+    hand: list[CardRank]
+    bet: int
+
+    def __lt__(self, other):
+        return compareHands(self.hand, other.hand) == 1
+
+    def __eq__(self, other):
+        return compareHands(self.hand, other.hand) == 0
 
 
 def parse_card(card):
@@ -93,7 +106,7 @@ def scoreHand2(hand):
     c = collections.Counter(hand)
 
     best = c.most_common()
-    print(f'{hand=}: {best=} {c=}')
+    # print(f'{hand=}: {best=} {c=}')
 
     if best[0][0] == 'J':
         offset = 1
@@ -118,14 +131,14 @@ def scoreHand2(hand):
         return HandRank.HIGH_CARD
 
 
-def compareHands(hand, other):
-    s1, s2 = scoreHand(hand), scoreHand(other)
-    if s1 > s2:
+def compareHands(hand1, hand2):
+    score1, score2 = scoreHand(hand1), scoreHand(hand2)
+    if score1 > score2:
         return 1
-    elif s2 > s1:
+    elif score2 > score1:
         return -1
     else:
-        for c1, c2 in zip(hand, other):
+        for c1, c2 in zip(hand1, hand2):
             cc1 = parse_card(c1)
             cc2 = parse_card(c2)
             if cc1 > cc2:
@@ -152,28 +165,37 @@ def compareHands2(hand, other):
         else:
             return 0
 
+def compare_bets(bet1, bet2):
+    return compareHands(bet1[0], bet2[0])
+
+
+def compare_bets2(bet1, bet2):
+    return compareHands2(bet1[0], bet2[0])
+
+
+def parse_cards(cards):
+    return [parse_card(card) for card in cards]
+
+
+def parse_line(line):
+    hand, bet = line.split(' ')
+    return parse_cards(hand), int(bet)
+
+def parse_data(lines):
+    return [parse_line(line) for line in lines]
+
 
 def part1(data):
     acc = 0
-    for index, (hand, bet) in enumerate(sorted((item.split(' ') for item in data), key=functools.cmp_to_key(lambda a, b: compareHands(a[0], b[0])))):
-        bet = int(bet)
-        score = scoreHand(hand)
+    for index, (_hand, bet) in enumerate(sorted((item.split(' ') for item in data), key=functools.cmp_to_key(compare_bets))):
+        acc += (index+1) * int(bet)
 
-        print(f'{index=} {score=} {hand=}')
-        acc += (index+1) * bet
-
-    CardRank.FIVE
-    pass
     return acc
 
 def part2(data):
     acc = 0
-    for index, (hand, bet) in enumerate(sorted((item.split(' ') for item in data), key=functools.cmp_to_key(lambda a, b: compareHands2(a[0], b[0])))):
-        bet = int(bet)
-        score = scoreHand(hand)
-
-        print(f'{index=} {score=} {hand=}')
-        acc += (index+1) * bet
+    for index, (_hand, bet) in enumerate(sorted((item.split(' ') for item in data), key=functools.cmp_to_key(compare_bets2))):
+        acc += (index+1) * int(bet)
 
     CardRank.FIVE
     pass
