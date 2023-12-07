@@ -56,11 +56,10 @@ def parse_card(card, *, jokers=False):
     }[card]
 
 
-def scoreHand(hand):
+def score_hand(hand):
     c = collections.Counter(hand)
 
     best = c.most_common()
-    # print(f'{hand=}: {best=} {c=}')
 
     if best[0][0] == CardRank.JOKER:
         offset = 1
@@ -85,72 +84,29 @@ def scoreHand(hand):
         return HandRank.HIGH_CARD
 
 
-def compareHands(hand1, hand2):
-    score1, score2 = scoreHand(hand1), scoreHand(hand2)
-    if score1 > score2:
-        return 1
-    elif score2 > score1:
-        return -1
-    else:
-        for c1, c2 in zip(hand1, hand2):
-            # cc1 = parse_card(c1)
-            # cc2 = parse_card(c2)
-            cc1, cc2 = c1, c2
-            if cc1 > cc2:
-                return 1
-            elif cc2 > cc1:
-                return -1
-        else:
-            return 0
-
-def compareHands2(hand, other):
-    s1, s2 = scoreHand(hand), scoreHand(other)
-    if s1 > s2:
-        return 1
-    elif s2 > s1:
-        return -1
-    else:
-        for c1, c2 in zip(hand, other):
-            # cc1 = parse_card2(c1)
-            # cc2 = parse_card2(c2)
-            cc1, cc2 = c1, c2
-            if cc1 > cc2:
-                return 1
-            elif cc2 > cc1:
-                return -1
-        else:
-            return 0
-
-def compare_bets(bet1, bet2):
-    return compareHands(bet1[0], bet2[0])
-
-
-def compare_bets2(bet1, bet2):
-    return compareHands2(bet1[0], bet2[0])
-
-
 def parse_line(line, jokers=False):
     hand, bet = line.split(' ')
     cards = [parse_card(card, jokers=jokers) for card in hand]
     return cards, int(bet)
 
+
 def parse_data(lines, jokers=False):
     return [parse_line(line, jokers=jokers) for line in lines]
 
 
-def part1(data):
+def hand_to_key(hand):
+    return score_hand(hand[0]), hand[0]
+
+
+def part1(data, with_joker = False):
     acc = 0
-    for index, (_, bet) in enumerate(sorted(parse_data(data), key=functools.cmp_to_key(compare_bets)), start=1):
+    for index, (_, bet) in enumerate(sorted(parse_data(data, with_joker), key=hand_to_key), start=1):
         acc += index * bet
 
     return acc
 
 def part2(data):
-    acc = 0
-    for index, (_, bet) in enumerate(sorted(parse_data(data, True), key=functools.cmp_to_key(compare_bets2)), start = 1):
-        acc += index * bet
-
-    return acc
+    return part1(data, with_joker=True)
 
 def main():
     print(part1(fileinput.input()))
