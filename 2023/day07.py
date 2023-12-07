@@ -53,32 +53,13 @@ def parse_card(card, *, with_jokers=False):
 
 def score_hand(hand: list[CardRank]):
     counter = collections.Counter(hand)
-    # jokers = counter[CardRank.JOKER]
-    # del counter[CardRank.JOKER]
+    jokers, counter[CardRank.JOKER] = counter[CardRank.JOKER], 0
 
-    best = counter.most_common(2)
+    top_cards = counter.most_common(2)
 
-    if best[0][1] == 5:
-        return HandRank.FIVE_OF_KIND
-
-    if CardRank.JOKER in counter:
-        if best[0][0] == CardRank.JOKER:
-            target = 1
-        else:
-            target = 0
-        # print(f'1. {counter}=')
-        counter[best[target][0]] += counter[CardRank.JOKER]
-        # print(f'2. {counter}=')
-        del counter[CardRank.JOKER]
-        # print(f'3. {counter}=')
-
-    best = counter.most_common(2)
-
-    if best[0][1] == 5:
-        return HandRank.FIVE_OF_KIND
-
-
-    match best[0][1], best[1][1]:
+    match (top_cards[0][1] + jokers), (top_cards[1][1] if len(top_cards) > 1 else None):
+        case 5, 0 | None:
+            return HandRank.FIVE_OF_KIND
         case 4, 1:
             return HandRank.FOUR_OF_KIND
         case 3, 2:
@@ -89,10 +70,10 @@ def score_hand(hand: list[CardRank]):
             return HandRank.TWO_PAIR
         case 2, 1:
             return HandRank.ONE_PAIR
-        case 1, 1:
+        case 1, _:
             return HandRank.HIGH_CARD
-
-    raise ValueError("No match")
+        case _ as other:
+            raise ValueError("No match", other)
 
 
 def score_cards(cards_bet, with_jokers=False):
