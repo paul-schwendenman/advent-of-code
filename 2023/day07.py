@@ -1,11 +1,6 @@
 import fileinput
-import re
-import itertools
-import math
-import functools
 import enum
 import collections
-import dataclasses
 
 
 class CardRank(enum.IntEnum):
@@ -35,8 +30,8 @@ class HandRank(enum.IntEnum):
     FIVE_OF_KIND = 7
 
 
-def parse_card(card, *, jokers=False):
-    if jokers and card == 'J':
+def parse_card(card, *, with_jokers=False):
+    if with_jokers and card == 'J':
         return CardRank.JOKER
 
     return {
@@ -56,27 +51,27 @@ def parse_card(card, *, jokers=False):
     }[card]
 
 
-def score_hand(hand):
-    c = collections.Counter(hand)
+def score_hand(hand: list[CardRank]):
+    counter = collections.Counter(hand)
 
-    best = c.most_common()
+    best = counter.most_common()
 
     if best[0][0] == CardRank.JOKER:
         offset = 1
     else:
         offset = 0
 
-    if c[CardRank.JOKER] == 5:
+    if counter[CardRank.JOKER] == 5:
         return HandRank.FIVE_OF_KIND
-    elif best[0+offset][1] + c[CardRank.JOKER] == 5:
+    elif best[0+offset][1] + counter[CardRank.JOKER] == 5:
         return HandRank.FIVE_OF_KIND
-    elif best[0+offset][1] + c[CardRank.JOKER] == 4:
+    elif best[0+offset][1] + counter[CardRank.JOKER] == 4:
         return HandRank.FOUR_OF_KIND
-    elif best[0+offset][1] + c[CardRank.JOKER] == 3:
+    elif best[0+offset][1] + counter[CardRank.JOKER] == 3:
         if best[1+offset][1] == 2:
             return HandRank.FULL_HOUSE
         return HandRank.THREE_OF_KIND
-    elif best[0+offset][1] + c[CardRank.JOKER] == 2:
+    elif best[0+offset][1] + counter[CardRank.JOKER] == 2:
         if best[1+offset][1] == 2:
             return HandRank.TWO_PAIR
         return HandRank.ONE_PAIR
@@ -84,29 +79,30 @@ def score_hand(hand):
         return HandRank.HIGH_CARD
 
 
-def parse_line(line, jokers=False):
-    hand, bet = line.split(' ')
-    cards = [parse_card(card, jokers=jokers) for card in hand]
-    return cards, int(bet)
+def score_cards(cards_bet, with_jokers=False):
+    cards, bet = cards_bet.split(' ')
+    hand = [parse_card(card, with_jokers=with_jokers) for card in cards]
+
+    return score_hand(hand), hand, int(bet)
 
 
-def parse_data(lines, jokers=False):
-    return [parse_line(line, jokers=jokers) for line in lines]
+def parse_data(lines, *, with_jokers=False):
+    return [score_cards(line, with_jokers=with_jokers) for line in lines]
 
 
 def hand_to_key(hand):
     return score_hand(hand[0]), hand[0]
 
 
-def part1(data, with_joker = False):
+def part1(data, with_jokers = False):
     acc = 0
-    for index, (_, bet) in enumerate(sorted(parse_data(data, with_joker), key=hand_to_key), start=1):
+    for index, (_, _, bet) in enumerate(sorted(parse_data(data, with_jokers=with_jokers)), start=1):
         acc += index * bet
 
     return acc
 
 def part2(data):
-    return part1(data, with_joker=True)
+    return part1(data, with_jokers=True)
 
 def main():
     print(part1(fileinput.input()))
