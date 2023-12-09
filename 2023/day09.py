@@ -13,13 +13,13 @@ def parse_input(data):
 
 def solve(seq):
     if all(map(lambda item: item == 0, seq)):
+        print(f'{[0] + seq[:] + [0]}')
         return [0]
 
-    else:
-        differences = solve([b - a for a, b in itertools.pairwise(seq)])
+    differences = solve([b - a for a, b in itertools.pairwise(seq)])
 
-        # return [seq[0] - v[0]] + seq[:] + [seq[-1] + v[-1]]
-        return [seq[0] - differences[0], seq[-1] + differences[-1]]
+    print(f'{[seq[0] - differences[0]] + seq[:] + [seq[-1] + differences[-1]]}')
+    return [seq[0] - differences[0], seq[-1] + differences[-1]]
 
 
 def part1(data):
