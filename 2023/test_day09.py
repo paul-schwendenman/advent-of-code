@@ -1,6 +1,6 @@
 import pytest
 import fileinput
-from day09 import part1, part2, solve
+from day09 import part1, part2, extend_sequence
 
 
 @pytest.fixture
@@ -18,15 +18,15 @@ def test_part2_example(example_data):
 
 
 def test_solve_handles_base_case():
-    assert solve([0, 0, 0, 0]) == [0]
+    assert extend_sequence([0, 0, 0, 0]) == [0, 0]
 
 
 def test_solve_handles_constant_velocity():
-    assert solve([2, 2, 2]) == [2, 2]
+    assert extend_sequence([2, 2, 2]) == [2, 2]
 
 
 def test_solve_handles_increasing_velocity():
-    assert solve([2, 4, 6]) == [0, 8]
+    assert extend_sequence([2, 4, 6]) == [0, 8]
 
 def test_solve_handles_increasing_acceleration():
-    assert solve([10, 13, 16, 21, 30, 45]) == [5, 68]
+    assert extend_sequence([10, 13, 16, 21, 30, 45]) == [5, 68]

@@ -1,9 +1,5 @@
 import fileinput
-import re
 import itertools
-import math
-import functools
-import collections
 
 
 def parse_input(data):
@@ -11,23 +7,23 @@ def parse_input(data):
         yield [int(item) for item in line.split(' ')]
 
 
-def solve(seq):
-    if all(map(lambda item: item == 0, seq)):
-        print(f'{[0] + seq[:] + [0]}')
-        return [0]
+def extend_sequence(sequence):
+    if all(map(lambda item: item == 0, sequence)):
+        # print(f'{[0] + seq[:] + [0]}')
+        return [0, 0]
 
-    differences = solve([b - a for a, b in itertools.pairwise(seq)])
+    [first_diff, *_, last_diff] = extend_sequence([b - a for a, b in itertools.pairwise(sequence)])
 
     # print(f'{[seq[0] - differences[0]] + seq[:] + [seq[-1] + differences[-1]]}')
-    return [seq[0] - differences[0], seq[-1] + differences[-1]]
+    return [sequence[0] - first_diff, sequence[-1] + last_diff]
 
 
 def part1(data):
-    return sum(solve(sequence)[-1] for sequence in parse_input(data))
+    return sum(extend_sequence(sequence)[-1] for sequence in parse_input(data))
 
 
 def part2(data):
-    return sum(solve(sequence)[0] for sequence in parse_input(data))
+    return sum(extend_sequence(sequence)[0] for sequence in parse_input(data))
 
 
 def main():
