@@ -5,6 +5,12 @@ import math
 import functools
 import collections
 
+
+def parse_input(data):
+    for line in data:
+        yield [int(item) for item in line.split(' ')]
+
+
 def solve(seq):
     if all(map(lambda item: item == 0, seq)):
         return [0]
@@ -17,25 +23,11 @@ def solve(seq):
 
 
 def part1(data):
-    acc = 0
-
-    for line in data:
-        seq = [int(item) for item in line.split(' ')]
-
-        acc += solve(seq)[-1]
-
-    return acc
+    return sum(solve(sequence)[-1] for sequence in parse_input(data))
 
 
 def part2(data):
-    acc = 0
-
-    for line in data:
-        seq = [int(item) for item in line.split(' ')]
-
-        acc += solve(seq)[0]
-
-    return acc
+    return sum(solve(sequence)[0] for sequence in parse_input(data))
 
 
 def main():
