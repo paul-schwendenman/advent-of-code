@@ -18,7 +18,7 @@ def solve(seq):
 
     differences = solve([b - a for a, b in itertools.pairwise(seq)])
 
-    print(f'{[seq[0] - differences[0]] + seq[:] + [seq[-1] + differences[-1]]}')
+    # print(f'{[seq[0] - differences[0]] + seq[:] + [seq[-1] + differences[-1]]}')
     return [seq[0] - differences[0], seq[-1] + differences[-1]]
 
 
