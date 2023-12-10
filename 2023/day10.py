@@ -151,7 +151,50 @@ def part1(data):
 
 
 def part2(data):
+    lines = [list(line.strip()) for line in list(data)]
+    # lines[1][1] = 'F'
+    grid = {}
+
+    max_y = len(lines) * 3
+    max_x = len(lines[0]) * 3
+
+    for y in range(max_y):
+        for x in range(max_x):
+            grid[Point(x, y)] = '.'
+
+    for j, line in enumerate(lines):
+        for k, space in enumerate(line):
+            if space == '|':
+                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
+            elif space == "-":
+                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
+            elif space == "L":
+                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
+            elif space == "J":
+                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
+            elif space == "F":
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
+                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
+            elif space == "7":
+                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
+            pass
     pass
+
+    for y in range(max_y):
+        for x in range(max_x):
+            print(grid[(x, y)], end='')
+        print('')
 
 def main():
     print(part1(fileinput.input()))
