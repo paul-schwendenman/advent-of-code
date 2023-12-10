@@ -10,7 +10,7 @@ import enum
 class Point(collections.namedtuple('Point', 'x y')):
     __slots__ = ()
 
-    def get_neighboors(self):
+    def get_neighbors(self):
         # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
         for offset in ((-1, 0), (1, 0), (0, -1), (0, 1)):
             yield self + offset
@@ -151,50 +151,113 @@ def part1(data):
 
 
 def part2(data):
-    lines = [list(line.strip()) for line in list(data)]
+    lines = [line.strip() for line in list(data)]
+    grid, start = build_map(lines)
+
+    adjacent = find_connected(grid)
+
+    for space, neighbors in adjacent.items():
+        if start in neighbors:
+            adjacent[start].append(space)
+
+    distance = {
+        start: 0
+    }
+    queue = collections.deque([start])
+
+    ans = (0, start)
+
+    while len(queue) > 0:
+        current = queue.popleft()
+        current_distance = distance[current]
+
+        for nxt in adjacent[current]:
+
+            if nxt not in distance:
+                distance[nxt] = current_distance + 1
+                ans = max(ans, (current_distance + 1, nxt))
+                queue.append(nxt)
     # lines[1][1] = 'F'
-    grid = {}
+    grid2 = {}
 
     max_y = len(lines) * 3
     max_x = len(lines[0]) * 3
 
     for y in range(max_y):
         for x in range(max_x):
-            grid[Point(x, y)] = '.'
+            grid2[Point(x, y)] = '.'
 
     for j, line in enumerate(lines):
         for k, space in enumerate(line):
+            if (k, j) not in distance:
+                continue
             if space == '|':
-                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 2)] = '#'
             elif space == "-":
-                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 0, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 2, 3 * j + 1)] = '#'
             elif space == "L":
-                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
-            elif space == "J":
-                grid[Point(3 * k + 1, 3 * j + 0)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 2, 3 * j + 1)] = '#'
+            elif space == "J" or space == 'S':
+                grid2[Point(3 * k + 1, 3 * j + 0)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 0, 3 * j + 1)] = '#'
             elif space == "F":
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
-                grid[Point(3 * k + 2, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 2)] = '#'
+                grid2[Point(3 * k + 2, 3 * j + 1)] = '#'
             elif space == "7":
-                grid[Point(3 * k + 0, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 1)] = '#'
-                grid[Point(3 * k + 1, 3 * j + 2)] = '#'
+                grid2[Point(3 * k + 0, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 1)] = '#'
+                grid2[Point(3 * k + 1, 3 * j + 2)] = '#'
+            else:
+                raise ValueError("Invalid Space", space)
             pass
     pass
 
     for y in range(max_y):
         for x in range(max_x):
-            print(grid[(x, y)], end='')
+            print(grid2[(x, y)], end='')
         print('')
+
+    queue = collections.deque([Point(0, 0)])
+    seen = set()
+
+    while len(queue) > 0:
+        # print(f'{len(queue)=}')
+        location = queue.popleft()
+        if location in seen:
+            continue
+        seen.add(location)
+
+        grid2[location] = '*'
+
+        for nxt in location.get_neighbors():
+            if nxt not in grid2:
+                continue
+            if grid2[nxt] == '.':
+                queue.append(nxt)
+
+    print(collections.Counter(grid2.values()).most_common())
+    for y in range(max_y):
+        for x in range(max_x):
+            print(grid2[(x, y)], end='')
+        print('')
+
+    count = 0
+    for location in grid:
+        scaled = Point(location.x * 3, location.y * 3)
+        print(f'{location}: {all([grid2[(scaled + (dx, dy))] == "." for dx in (0, 1, 2) for dy in (0, 1, 2)])}')
+        if all(grid2[(scaled + (dx, dy))] == '.' for dx in (0, 1, 2) for dy in (0, 1, 2)):
+
+            count += 1
+
+    return count
 
 def main():
     print(part1(fileinput.input()))
