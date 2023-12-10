@@ -217,19 +217,11 @@ def part2(data):
                 grid2[Point(3 * k + 1, 3 * j + 2)] = '#'
             else:
                 raise ValueError("Invalid Space", space)
-            pass
-    pass
-
-    for y in range(max_y):
-        for x in range(max_x):
-            print(grid2[(x, y)], end='')
-        print('')
 
     queue = collections.deque([Point(0, 0)])
     seen = set()
 
     while len(queue) > 0:
-        # print(f'{len(queue)=}')
         location = queue.popleft()
         if location in seen:
             continue
@@ -243,16 +235,9 @@ def part2(data):
             if grid2[nxt] == '.':
                 queue.append(nxt)
 
-    print(collections.Counter(grid2.values()).most_common())
-    for y in range(max_y):
-        for x in range(max_x):
-            print(grid2[(x, y)], end='')
-        print('')
-
     count = 0
     for location in grid:
         scaled = Point(location.x * 3, location.y * 3)
-        print(f'{location}: {all([grid2[(scaled + (dx, dy))] == "." for dx in (0, 1, 2) for dy in (0, 1, 2)])}')
         if all(grid2[(scaled + (dx, dy))] == '.' for dx in (0, 1, 2) for dy in (0, 1, 2)):
 
             count += 1
