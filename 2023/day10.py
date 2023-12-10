@@ -85,17 +85,12 @@ def build_map(data):
 def find_connected(grid: dict[Point, Pipe]):
     adj = {}
     for location, pipe in (grid.items()):
-        print(f'{location=} {pipe=}')
         moves = [dirs[direction] for direction in dir_maps[pipe]]
-        print(f'{moves=}')
         neighbors = [location + move for move in moves]
 
         valid = [neighbor for neighbor in neighbors if neighbor in grid]
-        print(f'{neighbors=} => {valid=}')
-
 
         adj[location] = valid
-        print(f'{[neighbor in grid for neighbor in neighbors]}')
 
     return adj
 
@@ -127,24 +122,15 @@ def walk_path(grid, start):
 def part1(data):
     grid, start = build_map(data)
 
-    print(f'{start=}')
-
-    # grid[start] = Pipe('J')
-
-    # path = walk_path(grid, start)
     adjacent = find_connected(grid)
-
-    print(f'{adjacent=}')
 
     for space, neighbors in adjacent.items():
         if start in neighbors:
             adjacent[start].append(space)
 
-    print(f'{adjacent[start]}')
-
     distance = {
         start: 0
-    } #collections.defaultdict(lambda: math.inf)
+    }
     queue = collections.deque([start])
 
     ans = (0, start)
@@ -154,30 +140,15 @@ def part1(data):
         current_distance = distance[current]
 
         for nxt in adjacent[current]:
-            print(f'{current} {distance.get(current, "?")}')
 
             if nxt not in distance:
                 distance[nxt] = current_distance + 1
                 ans = max(ans, (current_distance + 1, nxt))
                 queue.append(nxt)
 
+
     return ans[0]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    print(f'{path=}')
-    pass
 
 def part2(data):
     pass
