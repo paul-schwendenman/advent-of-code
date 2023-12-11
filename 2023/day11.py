@@ -96,14 +96,15 @@ def part1(data):
 
     print(f'galaxies={len(galaxies)}')
 
-    pairs = itertools.combinations(galaxies, 2)
+    pairs: tuple(Point, Point) = itertools.combinations(galaxies, 2)
     distances: dict[Point, dict[Point, int]] = collections.defaultdict(dict)
 
 
     acc = 0
 
     for start, goal in tqdm(list(pairs)):
-        low, distances = find_path(grid, start, goal, distances)
+        # low, distances = find_path(grid, start, goal, distances)
+        low = start.manhattan(goal)
 
         acc += low
 
