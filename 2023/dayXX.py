@@ -4,12 +4,16 @@ import itertools
 import math
 import functools
 import collections
+import enum
+
 
 def part1(data):
     pass
 
+
 def part2(data):
     pass
+
 
 def main():
     print(part1(fileinput.input()))
