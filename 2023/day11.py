@@ -60,7 +60,7 @@ def find_path(grid: Point, start: Point, goal, distances: dict[Point, dict[Point
 
 
 
-def parse_grid(data):
+def parse_grid(data, offset=2):
     lines = [list(l.strip()) for l in data]
     grid = collections.defaultdict(lambda: Space.EMPTY)
     galaxies = set()
@@ -70,11 +70,11 @@ def parse_grid(data):
     for y, line in enumerate(lines):
         dx = 0
         if all(map(lambda item: item == '.', line)):
-            dy += 1
+            dy += offset - 1
         for x, chr in enumerate(line):
             if all(map(lambda item: item == '.', columns[x])):
                 # print(f'{x=}: {columns[x]=}')
-                dx += 1
+                dx += offset - 1
             location = Point(x + dx, y + dy)
             # location = Point(x, y)
             grid[location] = Space(chr)
@@ -114,6 +114,28 @@ def part1(data):
     pass
 
 def part2(data):
+    grid, galaxies = parse_grid(data, 1_000_000)
+
+    # for r in range(15):
+        # print(''.join('.' if (grid[(c, r)]) == Space.EMPTY else "#" for c in range(15)))
+
+    print(f'galaxies={len(galaxies)}')
+
+    pairs: tuple(Point, Point) = itertools.combinations(galaxies, 2)
+    distances: dict[Point, dict[Point, int]] = collections.defaultdict(dict)
+
+
+    acc = 0
+
+    for start, goal in tqdm(list(pairs)):
+        # low, distances = find_path(grid, start, goal, distances)
+        low = start.manhattan(goal)
+
+        acc += low
+
+    print(f'{start=} {goal=} {low=}')
+
+    return acc
     pass
 
 def main():
