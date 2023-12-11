@@ -1,17 +1,6 @@
 import fileinput
-import re
 import itertools
-import math
-import functools
 import collections
-import enum
-from heapq import heapify, heappop, heappush
-from tqdm import tqdm
-
-
-class Space(enum.Enum):
-    EMPTY = '.'
-    GALAXY = '#'
 
 
 class Point(collections.namedtuple('Point', 'x y')):
@@ -29,114 +18,37 @@ class Point(collections.namedtuple('Point', 'x y')):
         return abs(self.x - other.x) + abs(self.y - other.y)
 
 
-def find_path(grid: Point, start: Point, goal, distances: dict[Point, dict[Point, int]]):
-    queue = [(0, start)]
-    heapify(queue)
-    low = math.inf
-    seen = set()
-
-    while len(queue) > 0:
-        # print(f'size={len(queue)}')
-        steps, current = heappop(queue)
-
-        if steps > low:
-            continue
-
-        if current in seen:
-            continue
-
-        seen.add(current)
-        distances[start][current] = steps
-
-
-        if current == goal:
-            low = steps
-            continue
-
-        for neighbor in current.get_neighbors():
-            heappush(queue, (steps + 1, neighbor))
-
-    return low, distances
-
-
-
-def parse_grid(data, offset=2):
+def find_galaxies(data, expansion=2):
     lines = [list(l.strip()) for l in data]
-    grid = collections.defaultdict(lambda: Space.EMPTY)
-    galaxies = set()
+    galaxies: set[Point] = set()
     columns = list(map(list, zip(*lines)))
     dx, dy = 0, 0
 
     for y, line in enumerate(lines):
         dx = 0
         if all(map(lambda item: item == '.', line)):
-            dy += offset - 1
+            dy += expansion - 1
         for x, chr in enumerate(line):
             if all(map(lambda item: item == '.', columns[x])):
-                # print(f'{x=}: {columns[x]=}')
-                dx += offset - 1
-            location = Point(x + dx, y + dy)
-            # location = Point(x, y)
-            grid[location] = Space(chr)
+                dx += expansion - 1
 
             if chr == '#':
-                galaxies.add(location)
+                galaxies.add(Point(x + dx, y + dy))
 
-    print(f'{x=} {y=} {dx=} {dy=}')
-
-    return grid, galaxies
+    return galaxies
 
 
-def part1(data):
+def part1(data, expansion=2):
+    galaxies = find_galaxies(data, expansion)
 
-    grid, galaxies = parse_grid(data)
+    galaxy_pairs: tuple(Point, Point) = itertools.combinations(galaxies, 2)
 
-    # for r in range(15):
-        # print(''.join('.' if (grid[(c, r)]) == Space.EMPTY else "#" for c in range(15)))
-
-    print(f'galaxies={len(galaxies)}')
-
-    pairs: tuple(Point, Point) = itertools.combinations(galaxies, 2)
-    distances: dict[Point, dict[Point, int]] = collections.defaultdict(dict)
+    return sum(start.manhattan(goal) for start, goal in galaxy_pairs)
 
 
-    acc = 0
+def part2(data, expansion=1_000_000):
+    return part1(data, expansion)
 
-    for start, goal in tqdm(list(pairs)):
-        # low, distances = find_path(grid, start, goal, distances)
-        low = start.manhattan(goal)
-
-        acc += low
-
-    print(f'{start=} {goal=} {low=}')
-
-    return acc
-    pass
-
-def part2(data):
-    grid, galaxies = parse_grid(data, 1_000_000)
-
-    # for r in range(15):
-        # print(''.join('.' if (grid[(c, r)]) == Space.EMPTY else "#" for c in range(15)))
-
-    print(f'galaxies={len(galaxies)}')
-
-    pairs: tuple(Point, Point) = itertools.combinations(galaxies, 2)
-    distances: dict[Point, dict[Point, int]] = collections.defaultdict(dict)
-
-
-    acc = 0
-
-    for start, goal in tqdm(list(pairs)):
-        # low, distances = find_path(grid, start, goal, distances)
-        low = start.manhattan(goal)
-
-        acc += low
-
-    print(f'{start=} {goal=} {low=}')
-
-    return acc
-    pass
 
 def main():
     print(part1(fileinput.input()))
