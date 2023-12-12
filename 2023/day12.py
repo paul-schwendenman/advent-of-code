@@ -5,11 +5,12 @@ import math
 import functools
 import collections
 import enum
+from tqdm import tqdm
 
 def parse_line(line):
     springs, sets = line.split(' ')
     # springs = springs.split('')
-    sets = [int(item) for item in sets.split(',')]
+    sets = tuple(int(item) for item in sets.split(','))
 
     return springs, sets
 
@@ -40,7 +41,7 @@ def count_arrangements(springs, sets):
 
 
 def score_springs(springs):
-    sets = []
+    sets = tuple()
     count = 0
 
     for spring in springs:
@@ -49,11 +50,11 @@ def score_springs(springs):
             count += 1
         elif spring == '.':
             if count > 0:
-                sets.append(count)
+                sets = sets + (count,)
             count = 0
     else:
         if count > 0:
-            sets.append(count)
+            sets = sets + (count,)
     return sets
 
 def part1(data):
@@ -67,7 +68,25 @@ def part1(data):
     return acc
 
 
+def extend_line(line):
+    springs, sets = line.split(' ')
+
+    new_springs = '?'.join([springs for _ in range(5)])
+    new_sets = ','.join([sets for _ in range(5)])
+
+    return ' '.join([new_springs, new_sets])
+
+
+
 def part2(data):
+    acc = 0
+
+    for line in tqdm(data):
+        springs, sets = parse_line(extend_line(line))
+
+        acc += count_arrangements(springs, sets)
+    pass
+    return acc
     pass
 
 
