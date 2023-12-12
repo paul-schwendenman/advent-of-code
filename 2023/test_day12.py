@@ -1,6 +1,6 @@
 import pytest
 import fileinput
-from day12 import part1, part2, score_springs
+from day12 import part1, part2, score_springs, generate_permutations, count_arrangements
 
 
 @pytest.fixture
@@ -53,3 +53,9 @@ def test_score_springs_6():
     .###.##....# 3,2,1
     '''
     assert score_springs(".###.##....#") == [3, 2, 1]
+
+def test_generate_permutations():
+    assert len(list(generate_permutations('?###????????'))) == 512
+
+def test_count_arrangements():
+    assert count_arrangements('?###????????', [3, 2, 1]) == 10

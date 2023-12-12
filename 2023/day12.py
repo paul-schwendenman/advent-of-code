@@ -13,8 +13,30 @@ def parse_line(line):
 
     return springs, sets
 
+
+def generate_permutations(springs):
+    if not springs:
+        yield ()
+    else:
+        spring = springs[0]
+
+        for past in generate_permutations(springs[1:]):
+            if spring == '.' or spring == '#':
+                yield (spring,) + past
+            elif spring == '?':
+                yield ('.',) + past
+                yield ('#',) + past
+            else:
+                raise ValueError('Invalid spring type')
+
+
 def count_arrangements(springs, sets):
-    pass
+    acc = 0
+    for permutation in generate_permutations(springs):
+        if score_springs(permutation) == sets:
+            acc += 1
+
+    return acc
 
 
 def score_springs(springs):
@@ -22,7 +44,7 @@ def score_springs(springs):
     count = 0
 
     for spring in springs:
-        print(f'{spring} {count=} {sets}')
+        # print(f'{spring} {count=} {sets}')
         if spring == '#':
             count += 1
         elif spring == '.':
@@ -42,6 +64,7 @@ def part1(data):
 
         acc += count_arrangements(springs, sets)
     pass
+    return acc
 
 
 def part2(data):
