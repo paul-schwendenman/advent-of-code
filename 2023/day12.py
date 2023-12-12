@@ -1,16 +1,9 @@
 import fileinput
-import re
-import itertools
-import math
 import functools
-import collections
-import enum
-from tqdm import tqdm
 
 
 def parse_line(line):
     springs, sets = line.split(' ')
-    # springs = springs.split('')
     sets = tuple(int(item) for item in sets.split(','))
 
     return springs, sets
@@ -37,7 +30,6 @@ def score_springs(springs):
     count = 0
 
     for spring in springs:
-        # print(f'{spring} {count=} {sets}')
         if spring == '#':
             count += 1
         elif spring == '.':
