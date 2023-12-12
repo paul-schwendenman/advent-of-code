@@ -71,28 +71,58 @@ def part1(data):
 def extend_line(line):
     springs, sets = line.split(' ')
 
-    new_springs = '?'.join([springs for _ in range(5)])
-    new_sets = ','.join([sets for _ in range(5)])
+    new_springs = '?'.join([springs for _ in range(5)]) + '.'
+    new_sets = ','.join(sets for _ in range(5))
 
     return ' '.join([new_springs, new_sets])
 
+
+@functools.cache
+def count_arrangements2(springs, groups, index=0, spring_count=0, group_index=0):
+    if index == len(springs):
+        if len(groups) == group_index:
+            return 1
+        return 0
+    elif springs[index] == '#':
+        return count_arrangements2(springs, groups, index+1, spring_count+1, group_index)
+
+    if springs[index] == '.' or group_index == len(groups):
+        if group_index < len(groups) and spring_count == groups[group_index]:
+            return count_arrangements2(springs, groups, index+1, 0, group_index+1)
+        elif spring_count == 0:
+            return count_arrangements2(springs, groups, index+1, 0, group_index)
+        return 0
+
+    elif springs[index] == '?':
+        guess_broken_count = count_arrangements2(springs, groups, index+1, spring_count+1, group_index)
+
+        guess_ok_count = 0
+
+        if spring_count == groups[group_index]:
+            guess_ok_count = count_arrangements2(springs, groups, index+1, 0, group_index+1)
+        elif spring_count == 0:
+            guess_ok_count = count_arrangements2(springs, groups, index+1, 0, group_index)
+
+        return guess_broken_count + guess_ok_count
 
 
 def part2(data):
     acc = 0
 
-    for line in tqdm(data):
+    for line in (data):
         springs, sets = parse_line(extend_line(line))
 
-        acc += count_arrangements(springs, sets)
-    pass
+        acc += count_arrangements2(springs, sets)
+
     return acc
-    pass
 
 
 def main():
-    print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
+    try:
+        print(part1(fileinput.input()))
+        print(part2(fileinput.input()))
+    finally:
+        print(f'cache: {count_arrangements2.cache_info()}')
 
 
 if __name__ == '__main__':
