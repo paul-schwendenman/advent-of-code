@@ -64,7 +64,7 @@ def test_generate_permutations():
 
 
 def test_count_arrangements():
-    assert count_arrangements('?###????????', (3, 2, 1)) == 10
+    assert count_arrangements('?###????????' + '.', (3, 2, 1)) == 10
 
 def test_extend_line():
     assert extend_line('.# 1') == '.#?.#?.#?.#?.# 1,1,1,1,1'
