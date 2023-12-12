@@ -63,7 +63,7 @@ def part1(data):
     for line in data:
         springs, sets = parse_line(line)
 
-        acc += count_arrangements(springs, sets)
+        acc += count_arrangements2(springs + '.', sets)
     pass
     return acc
 
@@ -71,7 +71,7 @@ def part1(data):
 def extend_line(line):
     springs, sets = line.split(' ')
 
-    new_springs = '?'.join([springs for _ in range(5)]) + '.'
+    new_springs = '?'.join([springs for _ in range(5)])
     new_sets = ','.join(sets for _ in range(5))
 
     return ' '.join([new_springs, new_sets])
@@ -112,7 +112,7 @@ def part2(data):
     for line in (data):
         springs, sets = parse_line(extend_line(line))
 
-        acc += count_arrangements2(springs, sets)
+        acc += count_arrangements2(springs + '.', sets)
 
     return acc
 

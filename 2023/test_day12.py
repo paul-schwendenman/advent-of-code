@@ -66,11 +66,9 @@ def test_generate_permutations():
 def test_count_arrangements():
     assert count_arrangements('?###????????', (3, 2, 1)) == 10
 
-@pytest.mark.skip()
 def test_extend_line():
     assert extend_line('.# 1') == '.#?.#?.#?.#?.# 1,1,1,1,1'
 
 
-@pytest.mark.skip()
 def test_extend_line_2():
     assert extend_line('???.### 1,1,3') == '???.###????.###????.###????.###????.### 1,1,3,1,1,3,1,1,3,1,1,3,1,1,3'
