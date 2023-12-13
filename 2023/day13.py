@@ -45,12 +45,35 @@ def find_horizontal_reflection(pattern):
     else:
         raise ValueError("No match found")
 
-    pass
+
+def count_diff(a, b):
+    acc = 0
+    for aa, bb in zip(a, b):
+        if aa != bb:
+            acc += 1
+
+    return acc
+
+def find_smugged_horizontal_reflection(pattern):
+    for index, line in enumerate(pattern):
+        before = list(reversed(pattern[:index]))
+        after = pattern[index:]
+
+        if len(before) == 0 or len(after) == 0:
+            continue
+
+        if sum(count_diff(a, b)for a, b in zip(before, after)) == 1:
+            return index
+
+    else:
+        raise ValueError("No match found")
 
 
 def find_vertical_reflection(pattern):
     return find_horizontal_reflection(transpose(pattern))
 
+def find_smugged_vertical_reflection(pattern):
+    return find_smugged_horizontal_reflection(transpose(pattern))
 
 
 def part1(data):
@@ -86,6 +109,30 @@ def part1(data):
 
 
 def part2(data):
+    patterns = list(extract_patterns(data))
+
+    print(f'{len(patterns)}')
+
+    acc = 0
+
+    for pattern in patterns:
+        try:
+            n = find_smugged_horizontal_reflection(pattern) * 100
+            print(f'{n=}')
+            acc += n
+        except:
+            pass
+        finally:
+            pass
+        try:
+            m = find_smugged_vertical_reflection(pattern)
+            print(f'{m=}')
+            acc += m
+        except:
+            pass
+        finally:
+            pass
+    return acc
     pass
 
 
