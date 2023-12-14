@@ -88,21 +88,25 @@ def part1(data):
 
     return sum(max_y - y for (_, y), space in grid.items() if space == 'O' )
 
-    # grid = (tilt(grid, max_x, max_y, (0, -1)))
 
-    # print_grid(grid, max_x, max_y)
+def test_rotation(data):
+    grid, (max_x, max_y) = parse_data(data)
 
-    # grid = (tilt(grid, max_x, max_y, (-1, 0)))
+    grid = (tilt(grid, max_x, max_y, (0, -1)))
 
-    # print_grid(grid, max_x, max_y)
+    print_grid(grid, max_x, max_y)
 
-    # grid = (tilt(grid, max_x, max_y, (0, 1)))
+    grid = (tilt(grid, max_x, max_y, (-1, 0)))
 
-    # print_grid(grid, max_x, max_y)
+    print_grid(grid, max_x, max_y)
 
-    # grid = (tilt(grid, max_x, max_y, (1, 0)))
+    grid = (tilt(grid, max_x, max_y, (0, 1)))
 
-    # print_grid(grid, max_x, max_y)
+    print_grid(grid, max_x, max_y)
+
+    grid = (tilt(grid, max_x, max_y, (1, 0)))
+
+    print_grid(grid, max_x, max_y)
 
 
 
@@ -114,7 +118,6 @@ def part2(data):
     goal = 1_000_000_000
 
     for index in (range(1, goal)):
-        # print("this")
         grid = (cycle_tilts(grid, max_x, max_y))
 
         if hash(grid) in grids:
@@ -131,13 +134,8 @@ def part2(data):
 
 
 def main():
-    try:
-        print(part1(fileinput.input()))
-        print(part2(fileinput.input()))
-    finally:
-        # print(f'tilt:  {tilt.cache_info()}')
-        # print(f'cycle: {cycle_tilts.cache_info()}')
-        pass
+    print(part1(fileinput.input()))
+    print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
