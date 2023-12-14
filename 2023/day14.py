@@ -42,7 +42,7 @@ def freeze_data(grid, max_x, max_y):
             pass
 
 
-def tilt(grid, max_x, max_y, shift):
+def tilt(grid, max_x, max_y, shift=Direction.NORTH):
     moved = True
     while moved:
         moved = False
@@ -71,55 +71,22 @@ def cycle_tilts(grid, max_x, max_y):
 
 
 def score_grid(grid, max_y):
-    return sum(max_y - y for (_, y), space in dict(grid).items() if space == 'O' )
-
-
-def print_grid(grid, max_x, max_y):
-    if type(grid) != dict:
-        grid = dict(grid)
-
-    for y in range(max_y):
-        print(''.join(grid[(x, y)] for x in range(max_x)))
-    print('')
+    return sum(max_y - y for (_, y), space in grid.items() if space == 'O' )
 
 
 def part1(data):
     grid, (max_x, max_y) = parse_data(data)
 
-    grid = dict(tilt(grid, max_x, max_y, Direction.NORTH))
+    grid = tilt(grid, max_x, max_y)
 
-    return sum(max_y - y for (_, y), space in grid.items() if space == 'O' )
+    return score_grid(grid, max_y)
 
 
-def test_rotation(data):
+def part2(data, goal=1_000_000_000):
     grid, (max_x, max_y) = parse_data(data)
-
-    grid = (tilt(grid, max_x, max_y, Direction.NORTH))
-
-    print_grid(grid, max_x, max_y)
-
-    grid = (tilt(grid, max_x, max_y, Direction.WEST))
-
-    print_grid(grid, max_x, max_y)
-
-    grid = (tilt(grid, max_x, max_y, Direction.SOUTH))
-
-    print_grid(grid, max_x, max_y)
-
-    grid = (tilt(grid, max_x, max_y, Direction.EAST))
-
-    print_grid(grid, max_x, max_y)
-
-
-
-
-def part2(data):
-    grid, (max_x, max_y) = parse_data(data)
-
     grids = {}
-    goal = 1_000_000_000
 
-    for index in (range(1, goal)):
+    for index in itertools.count(1):
         grid = (cycle_tilts(grid, max_x, max_y))
 
         key = hash(tuple(grid.items()))
@@ -132,9 +99,6 @@ def part2(data):
                     return score
 
         grids[key] = (index, score_grid(grid, max_y))
-
-    # return sum(max_y - y for (_, y), space in dict(grid).items() if space == 'O' )
-    pass
 
 
 def main():
