@@ -7,6 +7,12 @@ import collections
 import enum
 from tqdm import tqdm
 
+class Direction(tuple, enum.Enum):
+    NORTH = (0, -1)
+    SOUTH = (0, 1)
+    WEST = (-1, 0)
+    EAST = (1, 0)
+
 
 class Point(collections.namedtuple('Point', 'x y')):
     __slots__ = ()
@@ -27,8 +33,7 @@ def parse_data(data):
     else:
         max_x, max_y = i + 1, j + 1
 
-    return tuple(grid.items()), (max_x, max_y)
-    # return grid, (max_x, max_y)
+    return grid, (max_x, max_y)
 
 
 def freeze_data(grid, max_x, max_y):
@@ -37,9 +42,7 @@ def freeze_data(grid, max_x, max_y):
             pass
 
 
-# @functools.lru_cache(maxsize=None)
 def tilt(grid, max_x, max_y, shift):
-    grid = dict(grid)
     moved = True
     while moved:
         moved = False
@@ -55,15 +58,14 @@ def tilt(grid, max_x, max_y, shift):
                     moved = True
                     grid[next_pos] = 'O'
                     grid[pos] = '.'
-    return tuple(grid.items())
+    return grid
 
 
-# @functools.lru_cache(maxsize=None)
 def cycle_tilts(grid, max_x, max_y):
-    north = tilt(grid, max_x, max_y, (0, -1))
-    west = tilt(north, max_x, max_y, (-1, 0))
-    south = tilt(west, max_x, max_y, (0, 1))
-    east = tilt(south, max_x, max_y, (1, 0))
+    north = tilt(grid, max_x, max_y, Direction.NORTH)
+    west = tilt(north, max_x, max_y, Direction.WEST)
+    south = tilt(west, max_x, max_y, Direction.SOUTH)
+    east = tilt(south, max_x, max_y, Direction.EAST)
 
     return east
 
@@ -84,7 +86,7 @@ def print_grid(grid, max_x, max_y):
 def part1(data):
     grid, (max_x, max_y) = parse_data(data)
 
-    grid = dict(tilt(grid, max_x, max_y, (0, -1)))
+    grid = dict(tilt(grid, max_x, max_y, Direction.NORTH))
 
     return sum(max_y - y for (_, y), space in grid.items() if space == 'O' )
 
@@ -92,19 +94,19 @@ def part1(data):
 def test_rotation(data):
     grid, (max_x, max_y) = parse_data(data)
 
-    grid = (tilt(grid, max_x, max_y, (0, -1)))
+    grid = (tilt(grid, max_x, max_y, Direction.NORTH))
 
     print_grid(grid, max_x, max_y)
 
-    grid = (tilt(grid, max_x, max_y, (-1, 0)))
+    grid = (tilt(grid, max_x, max_y, Direction.WEST))
 
     print_grid(grid, max_x, max_y)
 
-    grid = (tilt(grid, max_x, max_y, (0, 1)))
+    grid = (tilt(grid, max_x, max_y, Direction.SOUTH))
 
     print_grid(grid, max_x, max_y)
 
-    grid = (tilt(grid, max_x, max_y, (1, 0)))
+    grid = (tilt(grid, max_x, max_y, Direction.EAST))
 
     print_grid(grid, max_x, max_y)
 
@@ -120,14 +122,16 @@ def part2(data):
     for index in (range(1, goal)):
         grid = (cycle_tilts(grid, max_x, max_y))
 
-        if hash(grid) in grids:
-            cycle_length = index - grids[hash(grid)][0]
+        key = hash(tuple(grid.items()))
+
+        if key in grids:
+            cycle_length = index - grids[key][0]
 
             for cycle, score in grids.values():
-                if cycle >= grids[hash(grid)][0] and cycle % cycle_length == goal % cycle_length:
+                if cycle >= grids[key][0] and cycle % cycle_length == goal % cycle_length:
                     return score
 
-        grids[hash(grid)] = (index, score_grid(grid, max_y))
+        grids[key] = (index, score_grid(grid, max_y))
 
     # return sum(max_y - y for (_, y), space in dict(grid).items() if space == 'O' )
     pass
