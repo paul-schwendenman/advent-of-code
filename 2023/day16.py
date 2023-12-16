@@ -5,6 +5,7 @@ import math
 import functools
 import collections
 import enum
+import pprint
 
 
 class Point(collections.namedtuple('Point', 'x y')):
@@ -42,7 +43,7 @@ def parse_grid(data):
 
             grid[here] = char
 
-    return grid
+    return grid, i, j
 
 
 def show_energized(grid, energized):
@@ -138,7 +139,7 @@ def track_beams(grid, start_location, start_direction):
 
 
 def part1(data):
-    grid = parse_grid(data)
+    grid, _, _ = parse_grid(data)
 
     start = Point(0, 0)
     start_direction = Direction.RIGHT
@@ -149,7 +150,29 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    grid, max_x, max_y = parse_grid(data)
+    energized_map = {}
+
+    top_row = ((Point(0, y), Direction.DOWN) for y in range(max_y + 1))
+    bottom_row = ((Point(max_x, y), Direction.UP) for y in range(max_y + 1))
+    left_row = ((Point(x, 0), Direction.RIGHT) for x in range(max_x + 1))
+    right_row = ((Point(x, max_y), Direction.LEFT) for x in range(max_x + 1))
+
+    for start_location, start_direction in itertools.chain(top_row, bottom_row, left_row, right_row):
+        energized = track_beams(grid, start_location, start_direction)
+
+        energized_map[(start_location, start_direction)] = energized
+
+    pprint.pprint({key: len(value) for key, value in energized_map.items()})
+
+    return max(len(a) for a in energized_map.values())
+    # return max((len(a | b), a, b) for a, b in itertools.combinations(energized_map.values(), 2))
+    top = max((len(a[1] | b[1]), a, b) for a, b in itertools.combinations(energized_map.items(), 2))
+
+    print(top[1][0], top[2][0],)
+    show_energized(grid, top[1][1] | top[2][1])
+
+    return len(top[1][1] | top[2][1])
 
 
 def main():
