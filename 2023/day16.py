@@ -71,11 +71,13 @@ def track_beams(grid, start_location, start_direction):
             continue
 
         visited.add((location, facing))
+
         if location in grid:
             energized.add(location)
 
         match grid.get(location, None), facing:
             case None, _:
+                # print('hit border', location, facing)
                 continue
             case '.', _:
                 next_location = location + facing
@@ -141,8 +143,10 @@ def track_beams(grid, start_location, start_direction):
 def part1(data):
     grid, _, _ = parse_grid(data)
 
-    start = Point(0, 0)
-    start_direction = Direction.RIGHT
+    start = Point(3, 0)
+    start_direction = Direction.DOWN
+    # start = Point(0, 0)
+    # start_direction = Direction.RIGHT
 
     energized = track_beams(grid, start, start_direction)
 
@@ -153,17 +157,20 @@ def part2(data):
     grid, max_x, max_y = parse_grid(data)
     energized_map = {}
 
-    top_row = ((Point(0, y), Direction.DOWN) for y in range(max_y + 1))
-    bottom_row = ((Point(max_x, y), Direction.UP) for y in range(max_y + 1))
-    left_row = ((Point(x, 0), Direction.RIGHT) for x in range(max_x + 1))
-    right_row = ((Point(x, max_y), Direction.LEFT) for x in range(max_x + 1))
+    left_row = ((Point(0, y), Direction.RIGHT) for y in range(max_y + 1))
+    right_row = ((Point(max_x, y), Direction.LEFT) for y in range(max_y + 1))
+    top_row = ((Point(x, 0), Direction.DOWN) for x in range(max_x + 1))
+    bottom_row = ((Point(x, max_y), Direction.UP) for x in range(max_x + 1))
 
+    # for start_location, start_direction in itertools.chain(top_row):
     for start_location, start_direction in itertools.chain(top_row, bottom_row, left_row, right_row):
+        # print(f'{start_location=} {start_direction=}')
         energized = track_beams(grid, start_location, start_direction)
 
         energized_map[(start_location, start_direction)] = energized
 
-    pprint.pprint({key: len(value) for key, value in energized_map.items()})
+    # pprint.pprint({key: len(value) for key, value in energized_map.items()})
+    # pprint.pprint({key: (value) for key, value in energized_map.items()})
 
     return max(len(a) for a in energized_map.values())
     # return max((len(a | b), a, b) for a, b in itertools.combinations(energized_map.values(), 2))
