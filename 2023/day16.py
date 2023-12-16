@@ -56,16 +56,11 @@ def show_energized(grid, energized):
         print('')
     print('')
 
-
-def part1(data):
-    grid = parse_grid(data)
-
-    start = Point(0, 0)
-    start_direction = Direction.RIGHT
+def track_beams(grid, start_location, start_direction):
     energized = set()
     visited = set()
 
-    queue = collections.deque([(start, start_direction)])
+    queue = collections.deque([(start_location, start_direction)])
 
     while len(queue) > 0:
         # print(f'{energized=}')
@@ -139,8 +134,16 @@ def part1(data):
             case symbol, direction:
                 raise ValueError("No match", symbol, direction)
         # show_energized(grid, energized)
+    return energized
 
 
+def part1(data):
+    grid = parse_grid(data)
+
+    start = Point(0, 0)
+    start_direction = Direction.RIGHT
+
+    energized = track_beams(grid, start, start_direction)
 
     return len(energized)
 
