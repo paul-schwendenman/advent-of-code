@@ -29,6 +29,23 @@ class Direction(tuple, enum.Enum):
     RIGHT = (1, 0)
 
 
+# ---- / ------
+FORWARD_SLASH = {
+    Direction.UP: Direction.RIGHT,
+    Direction.RIGHT: Direction.UP,
+    Direction.LEFT: Direction.DOWN,
+    Direction.DOWN: Direction.LEFT,
+}
+
+# ---- \ ------
+BACKSLASH = {
+    Direction.UP: Direction.LEFT,
+    Direction.RIGHT: Direction.DOWN,
+    Direction.LEFT: Direction.UP,
+    Direction.DOWN: Direction.RIGHT,
+}
+
+
 def parse_grid(data):
     grid = {}
 
@@ -52,6 +69,7 @@ def show_energized(grid, energized):
         print('')
     print('')
 
+
 def track_beams(grid, start_location, start_direction):
     energized = set()
     visited = set()
@@ -68,65 +86,34 @@ def track_beams(grid, start_location, start_direction):
 
         if location in grid:
             energized.add(location)
+        else:
+            continue
 
-        match grid.get(location, None), facing:
-            case None, _:
-                continue
+        match grid[location], facing:
             case '.', _:
+                queue.append((location + facing, facing))
+            case '/', _:
+                facing = FORWARD_SLASH[facing]
                 next_location = location + facing
                 queue.append((next_location, facing))
-            case '/', Direction.RIGHT:
-                facing = Direction.UP
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '/', Direction.DOWN:
-                facing = Direction.LEFT
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '/', Direction.LEFT:
-                facing = Direction.DOWN
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '/', Direction.UP:
-                facing = Direction.RIGHT
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '\\', Direction.RIGHT:
-                facing = Direction.DOWN
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '\\', Direction.DOWN:
-                facing = Direction.RIGHT
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '\\', Direction.LEFT:
-                facing = Direction.UP
-                next_location = location + facing
-                queue.append((next_location, facing))
-            case '\\', Direction.UP:
-                facing = Direction.LEFT
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
+            case '\\', _:
+                facing = BACKSLASH[facing]
+                queue.append((location + facing, facing))
             case '-', Direction.RIGHT | Direction.LEFT:
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
             case '-', Direction.UP | Direction.DOWN:
                 facing = Direction.LEFT
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
                 facing = Direction.RIGHT
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
             case '|', Direction.UP | Direction.DOWN:
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
             case '|', Direction.RIGHT | Direction.LEFT:
                 facing = Direction.UP
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
                 facing = Direction.DOWN
-                next_location = location + facing
-                queue.append((next_location, facing))
+                queue.append((location + facing, facing))
             case symbol, direction:
                 raise ValueError("No match", symbol, direction)
     return energized
