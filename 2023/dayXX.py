@@ -5,6 +5,7 @@ import math
 import functools
 import collections
 import enum
+import pprint
 
 
 def part1(data):
