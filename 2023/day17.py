@@ -44,13 +44,10 @@ def part1(data):
     end = Point(i, j)
     min_loss = math.inf
 
-    # queue = collections.deque([State(0, start, tuple())])
     queue = [State(0, start, tuple())]
     spots = {}
 
     while len(queue) > 0:
-        # print(f'states: {len(queue)}')
-        # loss, location, prev_moves = queue.popleft()
         loss, location, prev_moves = heapq.heappop(queue)
 
         if (location, prev_moves) in spots:
@@ -60,7 +57,6 @@ def part1(data):
         spots[(location, prev_moves)] = loss
 
         if loss > min_loss:
-            # print(f'path exceeds loss: {loss} > {min_loss}')
             continue
 
         if location == end:
@@ -71,17 +67,12 @@ def part1(data):
         for direction in (Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST):
             next_location = location + direction
             if next_location not in grid:
-                # print(f'moving {direction} is out of bounds: {next_location}')
                 continue
 
             if len(prev_moves) > 1 and (prev_moves[-1][0] + direction[0], prev_moves[-1][1] + direction[1]) == (0, 0):
-                # print(f"can't go {direction} when going {prev_moves[-1]}")
                 continue
-            # elif len(prev_moves) > 1:
-            #     print(f"can go {direction} when going {prev_moves[-1]} {prev_moves[-1] + direction}")
 
             if len(prev_moves) == 3 and all(map(lambda item: item == direction, prev_moves)):
-                # print(f"can't go {direction} because {prev_moves}")
                 continue
 
             next_loss = loss + grid[next_location]
@@ -89,14 +80,10 @@ def part1(data):
             if len(next_directions) > 3:
                 raise ValueError("Out of bounds")
 
-            # queue.append(State(next_location, next_loss, next_directions))
             heapq.heappush(queue, State(next_loss, next_location, next_directions))
 
-
-
-        pass
-    pass
     return min_loss
+
 
 def part2(data):
     grid = {}
@@ -108,13 +95,10 @@ def part2(data):
     end = Point(i, j)
     min_loss = math.inf
 
-    # queue = collections.deque([State(0, start, tuple())])
     queue = [State(0, start, tuple())]
     spots = {}
 
     while len(queue) > 0:
-        # print(f'states: {len(queue)}')
-        # loss, location, prev_moves = queue.popleft()
         loss, location, prev_moves = heapq.heappop(queue)
 
         if (location, prev_moves) in spots:
@@ -124,51 +108,32 @@ def part2(data):
         spots[(location, prev_moves)] = loss
 
         if loss > min_loss:
-            # print(f'path exceeds loss: {loss} > {min_loss}')
             continue
 
         if location == end:
-            # print('found the end')
             min_loss = min(min_loss, loss)
             continue
 
         for direction in (Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST):
             next_location = location + direction
             if next_location not in grid:
-                # print(f'moving {direction} is out of bounds: {next_location}')
                 continue
 
             if len(prev_moves) > 1 and (prev_moves[-1][0] + direction[0], prev_moves[-1][1] + direction[1]) == (0, 0):
-                # print(f"can't go {direction} when going {prev_moves[-1]}")
                 continue
-            # elif len(prev_moves) > 1:
-            #     print(f"can go {direction} when going {prev_moves[-1]} {prev_moves[-1] + direction}")
 
             if len(prev_moves) == 10 and all(map(lambda item: item == direction, prev_moves)):
-                # print(f"can't go {direction} because {set(prev_moves)}")
                 continue
 
-            if len(prev_moves) >= 1 and (prev_moves[-1] == direction or len(set(prev_moves[-4:])) == 1):
-                pass
-                # continue
-            elif len(prev_moves) >= 1:
-                # print(f"can't go {direction} because {prev_moves[-4:]}")
+            if len(prev_moves) >= 1 and not (prev_moves[-1] == direction or len(set(prev_moves[-4:])) == 1):
                 continue
 
             next_loss = loss + grid[next_location]
             next_directions = (prev_moves + (direction,))[-10:]
-            if len(next_directions) > 10:
-                raise ValueError("Out of bounds")
 
-            # queue.append(State(next_location, next_loss, next_directions))
             heapq.heappush(queue, State(next_loss, next_location, next_directions))
 
-
-
-        pass
-    pass
     return min_loss
-    pass
 
 
 def main():
