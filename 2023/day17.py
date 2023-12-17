@@ -60,11 +60,11 @@ def part1(data):
         spots[(location, prev_moves)] = loss
 
         if loss > min_loss:
-            print(f'path exceeds loss: {loss} > {min_loss}')
+            # print(f'path exceeds loss: {loss} > {min_loss}')
             continue
 
         if location == end:
-            print('found the end')
+            # print('found the end')
             min_loss = min(min_loss, loss)
             continue
 
@@ -84,7 +84,7 @@ def part1(data):
                 # print(f"can't go {direction} because {prev_moves}")
                 continue
 
-            next_loss = loss + grid[location]
+            next_loss = loss + grid[next_location]
             next_directions = (prev_moves + (direction,))[-3:]
             if len(next_directions) > 3:
                 raise ValueError("Out of bounds")
@@ -124,11 +124,11 @@ def part2(data):
         spots[(location, prev_moves)] = loss
 
         if loss > min_loss:
-            print(f'path exceeds loss: {loss} > {min_loss}')
+            # print(f'path exceeds loss: {loss} > {min_loss}')
             continue
 
         if location == end:
-            print('found the end')
+            # print('found the end')
             min_loss = min(min_loss, loss)
             continue
 
@@ -155,7 +155,7 @@ def part2(data):
                 # print(f"can't go {direction} because {prev_moves[-4:]}")
                 continue
 
-            next_loss = loss + grid[location]
+            next_loss = loss + grid[next_location]
             next_directions = (prev_moves + (direction,))[-10:]
             if len(next_directions) > 10:
                 raise ValueError("Out of bounds")
@@ -172,7 +172,7 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
