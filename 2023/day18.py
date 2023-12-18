@@ -63,16 +63,22 @@ def compute_points_inside_polygon(area, num_edges):
     return int(area - num_edges / 2 + 1)
 
 
+def parse_data(data):
+    for line in data:
+        match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
+        if not match:
+            print(f'{line=}')
+        yield match.groups()
+
+
 def part1(data):
     location = Point(0, 0)
     corners = [location]
     circumference = 0
 
-    for line in data:
-        match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
-        if not match:
-            print(f'{line=}')
-        direction, distance, _ = match.groups()
+
+
+    for direction, distance, _ in parse_data(data):
 
         direction = direction_map[direction]
         distance = int(distance)
@@ -101,11 +107,7 @@ def part2(data):
     corners = [location]
     circumference = 0
 
-    for line in data:
-        match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
-        if not match:
-            print(f'{line=}')
-        _, _, color = match.groups()
+    for _, _, color in parse_data(data):
         direction = color[-1]
         distance = int(color[:5], 16)
 
