@@ -31,6 +31,9 @@ class Direction(tuple, enum.Enum):
     LEFT = (-1, 0)
     RIGHT = (1, 0)
 
+    def __mul__(self, num):
+        return (self[0] * num, self[1] * num)
+
 direction_map = {
     "U": Direction.UP,
     "D": Direction.DOWN,
@@ -61,11 +64,10 @@ def compute_points_inside_polygon(area, num_edges):
 
 
 def part1(data):
-    grid = {}
     holes = set()
     location = Point(0, 0)
-    grid[location] = None
     corners = [location]
+    circumference = 0
 
     for line in data:
         match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
@@ -75,27 +77,23 @@ def part1(data):
 
         direction = direction_map[direction]
         distance = int(distance)
+        circumference += distance
 
-        for i in range(distance):
-            location += direction
-            grid[location] = color
-        else:
-            corners.append(location)
+        location += direction * distance
+
+        corners.append(location)
 
     # pprint.pprint(grid)
 
-    print(f'{len(grid)}')
-
-    max_x = max(item.x for item in grid.keys())
-    min_x = min(item.x for item in grid.keys())
-    max_y = max(item.y for item in grid.keys())
-    min_y = min(item.y for item in grid.keys())
+    max_x = max(item.x for item in corners)
+    min_x = min(item.x for item in corners)
+    max_y = max(item.y for item in corners)
+    min_y = min(item.y for item in corners)
 
     print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     # for y in range(min_y, max_y+1):
     #     print(''.join("#" if (x, y) in grid else " " for x in range(min_x, max_x+1)))
-    circumference = len(grid.keys())
 
 
     area = compute_polygonal_area(corners + [corners[0]])
@@ -105,11 +103,10 @@ def part1(data):
 
 
 def part2(data):
-    grid = {}
     holes = set()
     location = Point(0, 0)
-    grid[location] = None
     corners = [location]
+    circumference = 0
 
     for line in data:
         match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
@@ -120,28 +117,21 @@ def part2(data):
         distance = int(color[:5], 16)
 
         direction = direction_map2[direction]
+        circumference += distance
 
-        for i in range(distance):
-            location += direction
-            grid[location] = color
-        else:
-            corners.append(location)
+        location += direction * distance
 
-    # pprint.pprint(grid)
+        corners.append(location)
 
-    print(f'{len(grid)}')
-
-    max_x = max(item.x for item in grid.keys())
-    min_x = min(item.x for item in grid.keys())
-    max_y = max(item.y for item in grid.keys())
-    min_y = min(item.y for item in grid.keys())
+    max_x = max(item.x for item in corners)
+    min_x = min(item.x for item in corners)
+    max_y = max(item.y for item in corners)
+    min_y = min(item.y for item in corners)
 
     print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     # for y in range(min_y, max_y+1):
     #     print(''.join("#" if (x, y) in grid else " " for x in range(min_x, max_x+1)))
-    circumference = len(grid.keys())
-
 
     area = compute_polygonal_area(corners + [corners[0]])
     inner_points = compute_points_inside_polygon(area, circumference)
