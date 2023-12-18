@@ -37,6 +37,12 @@ direction_map = {
     "L": Direction.LEFT,
     "R": Direction.RIGHT,
 }
+direction_map2 = {
+    "3": Direction.UP,
+    "1": Direction.DOWN,
+    "2": Direction.LEFT,
+    "0": Direction.RIGHT,
+}
 
 def compute_polygonal_area(vertices):
     # Triangle formula to compute area of a polygon
@@ -99,6 +105,48 @@ def part1(data):
 
 
 def part2(data):
+    grid = {}
+    holes = set()
+    location = Point(0, 0)
+    grid[location] = None
+    corners = [location]
+
+    for line in data:
+        match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
+        if not match:
+            print(f'{line=}')
+        _, _, color = match.groups()
+        direction = color[-1]
+        distance = int(color[:5], 16)
+
+        direction = direction_map2[direction]
+
+        for i in range(distance):
+            location += direction
+            grid[location] = color
+        else:
+            corners.append(location)
+
+    # pprint.pprint(grid)
+
+    print(f'{len(grid)}')
+
+    max_x = max(item.x for item in grid.keys())
+    min_x = min(item.x for item in grid.keys())
+    max_y = max(item.y for item in grid.keys())
+    min_y = min(item.y for item in grid.keys())
+
+    print(f'{min_x}-{max_x} {min_y}-{max_y}')
+
+    # for y in range(min_y, max_y+1):
+    #     print(''.join("#" if (x, y) in grid else " " for x in range(min_x, max_x+1)))
+    circumference = len(grid.keys())
+
+
+    area = compute_polygonal_area(corners + [corners[0]])
+    inner_points = compute_points_inside_polygon(area, circumference)
+
+    return circumference + inner_points
     pass
 
 
