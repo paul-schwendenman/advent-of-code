@@ -12,4 +12,6 @@ if [ ! -f day$1.py ]; then
 elif [ ! -f test_day$1.py ]; then
     cp test_dayXX.py test_day$1.py
     code test_day$1.py
+else
+    code day$1.py day$1.in day$1.example
 fi
