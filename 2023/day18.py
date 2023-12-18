@@ -64,7 +64,6 @@ def compute_points_inside_polygon(area, num_edges):
 
 
 def part1(data):
-    holes = set()
     location = Point(0, 0)
     corners = [location]
     circumference = 0
@@ -73,7 +72,7 @@ def part1(data):
         match = re.match(r"([UDLR]) (\d+) \(\#([a-z0-9]+)\)", line)
         if not match:
             print(f'{line=}')
-        direction, distance, color = match.groups()
+        direction, distance, _ = match.groups()
 
         direction = direction_map[direction]
         distance = int(distance)
@@ -83,18 +82,12 @@ def part1(data):
 
         corners.append(location)
 
-    # pprint.pprint(grid)
-
     max_x = max(item.x for item in corners)
     min_x = min(item.x for item in corners)
     max_y = max(item.y for item in corners)
     min_y = min(item.y for item in corners)
 
     print(f'{min_x}-{max_x} {min_y}-{max_y}')
-
-    # for y in range(min_y, max_y+1):
-    #     print(''.join("#" if (x, y) in grid else " " for x in range(min_x, max_x+1)))
-
 
     area = compute_polygonal_area(corners + [corners[0]])
     inner_points = compute_points_inside_polygon(area, circumference)
@@ -130,14 +123,10 @@ def part2(data):
 
     print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
-    # for y in range(min_y, max_y+1):
-    #     print(''.join("#" if (x, y) in grid else " " for x in range(min_x, max_x+1)))
-
     area = compute_polygonal_area(corners + [corners[0]])
     inner_points = compute_points_inside_polygon(area, circumference)
 
     return circumference + inner_points
-    pass
 
 
 def main():
