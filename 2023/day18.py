@@ -34,18 +34,18 @@ class Direction(tuple, enum.Enum):
     def __mul__(self, num):
         return (self[0] * num, self[1] * num)
 
+
 direction_map = {
     "U": Direction.UP,
     "D": Direction.DOWN,
     "L": Direction.LEFT,
     "R": Direction.RIGHT,
-}
-direction_map2 = {
     "3": Direction.UP,
     "1": Direction.DOWN,
     "2": Direction.LEFT,
     "0": Direction.RIGHT,
 }
+
 
 def compute_polygonal_area(vertices):
     # Triangle formula to compute area of a polygon
@@ -71,29 +71,30 @@ def parse_data(data):
         yield match.groups()
 
 
+def parse_directions(data):
+    for direction, distance, _ in parse_data(data):
+        yield direction_map[direction], int(distance)
+
+
+def parse_colors(data):
+    for _, _, color in parse_data(data):
+        direction = direction_map[color[-1]]
+        distance = int(color[:5], 16)
+
+        yield direction, distance
+
+
 def part1(data):
     location = Point(0, 0)
     corners = [location]
     circumference = 0
 
-
-
-    for direction, distance, _ in parse_data(data):
-
-        direction = direction_map[direction]
-        distance = int(distance)
+    for direction, distance in parse_directions(data):
         circumference += distance
 
         location += direction * distance
 
         corners.append(location)
-
-    max_x = max(item.x for item in corners)
-    min_x = min(item.x for item in corners)
-    max_y = max(item.y for item in corners)
-    min_y = min(item.y for item in corners)
-
-    print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     area = compute_polygonal_area(corners + [corners[0]])
     inner_points = compute_points_inside_polygon(area, circumference)
@@ -102,28 +103,15 @@ def part1(data):
 
 
 def part2(data):
-    holes = set()
     location = Point(0, 0)
     corners = [location]
     circumference = 0
 
-    for _, _, color in parse_data(data):
-        direction = color[-1]
-        distance = int(color[:5], 16)
-
-        direction = direction_map2[direction]
+    for direction, distance in parse_colors(data):
         circumference += distance
-
         location += direction * distance
 
         corners.append(location)
-
-    max_x = max(item.x for item in corners)
-    min_x = min(item.x for item in corners)
-    max_y = max(item.y for item in corners)
-    min_y = min(item.y for item in corners)
-
-    print(f'{min_x}-{max_x} {min_y}-{max_y}')
 
     area = compute_polygonal_area(corners + [corners[0]])
     inner_points = compute_points_inside_polygon(area, circumference)
