@@ -40,17 +40,25 @@ spells = {
 }
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class Player:
     hit_points: int
     mana: int
     armor: int = 0
 
+    def __iter__(self):
+        for field in dataclasses.fields(self):
+            yield getattr(self, field.name)
 
-@dataclasses.dataclass(frozen=True)
+
+@dataclasses.dataclass
 class Boss:
     hit_points: int
     damage: int
+
+    def __iter__(self):
+        for field in dataclasses.fields(self):
+            yield getattr(self, field.name)
 
 
 class State(typing.NamedTuple):
@@ -74,21 +82,22 @@ def part1(data):
         print(f'states={len(queue)}')
         state = queue.popleft()
         mana_spent, _, _, effects = state
-        player = copy.deepcopy(state.player)
-        boss = copy.deepcopy(state.boss)
 
         if mana_spent > lowest_mana:
             continue
 
         print(f'Available spells: {len(spells - effects)}')
         for spell in spells - effects:
+            player = copy.copy(state.player)
+            boss = copy.copy(state.boss)
+
             if spell.cost > player.mana:
-                print(f'Spell too expensive: {spell.cost} > {player.mana}')
+                # print(f'Spell too expensive: {spell.cost} > {player.mana}')
                 continue
             else:
-                print(f'Casting spell: {spell.cost} < {player.mana}: {mana_spent}')
+                # print(f'Casting spell: {spell.cost} < {player.mana}: {mana_spent}')
                 player.mana -= spell.cost
-                mana_spent += spell.cost
+                next_mana_spent = mana_spent + spell.cost
 
                 if spell.is_effect:
                     effects.add(Spell)
@@ -97,7 +106,7 @@ def part1(data):
                     player.hit_points += spell.heal
 
             if boss.hit_points <= 0:
-                print(f'Boss losses')
+                print(f'Boss loses')
                 lowest_mana = min(lowest_mana, mana_spent)
                 continue
 
@@ -107,7 +116,7 @@ def part1(data):
                 print(f'Player losses')
                 continue
 
-            queue.append(State(mana_spent, player, boss, effects))
+            queue.append(State(next_mana_spent, player, boss, effects))
 
 
             pass
