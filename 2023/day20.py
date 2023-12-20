@@ -60,7 +60,6 @@ def part1(data):
         if match:
             name, children = match.groups()
             nodes = [child.strip() for child in children.split(',')]
-            # print(f'{line=}: {name} {nodes}')
 
             tree[name] = ModuleType.BROADCASTER, nodes
             continue
@@ -70,7 +69,6 @@ def part1(data):
         if match:
             name, children = match.groups()
             nodes = [child.strip() for child in children.split(',')]
-            # print(f'{line=}: {name} {nodes}')
             tree[name] = ModuleType.FLIPFLOP, nodes
             continue
 
@@ -79,7 +77,6 @@ def part1(data):
         if match:
             name, children = match.groups()
             nodes = [child.strip() for child in children.split(',')]
-            # print(f'{line=}: {name} {nodes}')
             tree[name] = ModuleType.CONJUNCTION, nodes
             continue
 
@@ -92,12 +89,9 @@ def part1(data):
     modules_input = collections.defaultdict(dict)
 
     for source, destinations in tree.items():
-        print(f'{source=} {destinations=}')
         for destination in destinations[1]:
             modules_input[destination][source] = Pulse.LOW
 
-    # for time in range(1, 2):
-    # for time in range(0, 10):
     for time in range(0, 1_000):
         queue = collections.deque([State('broadcaster', 'button', Pulse.LOW)])
 
@@ -105,17 +99,12 @@ def part1(data):
 
             node = queue.popleft()
             name, source, pulse = node
-            print(f'name={name}\t source={source}\t pulse={"lo" if pulse == Pulse.LOW else "hi"}')
-            print(f'{time+1:4d}: {len(queue)} pulses, {high=} {low=}')
 
             if pulse == Pulse.HIGH:
                 high += 1
             else:
                 low += 1
 
-            print(f'{time+1:4d}: {len(queue)} pulses, {high=} {low=}')
-
-            # module_type, nxt_nodes = tree[name]
             module_type, nxt_nodes = tree.get(name, (None, []))
 
             if module_type is None:
@@ -139,7 +128,6 @@ def part1(data):
             elif module_type == ModuleType.CONJUNCTION:
                 modules_input[name][source] = pulse
 
-                print(f'{modules_input[name].values()}')
                 if all(pulse == Pulse.HIGH for pulse in modules_input[name].values()):
                     next_pulse = Pulse.LOW
                 else:
@@ -147,13 +135,7 @@ def part1(data):
 
             for next_node in nxt_nodes:
                 queue.append(State(next_node, name, next_pulse))
-            print('------')
 
-        if time < 10 or time % 100 == 1:
-            print(f'{time:4d}: {low:5d} * {high:5d} = {low * high}')
-
-
-    print(f'{low} * {high} = {low * high}')
     return high * low
 
 
