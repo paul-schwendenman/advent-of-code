@@ -182,7 +182,6 @@ def part2(data):
     watch = ['cl', 'rp', 'lb', 'nj']
 
     prev = {}
-    seen = collections.defaultdict(int)
     multiples = []
 
     for button_press in itertools.count(1):
@@ -194,12 +193,12 @@ def part2(data):
             node = queue.popleft()
             name, source, pulse = node
 
-            if pulse == Pulse.LOW:
-                if name in prev and name in watch and seen[name] == 2:
+            if pulse == Pulse.LOW and name in watch:
+                if name in prev:
                     multiples.append(button_press - prev[name])
-                    pass
-                prev[name] = button_press
-                seen[name] += 1
+                else:
+                    prev[name] = button_press
+
             if len(multiples) == len(watch):
                 return math.lcm(*multiples)
 
