@@ -6,6 +6,7 @@ import functools
 import collections
 import enum
 import pprint
+import typing
 
 
 def part1(data):
