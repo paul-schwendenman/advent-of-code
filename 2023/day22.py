@@ -190,9 +190,25 @@ def part1(data):
             acc += 1
 
     return acc
-    print(bricks)
+
 
 def part2(data):
+    bricks = sorted((Brick(*extract_ints(line)) for line in data), key=lambda item: item.z1)
+
+    _, settled_bricks = gravity(bricks)
+    acc = 0
+
+    for index in range(len(settled_bricks)):
+        before, _, after = settled_bricks[:index], settled_bricks[index:index+1], settled_bricks[index + 1:]
+
+        missing = before + after
+
+        distance, _ = gravity(missing)
+
+        if distance > 0:
+            acc += distance
+
+    return acc
     pass
 
 
