@@ -169,7 +169,7 @@ def gravity(bricks):
 
         for y in new_brick.range_y():
             for x in new_brick.range_x():
-                peaks[(x, y)] = new_brick.z1
+                peaks[(x, y)] = new_brick.z2
 
     return changed, new_bricks
 
