@@ -7,6 +7,7 @@ import collections
 import enum
 import pprint
 import typing
+import heapq
 
 class Point(typing.NamedTuple):
     x: int
@@ -104,21 +105,24 @@ def part2(data):
             elif y == len(lines) - 1 and chr == '.':
                 end = Point(x, y)
 
-    queue = collections.deque([(start, 0, ())])
+    queue = [(1_000_000, start, 0, ())]
     distances = []
     steps = collections.defaultdict(lambda: -1)
 
     while queue:
-        location, distance, seen = queue.popleft()
+        left, location, distance, seen = heapq.heappop(queue)
 
         if location == end:
             distances.append(distance)
-            print(f'found: {distance} left:{len(queue)} total:{len(distances)}')
+            print(f'found: {distance} left:{len(queue)} total:{len(distances)} max: {max(distances)}')
+            # if distance > max_distance:
+            #     max_distance = distance
+            #     best_path = seen
             continue
 
-        if steps[location] > distance:
-            continue
-        steps[location] = distance
+        # if steps[location] >= distance:
+        #     continue
+        # steps[location] = distance
 
         if location in seen:
             continue
@@ -129,18 +133,22 @@ def part2(data):
                 continue
             case '.' | '>' | '<' | '^' | 'v':
                 for neighbor in location.get_neighbors():
-                    queue.append((neighbor, distance + 1, seen))
+                    heapq.heappush(queue, (left - 1, neighbor, distance + 1, seen))
             case None:
                 continue
             case _:
                 raise ValueError("Missing tile")
 
+        # print_grid(grid, seen, start, end)
+        # input()
+
+    # print_grid(grid, best_path, start, end)
     return max(distances)
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
