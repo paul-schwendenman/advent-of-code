@@ -143,9 +143,9 @@ def part2(data):
                         heapq.heappush(queue, (left - 1, neighbor, distance + 1, seen))
 
     max_distance = 0
-    queue = collections.deque([(start, 0, ())])
+    queue = [(start, 0, ())]
     while queue:
-        location, distance, path = queue.popleft()
+        location, distance, path = heapq.heappop(queue)
 
         if location == end:
             if max_distance < distance:
@@ -157,7 +157,7 @@ def part2(data):
         new_path = path + (location,)
 
         for neighbor, travel in paths[location].items():
-            queue.append((neighbor, distance + travel, new_path))
+            heapq.heappush(queue, (neighbor, distance + travel, new_path))
 
     return max_distance
 
