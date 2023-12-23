@@ -105,9 +105,77 @@ def part2(data):
             elif y == len(lines) - 1 and chr == '.':
                 end = Point(x, y)
 
-    queue = [(1_000_000, start, 0, ())]
     distances = []
     steps = collections.defaultdict(lambda: -1)
+
+    # best_path = []
+    # max_distance = 0
+
+    intersections = [start, end]
+
+    for point, chr in grid.items():
+        if chr == '#':
+            continue
+        if sum(1 for neighbor in point.get_neighbors() if grid.get(neighbor, '#') != '#') > 2:
+            intersections.append(point)
+
+    print(f'# of intersections: {len(intersections)}')
+
+    paths = collections.defaultdict(lambda: collections.defaultdict(lambda: -1))
+
+    for substart, goal in itertools.combinations(intersections, 2):
+        # print(f'{substart} -> {goal}')
+        queue = [(10_000, substart, 0, ())]
+
+        while queue:
+            left, location, distance, seen = heapq.heappop(queue)
+
+            if location == goal:
+                if paths[substart][goal] < distance:
+                    # print(f'found better path {distance}')
+                    paths[substart][goal] = distance
+                    paths[goal][substart] = distance
+                continue
+            elif location in intersections and distance != 0:
+                continue
+
+            if location in seen:
+                continue
+            seen = seen + (location,)
+
+            match grid.get(location):
+                case '#' | None:
+                    continue
+                case '.' | '>' | '<' | '^' | 'v':
+                    for neighbor in location.get_neighbors():
+                        heapq.heappush(queue, (left - 1, neighbor, distance + 1, seen))
+            # print_grid(grid, seen, substart, goal)
+            # input
+
+    # pprint.pprint({key: dict(value) for key, value in paths.items()})
+
+    assert len(paths[end]) > 0
+
+
+    max_distance = 0
+    queue = collections.deque([(start, 0, ())])
+    while queue:
+        location, distance, path = queue.popleft()
+
+        if location == end:
+            if max_distance < distance:
+                max_distance = distance
+            continue
+
+        if location in path:
+            continue
+        new_path = path + (location,)
+
+        for neighbor, travel in paths[location].items():
+            queue.append((neighbor, distance + travel, new_path))
+
+    return max_distance
+
 
     while queue:
         left, location, distance, seen = heapq.heappop(queue)
