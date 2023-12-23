@@ -56,8 +56,6 @@ def part1(data):
 
     queue = collections.deque([(start, 0, ())])
     distances = []
-    print(f'{start=} {end=}')
-    print_grid(grid, start=start, end=end)
 
     while queue:
         location, distance, seen = queue.popleft()
@@ -89,21 +87,50 @@ def part1(data):
                 continue
             case _:
                 raise ValueError("Missing tile")
-        # print_grid(grid, seen, start, end)
-        # input()
 
     return max(distances)
 
 
-
-
-
-
-
-    pass
-
-
 def part2(data):
+    lines = [list(line.rstrip()) for line in list(data)]
+    grid = {}
+    start, end = None, None
+
+    for y, line in enumerate(lines):
+        for x, chr in enumerate(line):
+            grid[Point(x, y)] = chr
+            if y == 0 and chr == '.':
+                start = Point(x, y)
+            elif y == len(lines) - 1 and chr == '.':
+                end = Point(x, y)
+
+    queue = collections.deque([(start, 0, ())])
+    distances = []
+
+    while queue:
+        location, distance, seen = queue.popleft()
+
+        if location == end:
+            distances.append(distance)
+            print(f'found: {distance} left:{len(queue)} total:{len(distances)}')
+            continue
+
+        if location in seen:
+            continue
+        seen = seen + (location,)
+
+        match grid.get(location):
+            case '#':
+                continue
+            case '.' | '>' | '<' | '^' | 'v':
+                for neighbor in location.get_neighbors():
+                    queue.append((neighbor, distance + 1, seen))
+            case None:
+                continue
+            case _:
+                raise ValueError("Missing tile")
+
+    return max(distances)
     pass
 
 
