@@ -106,6 +106,7 @@ def part2(data):
 
     queue = collections.deque([(start, 0, ())])
     distances = []
+    steps = collections.defaultdict(lambda: -1)
 
     while queue:
         location, distance, seen = queue.popleft()
@@ -114,6 +115,10 @@ def part2(data):
             distances.append(distance)
             print(f'found: {distance} left:{len(queue)} total:{len(distances)}')
             continue
+
+        if steps[location] > distance:
+            continue
+        steps[location] = distance
 
         if location in seen:
             continue
