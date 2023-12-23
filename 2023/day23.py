@@ -105,12 +105,6 @@ def part2(data):
             elif y == len(lines) - 1 and chr == '.':
                 end = Point(x, y)
 
-    distances = []
-    steps = collections.defaultdict(lambda: -1)
-
-    # best_path = []
-    # max_distance = 0
-
     intersections = [start, end]
 
     for point, chr in grid.items():
@@ -124,7 +118,6 @@ def part2(data):
     paths = collections.defaultdict(lambda: collections.defaultdict(lambda: -1))
 
     for substart, goal in itertools.combinations(intersections, 2):
-        # print(f'{substart} -> {goal}')
         queue = [(10_000, substart, 0, ())]
 
         while queue:
@@ -132,7 +125,6 @@ def part2(data):
 
             if location == goal:
                 if paths[substart][goal] < distance:
-                    # print(f'found better path {distance}')
                     paths[substart][goal] = distance
                     paths[goal][substart] = distance
                 continue
@@ -149,13 +141,6 @@ def part2(data):
                 case '.' | '>' | '<' | '^' | 'v':
                     for neighbor in location.get_neighbors():
                         heapq.heappush(queue, (left - 1, neighbor, distance + 1, seen))
-            # print_grid(grid, seen, substart, goal)
-            # input
-
-    # pprint.pprint({key: dict(value) for key, value in paths.items()})
-
-    assert len(paths[end]) > 0
-
 
     max_distance = 0
     queue = collections.deque([(start, 0, ())])
@@ -175,44 +160,6 @@ def part2(data):
             queue.append((neighbor, distance + travel, new_path))
 
     return max_distance
-
-
-    while queue:
-        left, location, distance, seen = heapq.heappop(queue)
-
-        if location == end:
-            distances.append(distance)
-            print(f'found: {distance} left:{len(queue)} total:{len(distances)} max: {max(distances)}')
-            # if distance > max_distance:
-            #     max_distance = distance
-            #     best_path = seen
-            continue
-
-        # if steps[location] >= distance:
-        #     continue
-        # steps[location] = distance
-
-        if location in seen:
-            continue
-        seen = seen + (location,)
-
-        match grid.get(location):
-            case '#':
-                continue
-            case '.' | '>' | '<' | '^' | 'v':
-                for neighbor in location.get_neighbors():
-                    heapq.heappush(queue, (left - 1, neighbor, distance + 1, seen))
-            case None:
-                continue
-            case _:
-                raise ValueError("Missing tile")
-
-        # print_grid(grid, seen, start, end)
-        # input()
-
-    # print_grid(grid, best_path, start, end)
-    return max(distances)
-    pass
 
 
 def main():
