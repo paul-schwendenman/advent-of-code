@@ -28,32 +28,6 @@ class Hailstone(typing.NamedTuple):
     dz: int
 
 
-def line_intersection(stone1: Hailstone, stone2: Hailstone):
-    line1 = [(stone1.x, stone1.y), (stone1.x + stone1.dx, stone1.y + stone1.dy)]
-    line2 = [(stone2.x, stone2.y), (stone2.x + stone2.dx, stone2.y + stone2.dy)]
-    xdiff = (line1[1][0] - line1[0][0], line2[1][0] - line2[0][0])
-    ydiff = (line1[1][1] - line1[0][1], line2[1][1] - line2[0][1])
-
-    assert xdiff == (stone1.dx, stone2.dx), f'{xdiff}, {(stone1.dx, stone2.dx)}'
-    assert ydiff == (stone1.dy, stone2.dy)
-
-    def det(a, b):
-        return a[0] * b[1] - a[1] * b[0]
-
-    div = det(xdiff, ydiff)
-    if div == 0:
-       raise ValueError('lines do not intersect')
-
-    d = (det(*line1), det(*line2))
-    x = det(d, xdiff) / div
-    y = det(d, ydiff) / div
-
-    valid1 = x > line1[0][0] == line1[1][0] > line1[0][0]
-    valid2 = x > line2[0][0] == line2[1][0] > line2[0][0]
-    return x, y, valid1 and valid2
-
-
-
 def cross(stone1: Hailstone, stone2: Hailstone):
     x1, x2 = stone1.x, stone1.x + stone1.dx
     x3, x4 = stone2.x, stone2.x + stone2.dx
@@ -93,21 +67,12 @@ def part1(data, bounds):
 
     for a, b in itertools.combinations(hailstones, 2):
         try:
-            # x, y, valid = line_intersection(a, b)
             (x, y), valid = cross(a, b)
 
             if valid and bounds[0] <= x <= bounds[1] and bounds[0] <= y <= bounds[1]:
-                print(f'found inside:  {(x, y)}')
-
                 acc += 1
-            elif bounds[0] <= x <= bounds[1] and bounds[0] <= y <= bounds[1]:
-                print(f'found invalid:  {(x, y)}')
-            else:
-                print(f'found outside: {(x, y)}')
-
 
         except ValueError:
-            print('no intersection')
             pass
 
     return acc
