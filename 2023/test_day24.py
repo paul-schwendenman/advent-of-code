@@ -14,4 +14,4 @@ def test_part1_example(example_data):
 
 
 def test_part2_example(example_data):
-    assert part2(example_data) == None
+    assert part2(example_data) == 47

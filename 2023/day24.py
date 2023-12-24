@@ -55,15 +55,21 @@ def extract_ints(str):
         yield int(num)
 
 
-def part1(data, bounds):
+def parse_input(data):
     hailstones: list[Hailstone] = []
-
-    acc = 0
 
     for line in data:
         x, y, z, dx, dy, dz = extract_ints(line)
 
         hailstones.append(Hailstone(x, y, z, dx, dy, dz))
+
+    return hailstones
+
+
+def part1(data, bounds):
+    acc = 0
+    hailstones = parse_input(data)
+
 
     for a, b in itertools.combinations(hailstones, 2):
         try:
@@ -79,7 +85,24 @@ def part1(data, bounds):
 
 
 def part2(data):
-    pass
+    import z3
+
+    hailstones = parse_input(data)
+    solver = z3.Solver()
+
+    x, y, z = z3.Int('x'), z3.Int('y'), z3.Int('z')
+    dx, dy, dz = z3.Int('dx'), z3.Int('dy'), z3.Int('dz')
+    times = [z3.Int(f'T{i}') for i in range(len(hailstones))]
+
+    for hailstone, time in zip(hailstones, times):
+        solver.add(x + time * dx - hailstone.x - hailstone.dx * time == 0)
+        solver.add(y + time * dy - hailstone.y - hailstone.dy * time == 0)
+        solver.add(z + time * dz - hailstone.z - hailstone.dz * time == 0)
+
+    result = solver.check()
+    model = solver.model()
+
+    return model.eval(x + y + z)
 
 
 def main():
