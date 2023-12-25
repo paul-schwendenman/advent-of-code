@@ -7,35 +7,38 @@ import collections
 import enum
 import pprint
 import typing
-import karger
+import igraph
 
 
 def part1(data):
-    graph = collections.defaultdict(list)
-    # print('flowchart TD')
+    # graph = collections.defaultdict(list)
+    vertices = set()
     edges = set()
 
     for line in data:
         source, rest = line.rstrip().split(': ')
+        vertices.add(source)
         for destination in rest.split(' '):
-            graph[source].append(destination)
-            graph[destination].append(source)
+            # graph[source].append(destination)
+            # graph[destination].append(source)
+            vertices.add(destination)
             edges.add((source, destination))
 
             # print(f'{source} --> {destination}')
 
-    k_graph = karger.Graph(len(graph.keys()), len(edges))
-    nums = {name: i for i, name in enumerate(graph.keys())}
+    graph = igraph.Graph()
+
+    for vertex in vertices:
+        graph.add_vertex(vertex)
 
     for edge in edges:
-        a = nums[edge[0]]
-        b = nums[edge[1]]
+        graph.add_edge(*edge)
 
-        k_graph.edge.append(karger.Edge(a, b))
+    cut = graph.mincut()
 
-    res = karger.kargerMinCut(k_graph)
+    left, right = cut.partition
 
-    print("Found: ", res)
+    return len(left) * len(right)
 
 
 
@@ -50,7 +53,7 @@ def part2(data):
 
 def main():
     print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
+    # print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
