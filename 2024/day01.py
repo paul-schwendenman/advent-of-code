@@ -10,41 +10,25 @@ import typing
 
 
 def part1(data):
-    lines = [line.split() for line in data]
+    location_pairs = [line.split() for line in data]
 
-    first = [int(one[0]) for one in lines]
-    second = [int(one[1]) for one in lines]
+    list_one = sorted(int(location_pair[0]) for location_pair in location_pairs)
+    list_two = sorted(int(location_pair[1]) for location_pair in location_pairs)
 
-    third = sorted(first)
-    fourth = sorted(second)
-
-    count = 0
-
-    for n, item in enumerate(third):
-        count += abs(item - fourth[n])
+    count = sum(abs(one - two) for one, two in zip(list_one, list_two))
 
     return count
-
-    print(lines)
-
-    pass
 
 
 def part2(data):
-    lines = [line.split() for line in data]
+    items = [line.split() for line in data]
 
-    first = [int(one[0]) for one in lines]
-    second = collections.Counter([int(one[1]) for one in lines])
+    locations = [int(item[0]) for item in items]
+    counts = collections.Counter([int(item[1]) for item in items])
 
-    count = 0
-
-    for _, item in enumerate(first):
-        count += item * second[item]
+    count = sum(item * counts[item] for item in locations)
 
     return count
-
-    print(lines)
-    pass
 
 
 def main():
