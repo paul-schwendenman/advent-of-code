@@ -31,6 +31,19 @@ def part1(data):
 
 
 def part2(data):
+    lines = [line.split() for line in data]
+
+    first = [int(one[0]) for one in lines]
+    second = collections.Counter([int(one[1]) for one in lines])
+
+    count = 0
+
+    for _, item in enumerate(first):
+        count += item * second[item]
+
+    return count
+
+    print(lines)
     pass
 
 
