@@ -10,6 +10,23 @@ import typing
 
 
 def part1(data):
+    lines = [line.split() for line in data]
+
+    first = [int(one[0]) for one in lines]
+    second = [int(one[1]) for one in lines]
+
+    third = sorted(first)
+    fourth = sorted(second)
+
+    count = 0
+
+    for n, item in enumerate(third):
+        count += abs(item - fourth[n])
+
+    return count
+
+    print(lines)
+
     pass
 
 
