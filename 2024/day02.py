@@ -9,7 +9,13 @@ import pprint
 import typing
 
 
+def parse_levels(data):
+    for line in data:
+        yield [int(item) for item in line.strip().split()]
+
+
 def check_report(levels):
+    '''Check that report is decreasing or increasing slowly'''
     diffs = [b - a for a, b in (zip(levels[:-1], levels[1:]))]
 
 
@@ -21,36 +27,31 @@ def check_report(levels):
     return all_small and (all_neg or all_pos)
 
 
+def generate_subreports(levels):
+    '''Yield a list of reports where exactly one item was skipped'''
+    for i, _ in enumerate(levels):
+        yield levels[:i] + levels[i+1:]
+
+
+def check_report_damper(levels):
+    '''Check report with dampers
+
+    Allow for one level to not match
+    '''
+    if check_report(levels):
+        return True
+    for sublevels in generate_subreports(levels):
+        if check_report(sublevels):
+            return True
+    return False
+
+
 def part1(data):
-    count = 0
-    for line in data:
-        safe = True
-        levels = [int(item) for item in line.strip().split()]
-
-        if check_report(levels):
-            # print("pass")
-            count += 1
-
-
-    pass
-    return count
+    return sum(check_report(levels) for levels in parse_levels(data))
 
 
 def part2(data):
-    count = 0
-    for line in data:
-        levels = [int(item) for item in line.strip().split()]
-
-        if check_report(levels):
-            count += 1
-        else:
-            for i in range(len(levels)):
-                new_levels = levels[:i] + levels[i+1:]
-                if check_report(new_levels):
-                    count += 1
-                    break
-
-    return count
+    return sum(check_report_damper(levels) for levels in parse_levels(data))
 
 
 def main():
