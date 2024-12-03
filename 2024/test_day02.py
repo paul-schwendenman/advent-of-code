@@ -1,17 +1,17 @@
 import pytest
 import fileinput
-from dayXX import part1, part2
+from day02 import part1, part2
 
 
 @pytest.fixture
 def example_data():
-    with fileinput.input('dayXX.example') as data:
+    with fileinput.input('day02.example') as data:
         yield data
 
 
 def test_part1_example(example_data):
-    assert part1(example_data) == None
+    assert part1(example_data) == 2
 
 
 def test_part2_example(example_data):
-    assert part2(example_data) == None
+    assert part2(example_data) == 4
