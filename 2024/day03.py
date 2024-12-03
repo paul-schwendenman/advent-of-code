@@ -11,18 +11,19 @@ import typing
 
 def part1(data):
     lines = [line for line in data]
-    line = lines[0]
-    print(line)
-
-    # matches = re.findall(r'mul\((\d+\))', line)
-    matches = re.findall(r'mul\(\d+,\d+\)', line)
-    print(matches)
-
     count = 0
-    for match in matches:
-        print(match)
-        nums = list(map(int, re.findall(r'\d+', match)))
-        count += math.prod(nums)
+
+    for line in lines:
+        print(line)
+
+        # matches = re.findall(r'mul\((\d+\))', line)
+        matches = re.findall(r'mul\(\d+,\d+\)', line)
+        print(matches)
+
+        for match in matches:
+            nums = list(map(int, re.findall(r'\d+', match)))
+            print(match, math.prod(nums))
+            count += math.prod(nums)
 
     return count
 
