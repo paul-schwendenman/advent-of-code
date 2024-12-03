@@ -25,35 +25,17 @@ def part1(data):
 
 
 def part2(data):
-    # lines = [''.join(data)]
-    lines = [line for line in data]
+    line = ''.join(line.strip() for line in data)
     count = 0
 
-    for line in lines:
-        # skips = re.findall('don\'t\(\)', line)
+    line = re.sub(r'don\'t\(\).*?do\(\)', '', line)
 
-        # print('dont', len(skips))
+    matches = re.findall(r'mul\(\d+,\d+\)', line)
 
-        # skips = re.findall('do\(\)', line)
+    for match in matches:
+        nums = list(map(int, re.findall(r'\d+', match)))
 
-        # print('do', len(skips))
-
-        skips = re.findall('don\'t\(\).*?do\(\)', line)
-
-        print('sets', len(skips))
-
-        line = re.sub(r'don\'t\(\).*?do\(\)', '', line)
-
-        skips = re.findall('don\'t\(\).*?do\(\)', line)
-
-        print('afte', len(skips))
-
-        matches = re.findall(r'mul\(\d+,\d+\)', line)
-
-        for match in matches:
-            nums = list(map(int, re.findall(r'\d+', match)))
-
-            count += math.prod(nums)
+        count += math.prod(nums)
 
     return count
 
