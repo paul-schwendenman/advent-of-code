@@ -9,22 +9,22 @@ import pprint
 import typing
 
 
+def extract_ints(string):
+    return list(map(int, re.findall(r'-?\d+', string)))
+
+
 def total_instructions(line):
     matches = re.findall(r'mul\(\d+,\d+\)', line)
-    total = 0
 
-    for match in matches:
-        nums = list(map(int, re.findall(r'\d+', match)))
-
-        total += math.prod(nums)
+    total = sum(math.prod(extract_ints(match)) for match in matches)
 
     return total
 
 
 def part1(data):
-    lines = [line for line in data]
+    single_line = ''.join(line.rstrip() for line in data)
 
-    return sum(total_instructions(line) for line in lines)
+    return total_instructions(single_line)
 
 
 def part2(data):
