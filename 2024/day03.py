@@ -14,42 +14,34 @@ def part1(data):
     count = 0
 
     for line in lines:
-        # print(line)
-
-        # matches = re.findall(r'mul\((\d+\))', line)
         matches = re.findall(r'mul\(\d+,\d+\)', line)
-        # print(matches)
 
         for match in matches:
             nums = list(map(int, re.findall(r'\d+', match)))
-            # print(match, math.prod(nums))
+
             count += math.prod(nums)
 
     return count
 
 
 def part2(data):
-    lines = [''.join([line for line in data])]
+    lines = [''.join(data)]
     count = 0
 
     for line in lines:
-        # print(line)
+        subs = 1
+        while subs > 0:
+            line, subs = re.subn(r'don\'t\(\).*?do\(\)', '', line)
+            print(subs)
 
-        check = re.findall(r'don\'t.*do\(\)', line)
-        print('check', len(check))
-        line, subs = re.subn(r'don\'t\(\).*do\(\)', '', line)
-        # print(subs, line)
-        # matches = re.findall(r'mul\((\d+\))', line)
         matches = re.findall(r'mul\(\d+,\d+\)', line)
-        # print(matches)
 
         for match in matches:
             nums = list(map(int, re.findall(r'\d+', match)))
-            # print(match, math.prod(nums))
+
             count += math.prod(nums)
 
     return count
-    pass
 
 
 def main():
