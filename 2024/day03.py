@@ -25,14 +25,28 @@ def part1(data):
 
 
 def part2(data):
-    lines = [''.join(data)]
+    # lines = [''.join(data)]
+    lines = [line for line in data]
     count = 0
 
     for line in lines:
-        subs = 1
-        while subs > 0:
-            line, subs = re.subn(r'don\'t\(\).*?do\(\)', '', line)
-            print(subs)
+        # skips = re.findall('don\'t\(\)', line)
+
+        # print('dont', len(skips))
+
+        # skips = re.findall('do\(\)', line)
+
+        # print('do', len(skips))
+
+        skips = re.findall('don\'t\(\).*?do\(\)', line)
+
+        print('sets', len(skips))
+
+        line = re.sub(r'don\'t\(\).*?do\(\)', '', line)
+
+        skips = re.findall('don\'t\(\).*?do\(\)', line)
+
+        print('afte', len(skips))
 
         matches = re.findall(r'mul\(\d+,\d+\)', line)
 
