@@ -40,6 +40,9 @@ class Offset(enum.Enum):
     def __getitem__(self, index):
         return self.value[index]
 
+    def __eq__(self, tuple):
+        return len(tuple) == 2 and self.value[0] == tuple[0] and self.value[1] == tuple[1]
+
     @classmethod
     def cardinal(cls):
         return (cls.UP, cls.LEFT, cls.RIGHT, cls.DOWN)
