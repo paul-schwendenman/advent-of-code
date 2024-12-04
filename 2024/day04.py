@@ -22,19 +22,22 @@ class Point(collections.namedtuple('Point', 'x y')):
 def make_grid(lines):
     grid = collections.defaultdict(str)
     xs = set()
+    a_s = set()
 
     for y, line in enumerate(lines):
         for x, char in enumerate(line.rstrip()):
             grid[Point(x, y)] = char
             if char == 'X':
                 xs.add(Point(x,y))
+            if char == 'A':
+                a_s.add(Point(x, y))
 
 
 
-    return grid, xs
+    return grid, xs, a_s
 
 def part1(data):
-    grid, xs = make_grid(data)
+    grid, xs, _ = make_grid(data)
 
     found = 0
 
@@ -53,11 +56,43 @@ def part1(data):
 
 
 def part2(data):
+    grid, _, a_s = make_grid(data)
+
+    found = 0
+
+    print('xs:\t', len(a_s))
+
+    for a in a_s:
+        here = False
+        if grid[a + (1, 1)] == 'S' and grid[a+ (-1, 1)] == 'S' and grid[a + (1, -1)] == 'M' and grid[a + (-1, -1)] == 'M':
+            found += 1
+            here = True
+        if grid[a + (1, 1)] == 'M' and grid[a+ (-1, 1)] == 'M' and grid[a + (1, -1)] == 'S' and grid[a + (-1, -1)] == 'S':
+            here = True
+            found += 1
+        if grid[a + (1, 1)] == 'S' and grid[a+ (-1, 1)] == 'M' and grid[a + (1, -1)] == 'S' and grid[a + (-1, -1)] == 'M':
+            found += 1
+            here = True
+        if grid[a + (1, 1)] == 'M' and grid[a+ (-1, 1)] == 'S' and grid[a + (1, -1)] == 'M' and grid[a + (-1, -1)] == 'S':
+            here = True
+            found += 1
+        if here:
+            print(a)
+            # print(''.join([grid[a + (-1, -1)], grid[a + (0, -1)], grid[a + (1, -1)]]))
+            # print(''.join([grid[a + (-1, 0)], grid[a + (0, 0)], grid[a + (1, 0)]]))
+            # print(''.join([grid[a + (-1, 1)], grid[a + (0, 1)], grid[a + (1, 1)]]))
+            print(''.join([grid[a + (-1, -1)], ' ', grid[a + (1, -1)]]))
+            print(''.join([' ', grid[a + (0, 0)], ' ']))
+            print(''.join([grid[a + (-1, 1)], ' ', grid[a + (1, 1)]]))
+            print('')
+
+    return found
+    # 926
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
