@@ -19,6 +19,19 @@ class Point(collections.namedtuple('Point', 'x y')):
     def __add__(self, other):
         return Point(self.x + other[0], self.y + other[1])
 
+class Offset(enum.Enum):
+    TOP_LEFT = (-1, -1)
+    TOP_RIGHT = (-1, 1)
+    BOTTOM_LEFT = (1, -1)
+    BOTTOM_RIGHT = (1, 1)
+
+    def __mul__(self, scalar):
+        return (self.value[0] * scalar, self.value[1] * scalar)
+
+    def __getitem__(self, index):
+        return self.value[index]
+
+
 def make_grid(lines):
     grid = collections.defaultdict(str)
     xs = set()
@@ -42,8 +55,8 @@ def part1(data):
     found = 0
 
     for x in xs:
-        for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
-            if grid[x + offset] == 'M' and grid[x + offset + offset] == 'A' and grid[x + offset + offset + offset] == 'S':
+        for offset in (Offset.TOP_RIGHT, Offset.TOP_LEFT, Offset.BOTTOM_LEFT, Offset.BOTTOM_RIGHT):
+            if grid[x + offset] == 'M' and grid[x + offset * 2] == 'A' and grid[x + offset * 3] == 'S':
                 found += 1
 
     return found
