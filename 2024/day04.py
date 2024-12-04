@@ -21,8 +21,17 @@ class Point(collections.namedtuple('Point', 'x y')):
 
 class Offset(enum.Enum):
     TOP_LEFT = (-1, -1)
+    UP = (-1, 0)
+    TOP_CENTER = (-1, 0)
     TOP_RIGHT = (-1, 1)
+    LEFT = (0, -1)
+    CENTER_LEFT = (0, -1)
+    CENTER_CENTER = (0, 0)
+    RIGHT = (0, 1)
+    CENTER_RIGHT = (0, 1)
     BOTTOM_LEFT = (1, -1)
+    DOWN = (1, 0)
+    BOTTOM_CENTER = (1, 0)
     BOTTOM_RIGHT = (1, 1)
 
     def __mul__(self, scalar):
@@ -30,6 +39,18 @@ class Offset(enum.Enum):
 
     def __getitem__(self, index):
         return self.value[index]
+
+    @classmethod
+    def cardinal(cls):
+        return (cls.UP, cls.LEFT, cls.RIGHT, cls.DOWN)
+
+    @classmethod
+    def diagonal(cls):
+        return (cls.TOP_LEFT, cls.TOP_RIGHT, cls.BOTTOM_LEFT, cls.BOTTOM_RIGHT)
+
+    @classmethod
+    def all(cls):
+        return cls.cardinal() + cls.diagonal()
 
 
 def make_grid(lines):
@@ -55,7 +76,7 @@ def part1(data):
     found = 0
 
     for x in xs:
-        for offset in (Offset.TOP_RIGHT, Offset.TOP_LEFT, Offset.BOTTOM_LEFT, Offset.BOTTOM_RIGHT):
+        for offset in Offset.all():
             if grid[x + offset] == 'M' and grid[x + offset * 2] == 'A' and grid[x + offset * 3] == 'S':
                 found += 1
 
