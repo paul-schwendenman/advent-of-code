@@ -73,6 +73,16 @@ def make_grid(lines):
 
     return grid, xs, a_s
 
+def find_word(grid, location, word, direction, start=0):
+    for index, char in enumerate(word, start=start):
+        if grid.get(location + direction * index) == char:
+            continue
+        break
+    else:
+        return True
+
+    return False
+
 def part1(data):
     grid, xs, _ = make_grid(data)
 
@@ -80,7 +90,7 @@ def part1(data):
 
     for x in xs:
         for offset in Offset.all():
-            if grid[x + offset] == 'M' and grid[x + offset * 2] == 'A' and grid[x + offset * 3] == 'S':
+            if find_word(grid, x, 'XMAS', offset):
                 found += 1
 
     return found
