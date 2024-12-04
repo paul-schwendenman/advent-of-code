@@ -35,13 +35,21 @@ class Offset(enum.Enum):
     BOTTOM_RIGHT = (1, 1)
 
     def __mul__(self, scalar):
-        return (self.value[0] * scalar, self.value[1] * scalar)
+        if isinstance(scalar, int):
+            return (self.value[0] * scalar, self.value[1] * scalar)
+        elif isinstance(scalar, tuple):
+            return (self.value[0] * scalar[0], self.value[1], scalar[1])
 
     def __getitem__(self, index):
         return self.value[index]
 
     def __eq__(self, tuple):
         return len(tuple) == 2 and self.value[0] == tuple[0] and self.value[1] == tuple[1]
+
+    def rotate(self, clockwise=True):
+        x, y = self.value
+
+        return Offset(y, -x) if clockwise else Offset(-y, x)
 
     @classmethod
     def cardinal(cls):
@@ -102,14 +110,9 @@ def part2(data):
     found = 0
 
     for a in a_s:
-        if grid[a + (1, 1)] == 'S' and grid[a+ (-1, 1)] == 'S' and grid[a + (1, -1)] == 'M' and grid[a + (-1, -1)] == 'M':
-            found += 1
-        if grid[a + (1, 1)] == 'M' and grid[a+ (-1, 1)] == 'M' and grid[a + (1, -1)] == 'S' and grid[a + (-1, -1)] == 'S':
-            found += 1
-        if grid[a + (1, 1)] == 'S' and grid[a+ (-1, 1)] == 'M' and grid[a + (1, -1)] == 'S' and grid[a + (-1, -1)] == 'M':
-            found += 1
-        if grid[a + (1, 1)] == 'M' and grid[a+ (-1, 1)] == 'S' and grid[a + (1, -1)] == 'M' and grid[a + (-1, -1)] == 'S':
-            found += 1
+        for offset in Offset.diagonal():
+            if find_word(grid, a, 'MAS', offset, -1) and find_word(grid, a, 'MAS', offset.rotate(), -1):
+                found += 1
 
     return found
 
