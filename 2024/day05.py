@@ -28,6 +28,16 @@ def parse_updates(updates):
     return [extract_ints(update) for update in updates]
 
 
+def parse_raw_data(data):
+    lines = ''.join(line for line in data).rstrip()
+    rules, updates = [chunk.split('\n') for chunk in lines.split('\n\n')]
+
+    rules = parse_rules(rules)
+    updates = parse_updates(updates)
+
+    return rules, updates
+
+
 def valid(rules, update):
     for index, number in enumerate(update):
         if number in rules:
@@ -35,32 +45,27 @@ def valid(rules, update):
                 return False
     return True
 
-    pass
+
+def get_middle(array):
+    middle = len(array) // 2
+
+    return array[middle]
+
 
 def part1(data):
-    lines = ''.join(line for line in data).rstrip()
-    rules, updates = [chunk.split('\n') for chunk in lines.split('\n\n')]
-
-    rules = parse_rules(rules)
-    updates = parse_updates(updates)
+    rules, updates = parse_raw_data(data)
 
     acc = 0
 
     for update in updates:
-
         if valid(rules, update):
-            middle = len(update) // 2
-            acc += update[middle]
+            acc += get_middle(update)
 
     return acc
 
 
 def part2(data):
-    lines = ''.join(line for line in data).rstrip()
-    rules, updates = [chunk.split('\n') for chunk in lines.split('\n\n')]
-
-    rules = parse_rules(rules)
-    updates = parse_updates(updates)
+    rules, updates = parse_raw_data(data)
 
     acc = 0
 
@@ -70,14 +75,11 @@ def part2(data):
 
         return 1
 
-
     for update in updates:
-
         if not valid(rules, update):
             sorted_update = sorted(update, key=functools.cmp_to_key(compare))
 
-            middle = len(sorted_update) // 2
-            acc += sorted_update[middle]
+            acc += get_middle(sorted_update)
 
     return acc
 
