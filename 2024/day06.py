@@ -7,6 +7,7 @@ import collections
 import enum
 import pprint
 import typing
+from tqdm import tqdm
 
 
 class Point(collections.namedtuple('Point', 'x y')):
@@ -48,13 +49,16 @@ def parse_grid(data):
 
     return grid, i, j, loc
 
-def print_grid(grid, i, j, been):
-    for y in range(j):
-        for x in range(i):
+
+def print_grid(grid, i, j, been, obsticle):
+    for y in range(j+1):
+        for x in range(i+1):
             if (x, y) in been:
                 print('^', end="")
+            elif (x, y) == obsticle:
+                print('O', end='')
             else:
-                print(grid[(x, y)], end="")
+                print(grid.get((x, y)), end="")
 
         print()
 
@@ -85,8 +89,46 @@ def part1(data):
 
     return len(past) - 1
 
+def simulate_grid(grid, location, direction, obstacle):
+    direction = Direction.UP
+    been = list()
+    been.append((location, direction))
+
+    while location in grid:
+        next_location = location + direction
+
+        if (next_location, direction) in been:
+            return been, True
+
+        if grid.get(next_location) == '#' or next_location == obstacle:
+            print(f'rotating: {location} {next_location} {direction}')
+            direction = direction.rotate()
+        else:
+            location = next_location
+            been.append((next_location, direction))
+
+        # print(been)
+
+    return been, False
+
 
 def part2(data):
+    grid, i, j, location = parse_grid(data)
+
+    been, _ = simulate_grid(grid, location, Direction.UP, None)
+
+    count = 0
+
+    for obstacle, _ in been:
+    # for obstacle, _ in tqdm(been):
+        path, result = simulate_grid(grid, location, Direction.UP, obstacle)
+
+        if result:
+            print_grid(grid, i,j, [i[0] for i in path], obstacle)
+
+            count +=1
+
+    return count
     pass
 
 
