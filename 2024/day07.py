@@ -7,7 +7,6 @@ import collections
 import enum
 import pprint
 import typing
-from collections.abc import Iterable
 
 
 def extract_ints(string):
@@ -23,21 +22,13 @@ def get_possible_values(parts, acc):
     mult = get_possible_values(rest, acc * first)
     addi = get_possible_values(rest, acc + first)
 
-    return (mult, addi)
-
-
-def flatten(xs):
-    for x in xs:
-        if isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-            yield from flatten(x)
-        else:
-            yield x
+    return mult + addi
 
 
 def is_possible(goal, parts):
     [first, *rest] = parts
     # print(list(flatten(get_possible_values(rest, first))))
-    return goal in flatten(get_possible_values(rest, first))
+    return goal in get_possible_values(rest, first)
 
 
 def part1(data):
@@ -67,12 +58,12 @@ def get_possible_values2(parts, acc):
     addi = get_possible_values2(rest, acc + first)
     concat = get_possible_values2(rest, int(str(acc) + str(first)))
 
-    return (mult, addi, concat)
+    return mult + addi + concat
 
 
 def is_possible2(goal, parts):
     [first, *rest] = parts
-    values = list(flatten(get_possible_values2(rest, first)))
+    values = list(get_possible_values2(rest, first))
     # print(f'{goal}\t{goal in values}\t', values)
     return goal in values
 
