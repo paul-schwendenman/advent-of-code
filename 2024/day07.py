@@ -36,7 +36,7 @@ def flatten(xs):
 
 def is_possible(goal, parts):
     [first, *rest] = parts
-    print(list(flatten(get_possible_values(rest, first))))
+    # print(list(flatten(get_possible_values(rest, first))))
     return goal in flatten(get_possible_values(rest, first))
 
 
@@ -47,7 +47,7 @@ def part1(data):
         equations.append((goal, collections.deque(parts)))
 
     acc = 0
-    print(equations)
+    # print(equations)
 
     for equation in equations:
         if is_possible(*equation):
@@ -96,7 +96,7 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
