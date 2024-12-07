@@ -57,12 +57,46 @@ def part1(data):
     return acc
 
 
+def get_possible_values2(parts, acc):
+    if len(parts) == 0:
+        return (acc, )
+
+    [first, *rest] = parts
+
+    mult = get_possible_values2(rest, acc * first)
+    addi = get_possible_values2(rest, acc + first)
+    concat = get_possible_values2(rest, int(str(acc) + str(first)))
+
+    return (mult, addi, concat)
+
+
+def is_possible2(goal, parts):
+    [first, *rest] = parts
+    values = list(flatten(get_possible_values2(rest, first)))
+    # print(f'{goal}\t{goal in values}\t', values)
+    return goal in values
+
+
+
 def part2(data):
+    equations = []
+    for line in data:
+        [goal, *parts] = extract_ints(line)
+        equations.append((goal, collections.deque(parts)))
+
+    acc = 0
+
+    for equation in equations:
+        if is_possible2(*equation):
+            acc += equation[0]
+
+    pass
+    return acc
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
