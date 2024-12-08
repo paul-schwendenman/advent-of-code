@@ -32,7 +32,7 @@ def parse_grid(data):
 
             grid[here] = char
 
-            if char != '.':
+            if char not in '.#':
                 antennas[char].append(here)
 
     return grid, i, j, antennas
