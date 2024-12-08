@@ -39,6 +39,24 @@ def parse_grid(data):
 
 def part1(data):
     grid, i, j, antennas = parse_grid(data)
+
+    antinodes = set()
+
+    for key, locations in antennas.items():
+        for a, b in itertools.permutations(locations, r=2):
+            diff = b - a
+            next_location = b + diff
+
+            if 0 <= next_location[0] <= i and 0 <= next_location[1] <= j:
+                antinodes.add(next_location)
+
+
+    return len(antinodes)
+    pass
+
+
+def part2(data):
+    grid, i, j, antennas = parse_grid(data)
     # print(i,j)
 
     antinodes = set()
@@ -53,13 +71,7 @@ def part1(data):
                 antinodes.add(next_location)
 
                 next_location = next_location + diff
-
-
     return len(antinodes)
-    pass
-
-
-def part2(data):
     pass
 
 
