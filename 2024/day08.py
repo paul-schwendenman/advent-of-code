@@ -22,9 +22,9 @@ class Point(collections.namedtuple('Point', 'x y')):
         return abs(self.x - other.x) + abs(self.y - other.y)
 
 
-def parse_grid(data):
+def parse_grid(data, *, exclude=''):
     grid = {}
-    antennas = collections.defaultdict(list)
+    markers = collections.defaultdict(list)
 
     for j, line in enumerate(data):
         for i, char in enumerate(line.rstrip()):
@@ -32,47 +32,43 @@ def parse_grid(data):
 
             grid[here] = char
 
-            if char not in '.#':
-                antennas[char].append(here)
+            if char not in exclude:
+                markers[char].append(here)
 
-    return grid, i, j, antennas
+    return grid, i, j, markers
+
 
 def part1(data):
-    grid, i, j, antennas = parse_grid(data)
+    grid, _, _, antennas = parse_grid(data, exclude='.#')
 
     antinodes = set()
 
-    for key, locations in antennas.items():
+    for _, locations in antennas.items():
         for a, b in itertools.permutations(locations, r=2):
             diff = b - a
             next_location = b + diff
 
-            if 0 <= next_location[0] <= i and 0 <= next_location[1] <= j:
+            if next_location in grid:
                 antinodes.add(next_location)
 
-
     return len(antinodes)
-    pass
 
 
 def part2(data):
-    grid, i, j, antennas = parse_grid(data)
-    # print(i,j)
+    grid, _, _, antennas = parse_grid(data, exclude=".#")
 
     antinodes = set()
 
-    for key, locations in antennas.items():
+    for _, locations in antennas.items():
         for a, b in itertools.permutations(locations, r=2):
-            antinodes.add(b)
             diff = b - a
 
-            next_location = b + diff
-            while 0 <= next_location[0] <= i and 0 <= next_location[1] <= j:
+            next_location = b
+            while next_location in grid:
                 antinodes.add(next_location)
 
                 next_location = next_location + diff
     return len(antinodes)
-    pass
 
 
 def main():
