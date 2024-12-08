@@ -7,10 +7,14 @@ from day08 import part1, part2
 def example_data():
     with fileinput.input('day08.example') as data:
         yield data
+
+
 @pytest.fixture
 def example_data2():
     with fileinput.input('day08_2.example') as data:
         yield data
+
+
 @pytest.fixture
 def example_data3():
     with fileinput.input('day08_3.example') as data:
