@@ -84,12 +84,16 @@ def part2(data):
 
         for new_spot in range(location):
             empty_size = spaces.get(new_spot, 0)
+
             if empty_size >= size:
                 del spaces[new_spot]
+
                 if empty_size > size:
                     spaces[new_spot+size] = empty_size - size
+
                 for new_location in range(new_spot, new_spot+size):
                     disc[new_location] = file_no
+
                 for old_location in range(location, location+size):
                     del disc[old_location]
 
