@@ -21,7 +21,7 @@ def print_disc(disc, index):
 
 
 def parse_disc(data):
-    line = [line for line in data][0].strip()
+    sizes = map(int, [line for line in data][0].strip())
 
     index = 0
     file_no = 0
@@ -29,9 +29,7 @@ def parse_disc(data):
     files = {}
     spaces = {}
 
-    for char, is_file in zip(line, itertools.cycle([True, False])):
-        size = int(char)
-
+    for size, is_file in zip(sizes, itertools.cycle([True, False])):
         if is_file:
             files[file_no] = (index, size)
         else:
