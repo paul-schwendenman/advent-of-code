@@ -27,7 +27,6 @@ def part1(data):
     disc = {}
 
     for char, is_file in zip(line, itertools.cycle([True, False])):
-        # print(f'{char} {is_file}')
         size = int(char)
 
         for _ in range(size):
@@ -38,15 +37,11 @@ def part1(data):
         if is_file:
             file_no += 1
 
-    # print_disc(disc, index)
-
     left = 0
     right = index
 
     while right not in disc:
         right -= 1
-
-    # print(f's: {left} e: {right}')
 
     while left < right:
         while left in disc:
@@ -55,20 +50,13 @@ def part1(data):
         if left >= right:
             break
 
-        # print(f'l{left}: {disc.get(left, None)}')
-
         disc[left] = disc[right]
         del disc[right]
-        # print_disc(disc, index)
 
         right -= 1
 
         while right not in disc:
             right -= 1
-
-        # print(f'r{right}: {disc.get(right, None)} -> {left}')
-
-    # print_disc(disc, index)
 
     acc = 0
     for i in range(index):
@@ -76,14 +64,6 @@ def part1(data):
 
 
     return acc
-
-    return
-
-
-
-
-
-    pass
 
 
 def part2(data):
@@ -111,20 +91,13 @@ def part2(data):
         if is_file:
             file_no += 1
 
-    # print(files)
-    # print(spaces)
-
-
     left = 0
     right = index
 
-    # print('\t', end='')
-    # print_disc(disc, index)
     while right not in disc:
         right -= 1
 
     for file_no, details in reversed(files.items()):
-        # print(f'file: {file_no}\t', end="")
         location, size = details
 
         for new_spot in range(location):
@@ -139,8 +112,6 @@ def part2(data):
                     del disc[old_location]
 
                 break
-
-        # print_disc(disc, index)
 
     acc = 0
     for i in range(index):
