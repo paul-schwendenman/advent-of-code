@@ -7,6 +7,7 @@ import collections
 import enum
 import pprint
 import typing
+from typing import Dict
 
 
 def print_disc(disc, index):
@@ -19,12 +20,8 @@ def print_disc(disc, index):
     print('')
 
 
-def calc_disc_checksum(disc, max_size):
-    acc = 0
-    for i in range(max_size):
-        acc += i * disc.get(i, 0)
-
-    return acc
+def calc_disc_checksum(disc: Dict[int, int]) -> int:
+    return sum(map(math.prod, disc.items()))
 
 
 def part1(data):
@@ -66,7 +63,7 @@ def part1(data):
         while right not in disc:
             right -= 1
 
-    return calc_disc_checksum(disc, index)
+    return calc_disc_checksum(disc)
 
 
 def part2(data):
@@ -110,7 +107,7 @@ def part2(data):
 
                 break
 
-    return calc_disc_checksum(disc, index)
+    return calc_disc_checksum(disc)
 
 
 def main():
