@@ -19,6 +19,14 @@ def print_disc(disc, index):
     print('')
 
 
+def calc_disc_checksum(disc, max_size):
+    acc = 0
+    for i in range(max_size):
+        acc += i * disc.get(i, 0)
+
+    return acc
+
+
 def part1(data):
     line = [line for line in data][0].strip()
 
@@ -58,12 +66,7 @@ def part1(data):
         while right not in disc:
             right -= 1
 
-    acc = 0
-    for i in range(index):
-        acc += i * disc.get(i, 0)
-
-
-    return acc
+    return calc_disc_checksum(disc, index)
 
 
 def part2(data):
@@ -91,12 +94,6 @@ def part2(data):
         if is_file:
             file_no += 1
 
-    left = 0
-    right = index
-
-    while right not in disc:
-        right -= 1
-
     for file_no, details in reversed(files.items()):
         location, size = details
 
@@ -113,11 +110,7 @@ def part2(data):
 
                 break
 
-    acc = 0
-    for i in range(index):
-        acc += i * disc.get(i, 0)
-
-    return acc
+    return calc_disc_checksum(disc, index)
 
 
 def main():
