@@ -55,23 +55,16 @@ def part1(data):
     left = 0
     right = disc_size
 
-    while right not in disc:
-        right -= 1
-
     while left < right:
-        while left in disc:
-            left += 1
+        if right in disc:
+            file_id = disc[right]
+            del disc[right]
 
-        if left >= right:
-            break
+            while left in disc:
+                left += 1
 
-        disc[left] = disc[right]
-        del disc[right]
-
+            disc[left] = file_id
         right -= 1
-
-        while right not in disc:
-            right -= 1
 
     return calc_disc_checksum(disc)
 
