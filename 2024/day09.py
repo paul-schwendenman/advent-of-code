@@ -20,53 +20,7 @@ def print_disc(disc, index):
     print('')
 
 
-def calc_disc_checksum(disc: Dict[int, int]) -> int:
-    return sum(map(math.prod, disc.items()))
-
-
-def part1(data):
-    line = [line for line in data][0].strip()
-
-    index = 0
-    file_no = 0
-    disc = {}
-
-    for char, is_file in zip(line, itertools.cycle([True, False])):
-        size = int(char)
-
-        for _ in range(size):
-            if is_file:
-                disc[index] = file_no
-            index += 1
-
-        if is_file:
-            file_no += 1
-
-    left = 0
-    right = index
-
-    while right not in disc:
-        right -= 1
-
-    while left < right:
-        while left in disc:
-            left += 1
-
-        if left >= right:
-            break
-
-        disc[left] = disc[right]
-        del disc[right]
-
-        right -= 1
-
-        while right not in disc:
-            right -= 1
-
-    return calc_disc_checksum(disc)
-
-
-def part2(data):
+def parse_disc(data):
     line = [line for line in data][0].strip()
 
     index = 0
@@ -90,6 +44,44 @@ def part2(data):
 
         if is_file:
             file_no += 1
+
+    return disc, index, files, spaces
+
+
+
+def calc_disc_checksum(disc: Dict[int, int]) -> int:
+    return sum(map(math.prod, disc.items()))
+
+
+def part1(data):
+    disc, disc_size, _, _ = parse_disc(data)
+
+    left = 0
+    right = disc_size
+
+    while right not in disc:
+        right -= 1
+
+    while left < right:
+        while left in disc:
+            left += 1
+
+        if left >= right:
+            break
+
+        disc[left] = disc[right]
+        del disc[right]
+
+        right -= 1
+
+        while right not in disc:
+            right -= 1
+
+    return calc_disc_checksum(disc)
+
+
+def part2(data):
+    disc, _, files, spaces = parse_disc(data)
 
     for file_no, details in reversed(files.items()):
         location, size = details
