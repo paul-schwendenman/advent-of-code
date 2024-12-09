@@ -32,16 +32,14 @@ def parse_disc(data):
     for size, is_file in zip(sizes, itertools.cycle([True, False])):
         if is_file:
             files[file_no] = (index, size)
+
+            for location in range(index, index + size):
+                disc[location] = file_no
+            file_no += 1
         else:
             spaces[index] = size
 
-        for _ in range(size):
-            if is_file:
-                disc[index] = file_no
-            index += 1
-
-        if is_file:
-            file_no += 1
+        index += size
 
     return disc, index, files, spaces
 
