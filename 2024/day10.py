@@ -82,13 +82,18 @@ def parse_grid(data, *, exclude=''):
     return grid, i, j, markers
 
 
-def grid_search(start, grid, check_goal, get_next, track_paths=True):
+def grid_search(start, grid, check_goal, get_next, track_paths=True, strategy='bfs'):
     queue = collections.deque([(start,)])
+
+    if strategy == 'bfs':
+        pop_item = queue.popleft
+    else:
+        pop_item = queue.pop
 
     found = set()
 
     while queue:
-        path = queue.popleft()
+        path = pop_item()
         location = path[-1]
         current = path if track_paths else location
 
@@ -139,7 +144,7 @@ def part2(data):
             if grid.get(next_location, '') == str(int(grid[location]) + 1):
                 yield next_location
 
-    return sum(grid_search(trailhead, grid, check_goal, get_next) for trailhead in markers['0'])
+    return sum(grid_search(trailhead, grid, check_goal, get_next, 'dfs') for trailhead in markers['0'])
 
 
 def main():
