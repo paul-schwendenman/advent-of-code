@@ -89,27 +89,21 @@ def search(start, grid, goal='9'):
 
     while queue:
         location = queue.popleft()
-        print(f'checking {location}')
 
         if location not in grid:
-            print(f'out of bounds {location}')
             continue
 
         if location in found:
-            print(f'already found {location}')
             continue
 
         if grid[location] == goal:
-            print(f'found {location}')
             found.add(location)
             continue
 
         for next_location in [location + dir for dir in Offset.cardinal()]:
             if next_location not in grid:
-                print(f'out of bounds {next_location} <- {location}')
                 continue
             if grid.get(next_location, '') == str(int(grid[location]) + 1):
-                print(f'continue {location} -> {next_location}: {grid[location]}->{grid[next_location]}')
                 queue.append(next_location)
 
     return len(found)
