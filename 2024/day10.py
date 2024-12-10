@@ -82,7 +82,7 @@ def parse_grid(data, *, exclude=''):
     return grid, i, j, markers
 
 
-def grid_search(start, grid, check_goal, get_next, track_paths=True, strategy='bfs'):
+def grid_search(start, grid, check_goal, get_next, is_next_valid, track_paths=True, strategy='bfs'):
     queue = collections.deque([(start,)])
 
     if strategy == 'bfs':
@@ -103,13 +103,13 @@ def grid_search(start, grid, check_goal, get_next, track_paths=True, strategy='b
         if current in found:
             continue
 
-        if check_goal(location, grid):
+        if check_goal(location):
             found.add(current)
             continue
 
-        for neighbor in get_next(location, grid):
-            next_item = path + (neighbor,)
-            queue.append(next_item)
+        for neighbor in get_next(location):
+            if is_next_valid(location, neighbor):
+                queue.append(path + (neighbor,))
 
     return len(found)
 
@@ -117,34 +117,39 @@ def grid_search(start, grid, check_goal, get_next, track_paths=True, strategy='b
 def part1(data):
     grid, _, _, markers = parse_grid(data)
 
-    # return sum(search(trailhead, grid, '9') for trailhead in markers['0'])
-    def check_goal(location, grid):
+    def check_goal(location):
         return grid[location] == '9'
 
-    def get_next(location, grid):
+    def get_next(location):
         for next_location in [location + dir for dir in Offset.cardinal()]:
             if next_location not in grid:
                 continue
             if grid.get(next_location, '') == str(int(grid[location]) + 1):
                 yield next_location
 
-    return sum(grid_search(trailhead, grid, check_goal, get_next, track_paths=False) for trailhead in markers['0'])
+    def is_valid(prev_location, next_location):
+        return True
+
+    return sum(grid_search(trailhead, grid, check_goal, get_next, is_valid, track_paths=False) for trailhead in markers['0'])
 
 
 def part2(data):
     grid, _, _, markers = parse_grid(data)
 
-    def check_goal(location, grid):
+    def check_goal(location):
         return grid[location] == '9'
 
-    def get_next(location, grid):
+    def get_next(location):
         for next_location in [location + dir for dir in Offset.cardinal()]:
             if next_location not in grid:
                 continue
             if grid.get(next_location, '') == str(int(grid[location]) + 1):
                 yield next_location
 
-    return sum(grid_search(trailhead, grid, check_goal, get_next, 'dfs') for trailhead in markers['0'])
+    def is_valid(prev_location, next_location):
+        return True
+
+    return sum(grid_search(trailhead, grid, check_goal, get_next, is_valid, 'dfs') for trailhead in markers['0'])
 
 
 def main():
