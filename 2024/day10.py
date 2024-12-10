@@ -82,33 +82,7 @@ def parse_grid(data, *, exclude=''):
     return grid, i, j, markers
 
 
-def search(start, grid, goal):
-    queue = collections.deque([start])
-
-    found = set()
-
-    while queue:
-        location = queue.popleft()
-
-        if location not in grid:
-            continue
-
-        if location in found:
-            continue
-
-        if grid[location] == goal:
-            found.add(location)
-            continue
-
-        for next_location in [location + dir for dir in Offset.cardinal()]:
-            if next_location not in grid:
-                continue
-            if grid.get(next_location, '') == str(int(grid[location]) + 1):
-                queue.append(next_location)
-
-    return len(found)
-
-def search2(start, grid, goal):
+def grid_search(start, grid, check_goal, get_next, track_paths=True):
     queue = collections.deque([(start,)])
 
     found = set()
@@ -116,35 +90,7 @@ def search2(start, grid, goal):
     while queue:
         path = queue.popleft()
         location = path[-1]
-
-        if location not in grid:
-            continue
-
-        if path in found:
-            continue
-
-        if grid[location] == goal:
-            found.add(path)
-            continue
-
-        for next_location in [location + dir for dir in Offset.cardinal()]:
-            if next_location not in grid:
-                continue
-            if grid.get(next_location, '') == str(int(grid[location]) + 1):
-                next_path = path + (next_location,)
-                queue.append(next_path)
-
-    return len(found)
-
-
-def grid_search(start, grid, check_goal, get_next):
-    queue = collections.deque([(start,)])
-
-    found = set()
-
-    while queue:
-        current = queue.popleft()
-        location = current[-1]
+        current = path if track_paths else location
 
         if location not in grid:
             continue
@@ -157,7 +103,7 @@ def grid_search(start, grid, check_goal, get_next):
             continue
 
         for neighbor in get_next(location, grid):
-            next_item = current + (neighbor,)
+            next_item = path + (neighbor,)
             queue.append(next_item)
 
     return len(found)
@@ -166,7 +112,18 @@ def grid_search(start, grid, check_goal, get_next):
 def part1(data):
     grid, _, _, markers = parse_grid(data)
 
-    return sum(search(trailhead, grid, '9') for trailhead in markers['0'])
+    # return sum(search(trailhead, grid, '9') for trailhead in markers['0'])
+    def check_goal(location, grid):
+        return grid[location] == '9'
+
+    def get_next(location, grid):
+        for next_location in [location + dir for dir in Offset.cardinal()]:
+            if next_location not in grid:
+                continue
+            if grid.get(next_location, '') == str(int(grid[location]) + 1):
+                yield next_location
+
+    return sum(grid_search(trailhead, grid, check_goal, get_next, track_paths=False) for trailhead in markers['0'])
 
 
 def part2(data):
@@ -182,7 +139,6 @@ def part2(data):
             if grid.get(next_location, '') == str(int(grid[location]) + 1):
                 yield next_location
 
-    # return sum(search2(trailhead, grid, '9') for trailhead in markers['0'])
     return sum(grid_search(trailhead, grid, check_goal, get_next) for trailhead in markers['0'])
 
 
