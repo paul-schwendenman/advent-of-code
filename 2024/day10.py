@@ -121,14 +121,10 @@ def part1(data):
         return grid[location] == '9'
 
     def get_next(location):
-        for next_location in [location + dir for dir in Offset.cardinal()]:
-            if next_location not in grid:
-                continue
-            if grid.get(next_location, '') == str(int(grid[location]) + 1):
-                yield next_location
+        yield from (location + dir for dir in Offset.cardinal())
 
     def is_valid(prev_location, next_location):
-        return True
+        return grid.get(next_location, '') == str(int(grid[prev_location]) + 1)
 
     return sum(grid_search(trailhead, grid, check_goal, get_next, is_valid, track_paths=False) for trailhead in markers['0'])
 
@@ -140,16 +136,12 @@ def part2(data):
         return grid[location] == '9'
 
     def get_next(location):
-        for next_location in [location + dir for dir in Offset.cardinal()]:
-            if next_location not in grid:
-                continue
-            if grid.get(next_location, '') == str(int(grid[location]) + 1):
-                yield next_location
+        yield from (location + dir for dir in Offset.cardinal())
 
     def is_valid(prev_location, next_location):
-        return True
+        return grid.get(next_location, '') == str(int(grid[prev_location]) + 1)
 
-    return sum(grid_search(trailhead, grid, check_goal, get_next, is_valid, 'dfs') for trailhead in markers['0'])
+    return sum(grid_search(trailhead, grid, check_goal, get_next, is_valid) for trailhead in markers['0'])
 
 
 def main():
