@@ -114,6 +114,39 @@ def search(start, grid, goal='9'):
 
     return len(found)
 
+def search2(start, grid, goal='9'):
+    queue = collections.deque([(start,)])
+
+    found = set()
+
+    while queue:
+        path = queue.popleft()
+        location = path[-1]
+        print(f'checking {location}')
+
+        if location not in grid:
+            print(f'out of bounds {location}')
+            continue
+
+        if path in found:
+            print(f'already found {location}')
+            continue
+
+        if grid[location] == goal:
+            print(f'found {location}')
+            found.add(path)
+            continue
+
+        for next_location in [location + dir for dir in Offset.cardinal()]:
+            if next_location not in grid:
+                print(f'out of bounds {next_location} <- {location}')
+                continue
+            if grid.get(next_location, '') == str(int(grid[location]) + 1):
+                print(f'continue {location} -> {next_location}: {grid[location]}->{grid[next_location]}')
+                next_path = path + (next_location,)
+                queue.append(next_path)
+
+    return len(found)
 
 def part1(data):
     grid, _, _, markers = parse_grid(data)
@@ -131,6 +164,18 @@ def part1(data):
 
 
 def part2(data):
+    grid, _, _, markers = parse_grid(data)
+
+    # print(markers)
+    trailheads = markers['0']
+
+    count = 0
+
+    for trailhead in trailheads:
+        print('------ new trailhead -------')
+        count += search2(trailhead, grid)
+
+    return count
     pass
 
 
