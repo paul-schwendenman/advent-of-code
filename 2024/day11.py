@@ -7,7 +7,6 @@ import collections
 import enum
 import pprint
 import typing
-from tqdm import tqdm
 
 def extract_ints(string):
     return list(map(int, re.findall(r'-?\d+', string)))
@@ -18,11 +17,7 @@ def part1(data):
     nums = extract_ints(line)
     new_nums = []
 
-    # print(f'nums: {nums}')
-
-
-    for index in tqdm(range(25)):
-        print(f'------ {index} - {len(nums)} -------')
+    for index in range(25):
         for n in nums:
             if n == 0:
                 new_nums.append(1)
@@ -30,13 +25,10 @@ def part1(data):
                 half = size // 2
                 front = int(str(n)[:half])
                 back = int(str(n)[half:])
-                # print(f'n: {n}\t f: {front}\t b: {back} s: {size} h: {half}')
-                new_nums.append(front)
-                new_nums.append(back)
+                new_nums.extend([front, back])
             else:
                 new_nums.append(n * 2024)
 
-        # print(f'new:  {new_nums}')
         nums, new_nums = new_nums, []
 
 
@@ -80,7 +72,7 @@ def part2(data):
     # print(f'nums: {nums}')
 
 
-    for index in tqdm(range(75)):
+    for index in range(75):
         stone_counts = blink_stones(stone_counts)
 
     return sum(count for count in stone_counts.values())
