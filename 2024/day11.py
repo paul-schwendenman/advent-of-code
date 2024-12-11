@@ -55,8 +55,8 @@ def blink_stones(stone_counts):
     counts = collections.Counter()
 
     for stone, count in stone_counts.items():
-        for stone in blink_stone(stone):
-            counts[stone] += count
+        for new_stone in blink_stone(stone):
+            counts[new_stone] += count
 
     return counts
 
@@ -65,18 +65,13 @@ def blink_stones(stone_counts):
 def part2(data):
     line = [l for l in data][0]
     nums = extract_ints(line)
-    new_nums = []
 
     stone_counts = collections.Counter(nums)
 
-    # print(f'nums: {nums}')
-
-
-    for index in range(75):
+    for _ in range(75):
         stone_counts = blink_stones(stone_counts)
 
     return sum(count for count in stone_counts.values())
-    pass
 
 
 def main():
