@@ -1,6 +1,6 @@
 import pytest
 import fileinput
-from day11 import part1, part2
+from day11 import part1, part2, solve
 
 
 @pytest.fixture
@@ -25,3 +25,9 @@ def test_part1_input(input_data):
 
 def test_part2_example(input_data):
     assert part2(input_data) == 228651922369703
+
+
+def test_solve_benchmark(benchmark):
+    input = (30, 71441, 3784, 580926, 2, 8122942, 0, 291)
+    value = benchmark(solve, input)
+    assert value == 228651922369703
