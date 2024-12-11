@@ -28,6 +28,6 @@ def test_part2_example(input_data):
 
 
 def test_solve_benchmark(benchmark):
-    input = (30, 71441, 3784, 580926, 2, 8122942, 0, 291)
+    input = "30 71441 3784 580926 2 8122942 0 291"
     value = benchmark(solve, input)
     assert value == 228651922369703

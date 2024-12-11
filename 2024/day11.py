@@ -61,7 +61,8 @@ def blink_stones(stone_counts):
     return counts
 
 
-def solve(nums):
+def solve(line):
+    nums = extract_ints(line)
     stone_counts = collections.Counter(nums)
 
     for _ in range(75):
@@ -72,9 +73,8 @@ def solve(nums):
 
 def part2(data):
     line = [l for l in data][0]
-    nums = extract_ints(line)
 
-    return solve(nums)
+    return solve(line)
 
 
 def main():
