@@ -37,7 +37,7 @@ def part1(data):
     pass
 
 
-@functools.lru_cache
+@functools.lru_cache(4096)
 def blink_stone(stone):
     if stone == 0:
         return [1]
@@ -61,11 +61,11 @@ def blink_stones(stone_counts):
     return counts
 
 
-def solve(line):
+def solve(line, n=75):
     nums = extract_ints(line)
     stone_counts = collections.Counter(nums)
 
-    for _ in range(75):
+    for _ in range(n):
         stone_counts = blink_stones(stone_counts)
 
     return sum(count for count in stone_counts.values())
@@ -74,12 +74,13 @@ def solve(line):
 def part2(data):
     line = [l for l in data][0]
 
-    return solve(line)
+    return solve(line, 75)
 
 
 def main():
     print(part1(fileinput.input()))
     print(part2(fileinput.input()))
+    print(blink_stone.cache_info())
 
 
 if __name__ == '__main__':
