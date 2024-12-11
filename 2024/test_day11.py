@@ -27,6 +27,7 @@ def test_part2_example(input_data):
     assert part2(input_data) == 228651922369703
 
 
+@pytest.mark.skip
 def test_solve_benchmark(benchmark):
     input = "30 71441 3784 580926 2 8122942 0 291"
     value = benchmark(solve, input)

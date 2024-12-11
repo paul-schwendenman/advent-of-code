@@ -38,10 +38,10 @@ def part1(data):
 def blink_stone(stone):
     if stone == 0:
         return [1]
-    elif (size := len(str(stone))) % 2 == 0:
+    elif (size := len(s_stone := str(stone))) % 2 == 0:
         half = size // 2
-        front = int(str(stone)[:half])
-        back = int(str(stone)[half:])
+        front = int(s_stone[:half])
+        back = int(s_stone[half:])
 
         return [front, back]
     else:
@@ -49,13 +49,13 @@ def blink_stone(stone):
 
 
 def blink_stones(stone_counts):
-    counts = collections.Counter()
+    new_counts = collections.Counter()
 
     for stone, count in stone_counts.items():
         for new_stone in blink_stone(stone):
-            counts[new_stone] += count
+            new_counts[new_stone] += count
 
-    return counts
+    return new_counts
 
 
 def solve(line, n=75):
