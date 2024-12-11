@@ -65,7 +65,7 @@ def solve(line, n=75):
     for _ in range(n):
         stone_counts = blink_stones(stone_counts)
 
-    return sum(count for count in stone_counts.values())
+    return stone_counts.total()
 
 
 def part2(data):
