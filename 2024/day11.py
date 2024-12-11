@@ -17,7 +17,7 @@ def part1(data):
     nums = extract_ints(line)
     new_nums = []
 
-    for index in range(25):
+    for _ in range(25):
         for n in nums:
             if n == 0:
                 new_nums.append(1)
@@ -31,13 +31,10 @@ def part1(data):
 
         nums, new_nums = new_nums, []
 
-
     return len(nums)
 
-    pass
 
-
-@functools.lru_cache(4096)
+@functools.cache
 def blink_stone(stone):
     if stone == 0:
         return [1]
@@ -80,7 +77,10 @@ def part2(data):
 def main():
     print(part1(fileinput.input()))
     print(part2(fileinput.input()))
-    print(blink_stone.cache_info())
+    try:
+        print(blink_stone.cache_info())
+    except:
+        pass
 
 
 if __name__ == '__main__':
