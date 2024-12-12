@@ -33,6 +33,13 @@ def test_part1_example3(example_data3):
     assert part1(example_data3) == 772
 
 
-@pytest.mark.skip
 def test_part2_example(example_data):
-    assert part2(example_data) == None
+    assert part2(example_data) == 1206
+
+
+def test_part2_example2(example_data2):
+    assert part2(example_data2) == 80
+
+
+def test_part2_example3(example_data3):
+    assert part2(example_data3) == 436
