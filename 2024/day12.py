@@ -24,6 +24,11 @@ class Point(collections.namedtuple('Point', 'x y')):
     def manhattan(self, other):
         return abs(self.x - other.x) + abs(self.y - other.y)
 
+    def get_neighbors(self):
+        # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
+        for offset in ((-1, 0), (1, 0), (0, -1), (0, 1),):
+            yield self + offset
+
 class Offset(enum.Enum):
     TOP_LEFT = (-1, -1)
     UP = (-1, 0)
@@ -85,12 +90,37 @@ def parse_grid(data, *, exclude=''):
     return grid, i, j, markers
 
 
-def part1(data):
+def find_regions(grid, markers):
+    for marker, locations in markers.items():
+        # print(f'marker {marker}')
+        sets = {location: {location} for location in locations}
 
+        # print(sets)
+
+        for location in locations:
+            for neighbor in location.get_neighbors():
+                if neighbor in locations:
+                    # print(f'{location} -> {neighbor}: {grid[location]}=={grid[neighbor]}')
+                    sets[location] |= sets[neighbor]
+
+                    for joined in sets[location]:
+                        sets[joined] = sets[location]
+
+        # print(sets)
+
+        for group in {tuple(group) for group in sets.values()}:
+            # print(f'yielding: {marker} {group}')
+            yield (marker, group)
+
+
+def part1(data):
     grid, _, _, markers = parse_grid(data)
     acc = 0
 
-    for marker, locations in markers.items():
+    # pprint.pprint(list(find_regions(grid, markers)))
+
+    for marker, locations in find_regions(grid, markers):
+    # for marker, locations in markers.items():
         edges = collections.Counter()
 
         for location in locations:
@@ -107,10 +137,8 @@ def part1(data):
         perimeter = len(edge_set)
         area = len(locations)
 
-        print(f'marker {marker}: {perimeter} * {area} = {perimeter * area}')
+        # print(f'marker {marker}: {perimeter} * {area} = {perimeter * area}')
         acc += perimeter * area
-
-
 
     # print(markers)
     return acc
