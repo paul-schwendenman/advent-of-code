@@ -32,27 +32,22 @@ def find_regions(grid, markers):
             yield (marker, group)
 
 
+def price_region(locations):
+    edges = set(get_all_neighbors(locations))
+
+    perimeter = len(edges)
+    area = len(locations)
+
+    return perimeter * area
+
+
+
 def part1(data):
     grid, _, _, markers = parse_grid(data)
     acc = 0
 
-    for marker, locations in find_regions(grid, markers):
-        edges = collections.Counter()
-
-        for location in locations:
-            for offset in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                edges[(location * 2) + offset] += 1
-
-        edge_set = set()
-
-        for edge, count in edges.items():
-            if count == 1:
-                edge_set.add(edge)
-
-        perimeter = len(edge_set)
-        area = len(locations)
-
-        acc += perimeter * area
+    for _, region in find_regions(grid, markers):
+        acc += price_region(region)
 
     return acc
 
