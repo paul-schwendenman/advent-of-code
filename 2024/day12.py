@@ -21,7 +21,7 @@ def find_regions(grid, markers):
         sets = {location: {location} for location in locations}
 
         for location in locations:
-            for neighbor in location.get_neighbors(Offset.cardinal()):
+            for neighbor in location.get_neighbors(offsets=Offset.cardinal()):
                 if neighbor in locations:
                     sets[location] |= sets[neighbor]
 
@@ -74,7 +74,7 @@ def part2(data):
         sets = {neighbor: {neighbor} for neighbor in all_neighbors}
 
         for location, dir in all_neighbors:
-            for neighbor in location.get_neighbors(Offset.cardinal()):
+            for neighbor in location.get_neighbors(offsets=Offset.cardinal()):
                 if (neighbor, dir) in all_neighbors:
                     sets[(location, dir)] |= sets[(neighbor, dir)]
 

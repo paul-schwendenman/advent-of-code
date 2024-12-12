@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from collections import defaultdict, namedtuple
 from enum import Enum
 from math import log10
+from typing import TextIO, Dict
 
 
 def flatten(xs):
@@ -70,14 +71,14 @@ class Point(namedtuple('Point', 'x y')):
     def manhattan(self, other):
         return abs(self.x - other.x) + abs(self.y - other.y)
 
-    def get_neighbors(self, offsets=Offset.all()):
+    def get_neighbors(self, *, offsets=Offset.all()):
         for offset in offsets:
             yield self + offset
 
 
-def parse_grid(data, *, exclude=''):
-    grid = {}
-    markers = defaultdict(list)
+def parse_grid(data: TextIO, *, exclude=''):
+    grid: Dict[Point, str] = {}
+    markers: Dict[str, list[Point]] = defaultdict(list)
 
     for j, line in enumerate(data):
         for i, char in enumerate(line.rstrip()):
