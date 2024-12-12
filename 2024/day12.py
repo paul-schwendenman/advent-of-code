@@ -31,7 +31,7 @@ class Point(collections.namedtuple('Point', 'x y')):
 
     def get_neighbors_fancy(self):
         # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
-        for offset, dir in (((-1, 0), '-'), ((1, 0), '-'), ((0, -1), '|'), ((0, 1), '|'),):
+        for offset, dir in (((-1, 0), 'L'), ((1, 0), 'R'), ((0, -1), 'U'), ((0, 1), 'D'),):
             yield self + offset, dir
 
     def get_neighbors_directional(self, dir):
@@ -171,10 +171,10 @@ def part2(data):
     # pprint.pprint(list(find_regions(grid, markers)))
 
     for marker, locations in find_regions(grid, markers):
-        print(f'---- {marker} ----')
-        print(f'{locations}')
+        # print(f'---- {marker} ----')
+        # print(f'{locations}')
         all_neighbors = list(get_all_neighbors(locations))
-        print(f'n: {all_neighbors}')
+        # print(f'n: {all_neighbors}')
 
         sets = {neighbor: {neighbor} for neighbor in all_neighbors}
 
@@ -189,7 +189,7 @@ def part2(data):
 
         lines = {tuple(group) for group in sets.values()}
 
-        pprint.pprint(lines)
+        # pprint.pprint(lines)
 
         perimeter = len(lines)
         # perimeter = len(all_neighbors)
