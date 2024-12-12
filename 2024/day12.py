@@ -16,7 +16,7 @@ def get_neighbors_fancy(point: Point):
         yield point + offset, dir
 
 
-def find_regions(grid, markers):
+def find_regions(markers: typing.Dict[str, list[Point]]):
     for marker, locations in markers.items():
         sets = {location: {location} for location in locations}
 
@@ -41,15 +41,10 @@ def price_region(locations):
     return perimeter * area
 
 
-
 def part1(data):
-    grid, _, _, markers = parse_grid(data)
-    acc = 0
+    _, _, _, markers = parse_grid(data)
 
-    for _, region in find_regions(grid, markers):
-        acc += price_region(region)
-
-    return acc
+    return sum(price_region(region) for _, region in find_regions(markers))
 
 
 def get_all_neighbors(locations):
@@ -63,7 +58,7 @@ def part2(data):
     grid, _, _, markers = parse_grid(data)
     acc = 0
 
-    for marker, locations in find_regions(grid, markers):
+    for marker, locations in find_regions(markers):
         all_neighbors = list(get_all_neighbors(locations))
 
         sets = {neighbor: {neighbor} for neighbor in all_neighbors}
