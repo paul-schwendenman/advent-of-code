@@ -29,6 +29,19 @@ class Point(collections.namedtuple('Point', 'x y')):
         for offset in ((-1, 0), (1, 0), (0, -1), (0, 1),):
             yield self + offset
 
+    def get_neighbors_fancy(self):
+        # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
+        for offset, dir in (((-1, 0), '-'), ((1, 0), '-'), ((0, -1), '|'), ((0, 1), '|'),):
+            yield self + offset, dir
+
+    def get_neighbors_directional(self, dir):
+        if dir == '-':
+            for offset in ((-1, 0), (1, 0)):
+                yield self + offset
+        elif dir == '|':
+            for offset in ((0, -1), (0, 1)):
+                yield self + offset
+
 class Offset(enum.Enum):
     TOP_LEFT = (-1, -1)
     UP = (-1, 0)
@@ -146,9 +159,9 @@ def part1(data):
 
 def get_all_neighbors(locations):
     for location in locations:
-        for neighbor in location.get_neighbors():
+        for neighbor, dir in location.get_neighbors_fancy():
             if neighbor not in locations:
-                yield neighbor
+                yield neighbor, dir
 
 
 def part2(data):
@@ -165,13 +178,13 @@ def part2(data):
 
         sets = {neighbor: {neighbor} for neighbor in all_neighbors}
 
-        for location in all_neighbors:
+        for location, dir in all_neighbors:
             for neighbor in location.get_neighbors():
-                if neighbor in all_neighbors:
-                    sets[location] |= sets[neighbor]
+                if (neighbor, dir) in all_neighbors:
+                    sets[(location, dir)] |= sets[(neighbor, dir)]
 
-                    for joined in sets[location]:
-                        sets[joined] = sets[location]
+                    for joined in sets[(location, dir)]:
+                        sets[joined] = sets[(location, dir)]
 
 
         lines = {tuple(group) for group in sets.values()}
