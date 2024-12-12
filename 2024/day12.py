@@ -7,100 +7,13 @@ import collections
 import enum
 import pprint
 import typing
+from utils import Point, Offset, parse_grid
 
 
-class Point(collections.namedtuple('Point', 'x y')):
-    __slots__ = ()
-
-    def __add__(self, other):
-        return Point(self.x + other[0], self.y + other[1])
-
-    def __sub__(self, other):
-        return Point(self.x - other[0], self.y - other[1])
-
-    def __mul__(self, scalar):
-        return Point(self.x * scalar, self.y * scalar)
-
-    def manhattan(self, other):
-        return abs(self.x - other.x) + abs(self.y - other.y)
-
-    def get_neighbors(self):
-        # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
-        for offset in ((-1, 0), (1, 0), (0, -1), (0, 1),):
-            yield self + offset
-
-    def get_neighbors_fancy(self):
-        # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
-        for offset, dir in (((-1, 0), 'L'), ((1, 0), 'R'), ((0, -1), 'U'), ((0, 1), 'D'),):
-            yield self + offset, dir
-
-    def get_neighbors_directional(self, dir):
-        if dir == '-':
-            for offset in ((-1, 0), (1, 0)):
-                yield self + offset
-        elif dir == '|':
-            for offset in ((0, -1), (0, 1)):
-                yield self + offset
-
-class Offset(enum.Enum):
-    TOP_LEFT = (-1, -1)
-    UP = (-1, 0)
-    TOP_CENTER = (-1, 0)
-    TOP_RIGHT = (-1, 1)
-    LEFT = (0, -1)
-    CENTER_LEFT = (0, -1)
-    CENTER_CENTER = (0, 0)
-    RIGHT = (0, 1)
-    CENTER_RIGHT = (0, 1)
-    BOTTOM_LEFT = (1, -1)
-    DOWN = (1, 0)
-    BOTTOM_CENTER = (1, 0)
-    BOTTOM_RIGHT = (1, 1)
-
-    def __mul__(self, scalar):
-        if isinstance(scalar, int):
-            return (self.value[0] * scalar, self.value[1] * scalar)
-        elif isinstance(scalar, tuple):
-            return (self.value[0] * scalar[0], self.value[1], scalar[1])
-
-    def __getitem__(self, index):
-        return self.value[index]
-
-    def __eq__(self, tuple):
-        return len(tuple) == 2 and self.value[0] == tuple[0] and self.value[1] == tuple[1]
-
-    def rotate(self, clockwise=True):
-        x, y = self.value
-
-        return Offset(y, -x) if clockwise else Offset(-y, x)
-
-    @classmethod
-    def cardinal(cls):
-        return (cls.UP, cls.LEFT, cls.RIGHT, cls.DOWN)
-
-    @classmethod
-    def diagonal(cls):
-        return (cls.TOP_LEFT, cls.TOP_RIGHT, cls.BOTTOM_LEFT, cls.BOTTOM_RIGHT)
-
-    @classmethod
-    def all(cls):
-        return cls.cardinal() + cls.diagonal()
-
-
-def parse_grid(data, *, exclude=''):
-    grid = {}
-    markers = collections.defaultdict(list)
-
-    for j, line in enumerate(data):
-        for i, char in enumerate(line.rstrip()):
-            here = Point(i, j)
-
-            grid[here] = char
-
-            if char not in exclude:
-                markers[char].append(here)
-
-    return grid, i, j, markers
+def get_neighbors_fancy(point: Point):
+    # for offset in ((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1)):
+    for offset, dir in (((-1, 0), 'L'), ((1, 0), 'R'), ((0, -1), 'U'), ((0, 1), 'D'),):
+        yield point + offset, dir
 
 
 def find_regions(grid, markers):
@@ -108,7 +21,7 @@ def find_regions(grid, markers):
         sets = {location: {location} for location in locations}
 
         for location in locations:
-            for neighbor in location.get_neighbors():
+            for neighbor in location.get_neighbors(Offset.cardinal()):
                 if neighbor in locations:
                     sets[location] |= sets[neighbor]
 
@@ -146,7 +59,7 @@ def part1(data):
 
 def get_all_neighbors(locations):
     for location in locations:
-        for neighbor, dir in location.get_neighbors_fancy():
+        for neighbor, dir in get_neighbors_fancy(location):
             if neighbor not in locations:
                 yield neighbor, dir
 
@@ -161,7 +74,7 @@ def part2(data):
         sets = {neighbor: {neighbor} for neighbor in all_neighbors}
 
         for location, dir in all_neighbors:
-            for neighbor in location.get_neighbors():
+            for neighbor in location.get_neighbors(Offset.cardinal()):
                 if (neighbor, dir) in all_neighbors:
                     sets[(location, dir)] |= sets[(neighbor, dir)]
 
