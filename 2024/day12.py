@@ -144,8 +144,49 @@ def part1(data):
     return acc
     pass
 
+def get_all_neighbors(locations):
+    for location in locations:
+        for neighbor in location.get_neighbors():
+            if neighbor not in locations:
+                yield neighbor
+
 
 def part2(data):
+    grid, _, _, markers = parse_grid(data)
+    acc = 0
+
+    # pprint.pprint(list(find_regions(grid, markers)))
+
+    for marker, locations in find_regions(grid, markers):
+        print(f'---- {marker} ----')
+        print(f'{locations}')
+        all_neighbors = list(get_all_neighbors(locations))
+        print(f'n: {all_neighbors}')
+
+        sets = {neighbor: {neighbor} for neighbor in all_neighbors}
+
+        for location in all_neighbors:
+            for neighbor in location.get_neighbors():
+                if neighbor in all_neighbors:
+                    sets[location] |= sets[neighbor]
+
+                    for joined in sets[location]:
+                        sets[joined] = sets[location]
+
+
+        lines = {tuple(group) for group in sets.values()}
+
+        pprint.pprint(lines)
+
+        perimeter = len(lines)
+        # perimeter = len(all_neighbors)
+        area = len(locations)
+
+        print(f'marker {marker}: {perimeter} * {area} = {perimeter * area}')
+        acc += perimeter * area
+
+    # print(markers)
+    return acc
     pass
 
 
