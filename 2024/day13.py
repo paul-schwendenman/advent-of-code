@@ -28,14 +28,21 @@ def parse_input(data):
     return machines
 
 
-def simulate_machine(machine):
-    (a_x, a_y, b_x, b_y, goal_x, goal_y) = machine
+def simulate_machine(machine, offset=0):
+    (a_x, a_y, b_x, b_y, x, y) = machine
     # a_x * a + b_x * b = goal_x
     # a_y * a + b_y * b = goal_y
     # a = goal_x / a_x - (b_x * b) / a_x
     # a = (goal_x - b_x * b) / a_x
     # b = (goal_x - a_x * a) / b_x
     # b = (goal_y - a_y * a) / b_y
+
+    # print(f'{goal_x} {goal_y}')
+
+    goal_y = y + offset
+    goal_x = x + offset
+
+    print(f'{goal_x} {goal_y}')
 
     #         (goal_x - a_x * a) / b_x = (goal_y - a_y * a) / b_y
     #         (goal_x - a_x * a) * b_y = (goal_y - a_y * a) * b_x
@@ -53,7 +60,7 @@ def simulate_machine(machine):
 
     b = (goal_y - a_y * a) // b_y
 
-    print(f'y: {goal_x} = {a * a_x + b * b_x} = {a} * {a_x} + {b} * {b_x}')
+    print(f'x: {goal_x} = {a * a_x + b * b_x} = {a} * {a_x} + {b} * {b_x}')
     print(f'y: {goal_y} = {a * a_y + b * b_y} = {a} * {a_y} + {b} * {b_y}')
     print(f'tokens: {a:3d} * 3 + {b:3d} = {a * 3 + b}')
 
@@ -77,11 +84,18 @@ def part1(data):
 
 
 def part2(data):
+    machines = parse_input(data)
+    tokens = 0
+
+    for machine in machines:
+        tokens += simulate_machine(machine, 10000000000000)
+
+    return tokens
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
