@@ -56,7 +56,6 @@ def simulate_machine(machine, offset=0):
 
     # b
     # b = (goal_y - a_y * a) / b_y
-    (a_x, a_y, b_x, b_y, goal_x, goal_y) = machine
 
     b = (goal_y - a_y * a) // b_y
 
