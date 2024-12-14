@@ -68,10 +68,9 @@ def part1(data, max_x=101, max_y=103):
 
 def part2(data, max_x=101, max_y=103):
     robots = [parse_robot(line) for line in data]
+    num_robots = len(robots)
 
-    step = 1
-    safe = math.inf
-    while True:
+    for step in itertools.count(1):
         new_robots = []
 
         for robot in robots:
@@ -82,24 +81,15 @@ def part2(data, max_x=101, max_y=103):
             pass
 
         robots = new_robots
-        q1 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] < max_y // 2])
-        q2 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] < max_y // 2])
-        q3 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] > max_y // 2])
-        q4 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] > max_y // 2])
-        if safe > (new_safe := q1 * q2 * q3 * q4):
-            safe = new_safe
-            print(f'------ {step} --------')
-            print_grid(robots, max_x, max_y)
-            print(f'-----------------')
-            input()
-        step += 1
 
+        if num_robots == len(set((x, y) for x, y, _, _ in robots)):
+            break
 
-    pass
+    return step
 
 
 def main():
-    print(part1(fileinput.input(), 11, 7))
+    # print(part1(fileinput.input(), 11, 7))
     print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
