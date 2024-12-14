@@ -60,16 +60,7 @@ def part2(data, max_x=101, max_y=103):
     num_robots = len(robots)
 
     for step in itertools.count(1):
-        new_robots = []
-
-        for robot in robots:
-            x, y, dx, dy = robot
-            new_robot = ((x + dx) % max_x, (y + dy) % max_y, dx, dy)
-
-            new_robots.append(new_robot)
-            pass
-
-        robots = new_robots
+        robots = move_robots(robots, max_x, max_y)
 
         if num_robots == len(set((x, y) for x, y, _, _ in robots)):
             break
