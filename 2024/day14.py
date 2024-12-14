@@ -31,39 +31,28 @@ def parse_robot(line):
 
     return (x, y, dx, dy)
 
+def move_robots(robots, max_x, max_y):
+    return [((x + dx) % max_x, (y + dy) % max_y, dx, dy) for (x, y, dx, dy) in robots]
 
-def part1(data, max_x=101, max_y=103):
-    robots = [parse_robot(line) for line in data]
 
-    # print_grid(robots, max_x, max_y)
-
-    # print(robots[0])
-
-    for step in range(100):
-        # print(f'------ {step} --------')
-        new_robots = []
-
-        for robot in robots:
-            x, y, dx, dy = robot
-            new_robot = ((x + dx) % max_x, (y + dy) % max_y, dx, dy)
-
-            new_robots.append(new_robot)
-            pass
-
-        robots = new_robots
-        # print_grid(robots, max_x, max_y)
-
-    # print_grid(robots, max_x, max_y)
+def count_quadrants(robots, max_x, max_y):
     q1 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] < max_y // 2])
     q2 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] < max_y // 2])
     q3 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] > max_y // 2])
     q4 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] > max_y // 2])
 
-    # print(f'{q1} * {q2} * {q3} * {q4} = {q1 * q2 * q3 * q4}')
+    return (q1, q2, q3, q4)
 
-    return q1 * q2 * q3 * q4
 
-    pass
+def part1(data, max_x=101, max_y=103):
+    robots = [parse_robot(line) for line in data]
+
+    for _ in range(100):
+        robots = move_robots(robots, max_x, max_y)
+
+    quadrants = count_quadrants(robots=robots, max_x=max_x, max_y=max_y)
+
+    return math.prod(quadrants)
 
 
 def part2(data, max_x=101, max_y=103):
