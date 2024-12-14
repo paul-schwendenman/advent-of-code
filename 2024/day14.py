@@ -7,6 +7,7 @@ import collections
 import enum
 import pprint
 import typing
+from utils import *
 
 
 def print_grid(robots, max_x, max_y):
@@ -22,8 +23,6 @@ def print_grid(robots, max_x, max_y):
 
     print('')
 
-def extract_ints(string):
-    return list(map(int, re.findall(r'-?\d+', string)))
 
 
 def parse_robot(line):

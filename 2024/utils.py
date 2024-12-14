@@ -2,7 +2,12 @@ from collections.abc import Iterable
 from collections import defaultdict, namedtuple
 from enum import Enum
 from math import log10
+from re import findall
 from typing import TextIO, Dict
+
+
+def extract_ints(string: str) -> list[int]:
+    return list(map(int, findall(r'-?\d+', string)))
 
 
 def flatten(xs):
@@ -13,7 +18,7 @@ def flatten(xs):
             yield x
 
 
-def concat_ints(x, y):
+def concat_ints(x: int, y: int) -> int:
     return x * (10 ** (int(log10(y)) + 1)) + y  # int(str(x) + str(y))
 
 

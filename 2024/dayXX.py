@@ -7,6 +7,7 @@ import collections
 import enum
 import pprint
 import typing
+from utils import *
 
 
 def part1(data):
