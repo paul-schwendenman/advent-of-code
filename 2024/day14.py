@@ -66,7 +66,35 @@ def part1(data, max_x=101, max_y=103):
     pass
 
 
-def part2(data):
+def part2(data, max_x=101, max_y=103):
+    robots = [parse_robot(line) for line in data]
+
+    step = 1
+    safe = math.inf
+    while True:
+        new_robots = []
+
+        for robot in robots:
+            x, y, dx, dy = robot
+            new_robot = ((x + dx) % max_x, (y + dy) % max_y, dx, dy)
+
+            new_robots.append(new_robot)
+            pass
+
+        robots = new_robots
+        q1 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] < max_y // 2])
+        q2 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] < max_y // 2])
+        q3 = len([1 for robot in robots if robot[0] < max_x // 2 and robot[1] > max_y // 2])
+        q4 = len([1 for robot in robots if robot[0] > max_x // 2 and robot[1] > max_y // 2])
+        if safe > (new_safe := q1 * q2 * q3 * q4):
+            safe = new_safe
+            print(f'------ {step} --------')
+            print_grid(robots, max_x, max_y)
+            print(f'-----------------')
+            input()
+        step += 1
+
+
     pass
 
 
