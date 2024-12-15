@@ -9,6 +9,21 @@ import pprint
 import typing
 from utils import *
 
+class Spot(enum.Enum):
+    ROBOT = '@'
+    EMPTY = '.'
+    WALL = '#'
+    BOX = 'O'
+    LEFT_BOX = '['
+    RIGHT_BOX = ']'
+
+    def __eq__(self, other):
+        return self.value == other
+
+    @classmethod
+    def GPS_TAGS(cls):
+        return (cls.LEFT_BOX, cls.BOX)
+
 
 def parse_input(data):
     parts = ''.join(line for line in data).split('\n\n')
@@ -21,7 +36,7 @@ def parse_input(data):
 
 def print_grid(grid, max_x, max_y):
     for j in range(0, max_y+1):
-        print("".join(grid.get((i, j), '.') for i in range(0, max_x+1)))
+        print("".join(grid.get((i, j), Spot.EMPTY) for i in range(0, max_x+1)))
 
 
 def double_grid(grid):
@@ -32,19 +47,19 @@ def double_grid(grid):
         left = Point(space.x * 2, space.y)
         right = Point(space.x * 2 + 1, space.y)
 
-        if value == '@':
-            new_grid[left] = '@'
-            new_grid[right] = '.'
+        if value == Spot.ROBOT:
+            new_grid[left] = Spot.ROBOT
+            new_grid[right] = Spot.EMPTY
             robot = left
-        if value == '#':
-            new_grid[left] = '#'
-            new_grid[right] = '#'
-        if value == 'O':
-            new_grid[left] = '['
-            new_grid[right] = ']'
-        if value == '.':
-            new_grid[left] = '.'
-            new_grid[right] = '.'
+        if value == Spot.WALL:
+            new_grid[left] = Spot.WALL
+            new_grid[right] = Spot.WALL
+        if value == Spot.BOX:
+            new_grid[left] = Spot.LEFT_BOX
+            new_grid[right] = Spot.RIGHT_BOX
+        if value == Spot.EMPTY:
+            new_grid[left] = Spot.EMPTY
+            new_grid[right] = Spot.EMPTY
 
     return new_grid, robot
 
@@ -52,19 +67,19 @@ def double_grid(grid):
 def can_move(grid, location, offset):
     next_location = location + offset
 
-    if grid[next_location] == '.':
+    if grid[next_location] == Spot.EMPTY:
         return True
-    elif grid[next_location] == '#':
+    elif grid[next_location] == Spot.WALL:
         return False
-    elif grid[next_location] == 'O':
+    elif grid[next_location] == Spot.BOX:
         return can_move(grid, next_location, offset)
-    elif grid[next_location] == '[' and offset in (Offset.UP, Offset.DOWN):
+    elif grid[next_location] == Spot.LEFT_BOX and offset in (Offset.UP, Offset.DOWN):
         return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.RIGHT, offset)
-    elif grid[next_location] == '[' and offset in (Offset.LEFT, Offset.RIGHT):
+    elif grid[next_location] == Spot.LEFT_BOX and offset in (Offset.LEFT, Offset.RIGHT):
         return can_move(grid, next_location, offset)
-    elif grid[next_location] == ']' and offset in (Offset.UP, Offset.DOWN):
+    elif grid[next_location] == Spot.RIGHT_BOX and offset in (Offset.UP, Offset.DOWN):
         return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.LEFT, offset)
-    elif grid[next_location] == ']' and offset in (Offset.LEFT, Offset.RIGHT):
+    elif grid[next_location] == Spot.RIGHT_BOX and offset in (Offset.LEFT, Offset.RIGHT):
         return can_move(grid, next_location, offset)
 
     raise ValueError()
@@ -72,19 +87,19 @@ def can_move(grid, location, offset):
 
 def move(grid, location, offset):
     next_location = location + offset
-    if grid[next_location] == '#':
+    if grid[next_location] == Spot.WALL:
         raise ValueError("Can't move there")
 
-    if grid[next_location] == '.':
+    if grid[next_location] == Spot.EMPTY:
         grid[next_location], grid[location] = grid[location], grid[next_location]
         return grid, next_location
-    elif grid[next_location] == '[' and offset in (Offset.UP, Offset.DOWN):
+    elif grid[next_location] == Spot.LEFT_BOX and offset in (Offset.UP, Offset.DOWN):
         grid, _ = move(grid, next_location, offset)
         grid, _ = move(grid, next_location + Offset.RIGHT, offset)
         grid[next_location], grid[location] = grid[location], grid[next_location]
 
         return grid, next_location
-    elif grid[next_location] == ']' and offset in (Offset.UP, Offset.DOWN):
+    elif grid[next_location] == Spot.RIGHT_BOX and offset in (Offset.UP, Offset.DOWN):
         grid, _ = move(grid, next_location, offset)
         grid, _ = move(grid, next_location + Offset.LEFT, offset)
         grid[next_location], grid[location] = grid[location], grid[next_location]
@@ -119,12 +134,12 @@ def simulate_instructions(grid, robot, instructions):
 
 
 def score_gps(grid):
-    return sum(100 * y + x for (x, y), value in grid.items() if value in 'O[')
+    return sum(100 * y + x for (x, y), value in grid.items() if value in Spot.GPS_TAGS())
 
 
 def part1(data):
     map, markers, instructions = parse_input(data)
-    robot = markers['@'][0]
+    robot = markers[Spot.ROBOT.value][0]
 
     final_map = simulate_instructions(map, robot, instructions)
 
