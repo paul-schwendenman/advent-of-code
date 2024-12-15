@@ -24,16 +24,16 @@ def concat_ints(x: int, y: int) -> int:
 
 class Offset(Enum):
     TOP_LEFT = (-1, -1)
-    UP = (-1, 0)
+    UP = (0, -1)
     TOP_CENTER = (-1, 0)
     TOP_RIGHT = (-1, 1)
-    LEFT = (0, -1)
+    LEFT = (-1, 0)
     CENTER_LEFT = (0, -1)
     CENTER_CENTER = (0, 0)
-    RIGHT = (0, 1)
+    RIGHT = (1, 0)
     CENTER_RIGHT = (0, 1)
     BOTTOM_LEFT = (1, -1)
-    DOWN = (1, 0)
+    DOWN = (0, 1)
     BOTTOM_CENTER = (1, 0)
     BOTTOM_RIGHT = (1, 1)
 
