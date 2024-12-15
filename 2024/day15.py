@@ -87,14 +87,8 @@ def move(grid, location, offset):
 
     return grid, next_location
 
-def part1(data):
-    parts = ''.join(line for line in data).split('\n\n')
 
-    grid, j, k, markers = parse_grid(parts[0].split('\n'))
-    instructions = parts[1].rstrip()
-
-    robot = markers['@'][0]
-
+def simulate_instructions(grid, robot, instructions):
     for instruction in instructions:
         if instruction == '<':
             offset = Offset.LEFT
@@ -111,6 +105,19 @@ def part1(data):
 
         if can_move(grid, robot, offset):
             grid, robot = move(grid, robot, offset)
+
+    return grid
+
+
+def part1(data):
+    parts = ''.join(line for line in data).split('\n\n')
+
+    grid, j, k, markers = parse_grid(parts[0].split('\n'))
+    instructions = parts[1].rstrip()
+
+    robot = markers['@'][0]
+
+    grid = simulate_instructions(grid, robot, instructions)
 
     return sum(100 * y + x for (x, y), value in grid.items() if value=='O')
 
@@ -124,22 +131,7 @@ def part2(data):
     grid, robot = double_grid(half_grid)
     j = j * 2 + 1
 
-    for instruction in instructions:
-        if instruction == '<':
-            offset = Offset.LEFT
-        elif instruction == '>':
-            offset = Offset.RIGHT
-        elif instruction == '^':
-            offset = Offset.UP
-        elif instruction == 'v':
-            offset = Offset.DOWN
-        elif instruction == '\n':
-            continue
-        else:
-            raise ValueError(f'Unknown instruction: "{instruction}"')
-
-        if can_move(grid, robot, offset):
-            grid, robot = move(grid, robot, offset)
+    grid = simulate_instructions(grid, robot, instructions)
 
     return sum(100 * y + x for (x, y), value in grid.items() if value=='[')
 
