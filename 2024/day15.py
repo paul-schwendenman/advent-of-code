@@ -10,6 +10,15 @@ import typing
 from utils import *
 
 
+def parse_input(data):
+    parts = ''.join(line for line in data).split('\n\n')
+
+    grid, _, _, markers = parse_grid(parts[0].split('\n'))
+    instructions = parts[1].rstrip()
+
+    return grid, markers, instructions
+
+
 def print_grid(grid, max_x, max_y):
     for j in range(0, max_y+1):
         print("".join(grid.get((i, j), '.') for i in range(0, max_x+1)))
@@ -109,31 +118,27 @@ def simulate_instructions(grid, robot, instructions):
     return grid
 
 
+def score_gps(grid):
+    return sum(100 * y + x for (x, y), value in grid.items() if value in 'O[')
+
+
 def part1(data):
-    parts = ''.join(line for line in data).split('\n\n')
-
-    grid, j, k, markers = parse_grid(parts[0].split('\n'))
-    instructions = parts[1].rstrip()
-
+    map, markers, instructions = parse_input(data)
     robot = markers['@'][0]
 
-    grid = simulate_instructions(grid, robot, instructions)
+    final_map = simulate_instructions(map, robot, instructions)
 
-    return sum(100 * y + x for (x, y), value in grid.items() if value=='O')
+    return score_gps(final_map)
 
 
 def part2(data):
-    parts = ''.join(line for line in data).split('\n\n')
+    half_map, _, instructions = parse_input(data)
 
-    half_grid, j, k, _ = parse_grid(parts[0].split('\n'))
-    instructions = parts[1].rstrip()
+    map, robot = double_grid(half_map)
 
-    grid, robot = double_grid(half_grid)
-    j = j * 2 + 1
+    final_map = simulate_instructions(map, robot, instructions)
 
-    grid = simulate_instructions(grid, robot, instructions)
-
-    return sum(100 * y + x for (x, y), value in grid.items() if value=='[')
+    return score_gps(final_map)
 
 
 def main():
