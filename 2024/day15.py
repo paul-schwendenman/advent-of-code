@@ -94,14 +94,12 @@ def move2(grid, robot, offset):
     elif grid[robot + offset] == '[' and offset in (Offset.UP, Offset.DOWN):
         grid, _ = move2(grid, robot + offset, offset)
         grid, _ = move2(grid, robot + offset + (1, 0), offset)
-        grid[robot + offset + (1, 0)], grid[robot + (1, 0)] = grid[robot + (1, 0)], '.'
         grid[robot + offset], grid[robot] = grid[robot], grid[robot + offset]
 
         return grid, robot + offset
     elif grid[robot + offset] == ']' and offset in (Offset.UP, Offset.DOWN):
         grid, _ = move2(grid, robot + offset, offset)
         grid, _ = move2(grid, robot + offset + (-1, 0), offset)
-        grid[robot + offset + (-1, 0)], grid[robot + (-1, 0)] = grid[robot + (-1, 0)], '.'
         grid[robot + offset], grid[robot] = grid[robot], grid[robot + offset]
 
         return grid, robot + offset
