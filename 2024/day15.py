@@ -186,7 +186,7 @@ def part2(data):
         # print_grid(grid, j, k)
         # print('')
 
-    return sum(100 * y + x for (x, y), value in grid.items() if value=='O')
+    return sum(100 * y + x for (x, y), value in grid.items() if value=='[')
     pass
 
 
