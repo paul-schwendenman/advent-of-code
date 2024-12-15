@@ -43,6 +43,9 @@ class Offset(Enum):
     def __eq__(self, tuple):
         return len(tuple) == 2 and self.value[0] == tuple[0] and self.value[1] == tuple[1]
 
+    def __len__(self):
+        return 2
+
     def rotate(self, clockwise=True):
         x, y = self.value
 
