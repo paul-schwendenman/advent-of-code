@@ -47,19 +47,20 @@ def double_grid(grid):
         left = Point(space.x * 2, space.y)
         right = Point(space.x * 2 + 1, space.y)
 
-        if value == Spot.ROBOT:
-            new_grid[left] = Spot.ROBOT
-            new_grid[right] = Spot.EMPTY
-            robot = left
-        if value == Spot.WALL:
-            new_grid[left] = Spot.WALL
-            new_grid[right] = Spot.WALL
-        if value == Spot.BOX:
-            new_grid[left] = Spot.LEFT_BOX
-            new_grid[right] = Spot.RIGHT_BOX
-        if value == Spot.EMPTY:
-            new_grid[left] = Spot.EMPTY
-            new_grid[right] = Spot.EMPTY
+        match value:
+            case Spot.ROBOT:
+                new_grid[left] = Spot.ROBOT
+                new_grid[right] = Spot.EMPTY
+                robot = left
+            case Spot.WALL:
+                new_grid[left] = Spot.WALL
+                new_grid[right] = Spot.WALL
+            case Spot.BOX:
+                new_grid[left] = Spot.LEFT_BOX
+                new_grid[right] = Spot.RIGHT_BOX
+            case Spot.EMPTY:
+                new_grid[left] = Spot.EMPTY
+                new_grid[right] = Spot.EMPTY
 
     return new_grid, robot
 
@@ -67,20 +68,21 @@ def double_grid(grid):
 def can_move(grid, location, offset):
     next_location = location + offset
 
-    if grid[next_location] == Spot.EMPTY:
-        return True
-    elif grid[next_location] == Spot.WALL:
-        return False
-    elif grid[next_location] == Spot.BOX:
-        return can_move(grid, next_location, offset)
-    elif grid[next_location] == Spot.LEFT_BOX and offset in (Offset.UP, Offset.DOWN):
-        return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.RIGHT, offset)
-    elif grid[next_location] == Spot.LEFT_BOX and offset in (Offset.LEFT, Offset.RIGHT):
-        return can_move(grid, next_location, offset)
-    elif grid[next_location] == Spot.RIGHT_BOX and offset in (Offset.UP, Offset.DOWN):
-        return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.LEFT, offset)
-    elif grid[next_location] == Spot.RIGHT_BOX and offset in (Offset.LEFT, Offset.RIGHT):
-        return can_move(grid, next_location, offset)
+    match grid[next_location], offset:
+        case Spot.EMPTY, _:
+            return True
+        case Spot.WALL, _:
+            return False
+        case Spot.BOX, _:
+            return can_move(grid, next_location, offset)
+        case Spot.LEFT_BOX, Offset.UP | Offset.DOWN:
+            return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.RIGHT, offset)
+        case Spot.LEFT_BOX, Offset.LEFT | Offset.RIGHT:
+            return can_move(grid, next_location, offset)
+        case Spot.RIGHT_BOX, Offset.UP | Offset.DOWN:
+            return can_move(grid, next_location, offset) and can_move(grid, next_location + Offset.LEFT, offset)
+        case Spot.RIGHT_BOX, Offset.LEFT | Offset.RIGHT:
+            return can_move(grid, next_location, offset)
 
     raise ValueError()
 
