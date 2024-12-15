@@ -120,9 +120,9 @@ def part1(data):
     # print(f'instructions: {instructions}')
     robot = markers['@'][0]
 
-    print('Initial state:')
-    print_grid(grid, j, k)
-    print('')
+    # print('Initial state:')
+    # print_grid(grid, j, k)
+    # print('')
 
     for instruction in instructions:
         if instruction == '<':
@@ -141,9 +141,9 @@ def part1(data):
         if can_move(grid, robot, offset):
             grid, robot = move(grid, robot, offset)
 
-        print(f'Move {instruction}:')
-        print_grid(grid, j, k)
-        print('')
+        # print(f'Move {instruction}:')
+        # print_grid(grid, j, k)
+        # print('')
 
     return sum(100 * y + x for (x, y), value in grid.items() if value=='O')
 
@@ -160,9 +160,9 @@ def part2(data):
     grid, robot = double_grid(half_grid)
     j = j * 2 + 1
 
-    print('Initial state:')
-    print_grid(grid, j, k)
-    print('')
+    # print('Initial state:')
+    # print_grid(grid, j, k)
+    # print('')
 
     for instruction in instructions:
         if instruction == '<':
@@ -178,20 +178,20 @@ def part2(data):
         else:
             raise ValueError(f'Unknown instruction: "{instruction}"')
 
-        print(f'Move {instruction}:')
+        # print(f'Move {instruction}:')
 
         if can_move2(grid, robot, offset):
             grid, robot = move2(grid, robot, offset)
 
-        print_grid(grid, j, k)
-        print('')
+        # print_grid(grid, j, k)
+        # print('')
 
     return sum(100 * y + x for (x, y), value in grid.items() if value=='O')
     pass
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
