@@ -22,7 +22,7 @@ def concat_ints(x: int, y: int) -> int:
     return x * (10 ** (int(log10(y)) + 1)) + y  # int(str(x) + str(y))
 
 
-class Offset(Enum):
+class Offset(tuple, Enum):
     TOP_LEFT = (-1, -1)
     UP = (0, -1)
     NORTH = (0, -1)

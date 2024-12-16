@@ -44,53 +44,36 @@ def part1(data):
     end = markers['E'][0]
     facing = Offset.EAST
 
-    states = [(end.manhattan(start), 0, ((start, facing), ))]
+    states = [(0, start, facing, [(start, facing)])]
     heapify(states)
 
     found = {}
 
-    print_grid(grid, j, k, path=(start,))
+    # print_grid(grid, j, k, path=(start,))
 
     while states:
-        print(f'------- new state {len(states)} ---------')
-        # input()
         state = heappop(states)
+        # print(f'{state}')
 
-        # if len(states) > 10_000:
-        #     print(f'state: {state}')
+        cost, location, facing, path = state
+        # print_grid(grid, j, k, path)
+        # input()
 
-        _, cost, path = state
-        print(f'path: {path}')
-        location, facing = path[-1]
-
-        print(f'cost: {cost} facing: {facing} path: {path[-3:]}')
-        print_grid(grid, j, k, path)
-
-        if found.get((location, facing.value), math.inf) <= cost:
-            print(f'skipping, easier path found: {location}')
+        if location in found:
             continue
-        else:
-            print(f'new location: {found.get(location)} = {cost}')
-            found[(location, facing.value)] = cost
+        found[location] = cost
 
-        if location == end:
-            print(f'found: {location} {len(path)} {path}')
-            print_grid(grid, j, k, path)
+        if grid[location] == '#':
             continue
-            # break
 
-        if grid.get(next_location := location + facing, '#') != '#':
-            print(f'forward: {location} -> {next_location} ({cost+1})')
-            heappush(states, ((end.manhattan(next_location), cost + 1, path + ((next_location, facing), ))))
-        else:
-            pass
-            print(f'wall: {location} + {facing} = {next_location} -> {grid.get(next_location)}')
+        heappush(states, (cost + 1, location + facing, facing, path + [(location + facing, facing)]))
 
-        for next_facing in (facing.rotate(), facing.rotate(True)):
-            print(f'turning {facing} -> {next_facing} {location} {cost + 1000}')
-            heappush(states, (end.manhattan(location), (cost + 1000), path + ((location, next_facing), )))
+        for next_facing in (facing.rotate(False), facing.rotate(True)):
 
-    print([v for k, v in found.items() if k[0] == end])
+            heappush(states, (cost + 1001, location + next_facing, next_facing, path + [(location + next_facing, next_facing)]))
+
+    # pprint.pprint(found)
+
     return found[end]
 
 
