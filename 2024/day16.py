@@ -15,10 +15,19 @@ def print_grid(grid, max_x, max_y, path):
     for j in range(0, max_y+1):
         for i in range(0, max_x+1):
             # matches = [i for i in path if i[0] == (i, j)]
-            matches = [i[0] for i in path]
-            if (i,j) in matches:
-                if matches[0] == Offset.RIGHT:
+            matches = dict(path)
+            if grid[(i, j)] in "SE":
+                print(grid[(i, j)], end='')
+
+            elif (i,j) in matches:
+                if matches[(i,j)] == Offset.RIGHT:
                     print('>', end='')
+                elif matches[(i,j)] == Offset.LEFT:
+                    print('<', end='')
+                elif matches[(i,j)] == Offset.UP:
+                    print('^', end='')
+                elif matches[(i,j)] == Offset.DOWN:
+                    print('v', end='')
                 else:
                     print('*', end='')
             else:
