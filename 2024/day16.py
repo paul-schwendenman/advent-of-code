@@ -44,7 +44,7 @@ def part1(data):
     end = markers['E'][0]
     facing = Offset.EAST
 
-    states = [(0, ((start, facing), ))]
+    states = [(end.manhattan(start), 0, ((start, facing), ))]
     heapify(states)
 
     found = {}
@@ -59,7 +59,7 @@ def part1(data):
         # if len(states) > 10_000:
         #     print(f'state: {state}')
 
-        cost, path = state
+        _, cost, path = state
         print(f'path: {path}')
         location, facing = path[-1]
 
@@ -76,21 +76,22 @@ def part1(data):
         if location == end:
             print(f'found: {location} {len(path)} {path}')
             print_grid(grid, j, k, path)
-            break
+            continue
+            # break
 
         if grid.get(next_location := location + facing, '#') != '#':
             print(f'forward: {location} -> {next_location} ({cost+1})')
-            heappush(states, ((cost + 1, path + ((next_location, facing), ))))
+            heappush(states, ((end.manhattan(next_location), cost + 1, path + ((next_location, facing), ))))
         else:
             pass
             print(f'wall: {location} + {facing} = {next_location} -> {grid.get(next_location)}')
 
         for next_facing in (facing.rotate(), facing.rotate(True)):
             print(f'turning {facing} -> {next_facing} {location} {cost + 1000}')
-            heappush(states, ((cost + 1000), path + ((location, next_facing), )))
+            heappush(states, (end.manhattan(location), (cost + 1000), path + ((location, next_facing), )))
 
-
-    return cost
+    print([v for k, v in found.items() if k[0] == end])
+    return found[end]
 
 
 
