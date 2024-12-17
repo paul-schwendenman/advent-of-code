@@ -9,15 +9,8 @@ import pprint
 import typing
 from utils import *
 
-
-def part1(data):
-    lines = [extract_ints(line) for line in data]
-    reg_a = lines[0][0]
-    reg_b = lines[1][0]
-    reg_c = lines[2][0]
-
+def run_program(reg_a, reg_b, reg_c, instructions):
     cursor = 0
-    instructions = lines[-1]
     output = []
 
     print(reg_a, reg_b, reg_c)
@@ -91,6 +84,19 @@ def part1(data):
         print(f'out: {output}')
         # input()
         cursor += jump
+    return output
+
+
+def part1(data):
+    lines = [extract_ints(line) for line in data]
+
+    instructions = lines[-1]
+    reg_a = lines[0][0]
+    reg_b = lines[1][0]
+    reg_c = lines[2][0]
+
+    output = run_program(reg_a, reg_b, reg_c, instructions)
+
     return ','.join(map(str, output))
 
     pass
