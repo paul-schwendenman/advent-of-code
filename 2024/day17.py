@@ -39,7 +39,7 @@ def part1(data):
             case 0, 6:
                 reg_a = reg_a // ( 2 ** reg_c)
             case 1, _:
-                reg_b = reg_b | operand
+                reg_b = reg_b ^ operand
             case 2, 0 | 1 | 2 | 3:
                 reg_b = operand % 8
             case 2, 4:
@@ -54,7 +54,7 @@ def part1(data):
                     jump = 0
 
             case 4, _:
-                reg_b = reg_c | reg_b
+                reg_b = reg_c ^ reg_b
             case 5, 0 | 1 | 2 | 3:
                 # print(f'{operand % 8},', end='')
                 output.append(operand % 8)
