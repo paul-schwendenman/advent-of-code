@@ -8,6 +8,7 @@ import enum
 import pprint
 import typing
 from utils import *
+import tqdm
 
 def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
     cursor = 0
@@ -52,25 +53,25 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
                 # print(f'{operand % 8},', end='')
                 output.append(operand % 8)
                 if goal:
-                    if goal[:len(output)] == output:
-                        pass
-                    else:
+                    if len(output) > len(goal):
+                        break
+                    if goal[:len(output)] != output:
                         break
             case 5, 4:
                 # print(f'{reg_a % 8},', end='')
                 output.append(reg_a % 8)
                 if goal:
-                    if goal[:len(output)] == output:
-                        pass
-                    else:
+                    if len(output) > len(goal):
+                        break
+                    if goal[:len(output)] != output:
                         break
             case 5, 5:
                 # print(f'{reg_b % 8},', end='')
                 output.append(reg_b % 8)
                 if goal:
-                    if goal[:len(output)] == output:
-                        pass
-                    else:
+                    if len(output) > len(goal):
+                        break
+                    if goal[:len(output)] != output:
                         break
             case 5, 6:
                 # print(f'{reg_c % 8},', end='')
@@ -124,13 +125,19 @@ def part2(data):
     reg_a = lines[0][0]
     reg_b = lines[1][0]
     reg_c = lines[2][0]
+    goal = [5,7,3,0]
+    output = run_program(reg_a, reg_b, reg_c, instructions, goal)
+    print(f'output: {output}')
     goal = lines[-1]
 
-    for reg_a in itertools.count():
-        output = run_program(reg_a, reg_b, reg_c, instructions, goal)
+    try:
+        for reg_a in tqdm.tqdm(itertools.count()):
+            output = run_program(reg_a, reg_b, reg_c, instructions, goal)
 
-        if output == instructions:
-            break
+            if output == instructions:
+                break
+    except KeyboardInterrupt:
+        print(f'reg_a: {reg_a}')
 
     return reg_a
 
