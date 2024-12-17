@@ -9,19 +9,19 @@ import pprint
 import typing
 from utils import *
 
-def run_program(reg_a, reg_b, reg_c, instructions):
+def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
     cursor = 0
     output = []
 
-    print(reg_a, reg_b, reg_c)
-    print(instructions)
+    # print(reg_a, reg_b, reg_c)
+    # print(instructions)
 
     while cursor < len(instructions):
         instruction = instructions[cursor]
         operand = instructions[cursor + 1]
         jump = 2
-        print(f'curs: {cursor}\t inst: {instruction}\t oper: {operand}')
-        print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
+        # print(f'curs: {cursor}\t inst: {instruction}\t oper: {operand}')
+        # print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
         match instruction, operand:
             case 0, 0 | 1 | 2 | 3:
                 reg_a = reg_a // ( 2 ** operand)
@@ -51,12 +51,27 @@ def run_program(reg_a, reg_b, reg_c, instructions):
             case 5, 0 | 1 | 2 | 3:
                 # print(f'{operand % 8},', end='')
                 output.append(operand % 8)
+                if goal:
+                    if goal[:len(output)] == output:
+                        pass
+                    else:
+                        break
             case 5, 4:
                 # print(f'{reg_a % 8},', end='')
                 output.append(reg_a % 8)
+                if goal:
+                    if goal[:len(output)] == output:
+                        pass
+                    else:
+                        break
             case 5, 5:
                 # print(f'{reg_b % 8},', end='')
                 output.append(reg_b % 8)
+                if goal:
+                    if goal[:len(output)] == output:
+                        pass
+                    else:
+                        break
             case 5, 6:
                 # print(f'{reg_c % 8},', end='')
                 output.append(reg_c % 8)
@@ -79,9 +94,9 @@ def run_program(reg_a, reg_b, reg_c, instructions):
             case _:
                 raise ValueError('Missing opcode:', instruction, operand, cursor)
 
-        print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
-        print(f'jump: {jump}')
-        print(f'out: {output}')
+        # print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
+        # print(f'jump: {jump}')
+        # print(f'out: {output}')
         # input()
         cursor += jump
     return output
@@ -103,7 +118,21 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    lines = [extract_ints(line) for line in data]
+
+    instructions = lines[-1]
+    reg_a = lines[0][0]
+    reg_b = lines[1][0]
+    reg_c = lines[2][0]
+    goal = lines[-1]
+
+    for reg_a in itertools.count():
+        output = run_program(reg_a, reg_b, reg_c, instructions, goal)
+
+        if output == instructions:
+            break
+
+    return reg_a
 
 
 def main():
