@@ -90,19 +90,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
     return output
 
 
-def part1(data):
-    lines = [extract_ints(line) for line in data]
-
-    instructions = lines[-1]
-    reg_a = lines[0][0]
-    reg_b = lines[1][0]
-    reg_c = lines[2][0]
-
-    output = run_program(reg_a, reg_b, reg_c, instructions)
-
-    return ','.join(map(str, output))
-
-
 def get_output(a):
     return ((((a % 8) ^ 1) ^ (a >> ((a % 8) ^ 1))) ^ 4) % 8
 
@@ -114,10 +101,10 @@ def run(a):
         outs.append(get_output(a))
         a = a >> 3
 
-    return ','.join(map(str, outs))
+    return outs
 
 
-def solve(program, a):
+def solve(program):
     meta_inputs = { 0 }
 
     for num in reversed(program):
@@ -132,16 +119,27 @@ def solve(program, a):
 
         meta_inputs = new_meta_inputs
 
-    return run(a), min(meta_inputs)
+    return min(meta_inputs)
+
+
+def part1(data):
+    lines = [extract_ints(line) for line in data]
+
+    # instructions = lines[-1]
+    reg_a = lines[0][0]
+    # reg_b = lines[1][0]
+    # reg_c = lines[2][0]
+
+    # output = run_program(reg_a, reg_b, reg_c, instructions)
+    output = run(reg_a)
+
+    return ','.join(map(str, output))
 
 
 def part2(data):
-    lines = [extract_ints(line) for line in data]
+    instructions = [extract_ints(line) for line in data][-1]
 
-    instructions = lines[-1]
-    reg_a = lines[0][0]
-
-    return solve(instructions, reg_a)[1]
+    return solve(instructions)
 
 
 def main():
