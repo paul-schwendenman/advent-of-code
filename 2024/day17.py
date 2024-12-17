@@ -8,21 +8,16 @@ import enum
 import pprint
 import typing
 from utils import *
-import tqdm
 
 def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
     cursor = 0
     output = []
 
-    # print(reg_a, reg_b, reg_c)
-    # print(instructions)
-
     while cursor < len(instructions):
         instruction = instructions[cursor]
         operand = instructions[cursor + 1]
         jump = 2
-        # print(f'curs: {cursor}\t inst: {instruction}\t oper: {operand}')
-        # print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
+
         match instruction, operand:
             case 0, 0 | 1 | 2 | 3:
                 reg_a = reg_a // ( 2 ** operand)
@@ -50,7 +45,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
             case 4, _:
                 reg_b = reg_c ^ reg_b
             case 5, 0 | 1 | 2 | 3:
-                # print(f'{operand % 8},', end='')
                 output.append(operand % 8)
                 if goal:
                     if len(output) > len(goal):
@@ -58,7 +52,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
                     if goal[:len(output)] != output:
                         break
             case 5, 4:
-                # print(f'{reg_a % 8},', end='')
                 output.append(reg_a % 8)
                 if goal:
                     if len(output) > len(goal):
@@ -66,7 +59,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
                     if goal[:len(output)] != output:
                         break
             case 5, 5:
-                # print(f'{reg_b % 8},', end='')
                 output.append(reg_b % 8)
                 if goal:
                     if len(output) > len(goal):
@@ -74,7 +66,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
                     if goal[:len(output)] != output:
                         break
             case 5, 6:
-                # print(f'{reg_c % 8},', end='')
                 output.append(reg_c % 8)
             case 6, 0 | 1 | 2 | 3:
                 reg_b = reg_a // ( 2 ** operand)
@@ -95,10 +86,6 @@ def run_program(reg_a, reg_b, reg_c, instructions, goal=None):
             case _:
                 raise ValueError('Missing opcode:', instruction, operand, cursor)
 
-        # print(f'reg_a: {reg_a}, reg_b: {reg_b}, reg_c: {reg_c}')
-        # print(f'jump: {jump}')
-        # print(f'out: {output}')
-        # input()
         cursor += jump
     return output
 
@@ -115,11 +102,10 @@ def part1(data):
 
     return ','.join(map(str, output))
 
-    pass
-
 
 def get_output(a):
     return ((((a % 8) ^ 1) ^ (a >> ((a % 8) ^ 1))) ^ 4) % 8
+
 
 def run(a):
     outs = []
@@ -147,8 +133,6 @@ def solve(program, a):
         meta_inputs = new_meta_inputs
 
     return run(a), min(meta_inputs)
-
-
 
 
 def part2(data):
