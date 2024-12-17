@@ -118,26 +118,46 @@ def part1(data):
     pass
 
 
+def get_output(a):
+    return ((((a % 8) ^ 1) ^ (a >> ((a % 8) ^ 1))) ^ 4) % 8
+
+def run(a):
+    outs = []
+
+    while a > 0:
+        outs.append(get_output(a))
+        a = a >> 3
+
+    return ','.join(map(str, outs))
+
+
+def solve(program, a):
+    meta_inputs = { 0 }
+
+    for num in reversed(program):
+        new_meta_inputs = set()
+
+        for current_number in meta_inputs:
+            for new_segment in range(8):
+                new_number = (current_number << 3) + new_segment
+
+                if get_output(new_number) == num:
+                    new_meta_inputs.add(new_number)
+
+        meta_inputs = new_meta_inputs
+
+    return run(a), min(meta_inputs)
+
+
+
+
 def part2(data):
     lines = [extract_ints(line) for line in data]
 
     instructions = lines[-1]
     reg_a = lines[0][0]
-    reg_b = lines[1][0]
-    reg_c = lines[2][0]
-    goal = lines[-1]
 
-    try:
-        for reg_a in tqdm.tqdm(itertools.count()):
-            output = run_program(reg_a, reg_b, reg_c, instructions, goal)
-
-            if output == instructions:
-                break
-    except KeyboardInterrupt:
-        print(f'reg_a: {reg_a}')
-    print('')
-
-    return reg_a
+    return solve(instructions, reg_a)[1]
 
 
 def main():
