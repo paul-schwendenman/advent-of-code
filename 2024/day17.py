@@ -125,9 +125,6 @@ def part2(data):
     reg_a = lines[0][0]
     reg_b = lines[1][0]
     reg_c = lines[2][0]
-    goal = [5,7,3,0]
-    output = run_program(reg_a, reg_b, reg_c, instructions, goal)
-    print(f'output: {output}')
     goal = lines[-1]
 
     try:
@@ -138,6 +135,7 @@ def part2(data):
                 break
     except KeyboardInterrupt:
         print(f'reg_a: {reg_a}')
+    print('')
 
     return reg_a
 
