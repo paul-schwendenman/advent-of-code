@@ -11,20 +11,12 @@ from heapq import heapify, heappop, heappush
 from utils import *
 
 
-def part1(data):
-    memory = [Point(*extract_ints(line)) for line in data]
-
-    corrupted = set()
-    start = Point(0, 0)
-    goal, limit, max_x, max_y = Point(70, 70), 1024, 70, 70
-    # goal, limit, max_x, max_y = Point(6, 6), 12, 6, 6
-
-    for space in memory[:limit]:
-        corrupted.add(space)
-
+def search(start, goal, corrupted):
     found = {}
     # queue = collections.deque([(0, start)])
     queue = [(goal.manhattan(start), 0, start)]
+    max_x = goal.x
+    max_y = goal.y
 
     while queue:
         # state = queue.popleft()
@@ -45,7 +37,22 @@ def part1(data):
                 # queue.append((distance + 1, neighbor))
                 heappush(queue, (goal.manhattan(neighbor), (distance + 1), neighbor))
 
-    return found[goal]
+    return found.get(goal)
+
+
+def part1(data):
+    memory = [Point(*extract_ints(line)) for line in data]
+
+    corrupted = set()
+    start = Point(0, 0)
+    goal, limit, max_x, max_y = Point(70, 70), 1024, 70, 70
+    # goal, limit, max_x, max_y = Point(6, 6), 12, 6, 6
+
+    for space in memory[:limit]:
+        corrupted.add(space)
+
+    return search(start, goal, corrupted)
+
 
 
 
