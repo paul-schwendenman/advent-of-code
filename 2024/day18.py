@@ -61,7 +61,29 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    memory = [Point(*extract_ints(line)) for line in data]
+
+    corrupted = set()
+    start = Point(0, 0)
+    goal, _, max_x, max_y = Point(6, 6), 1024, 6, 6
+    # goal, _, max_x, max_y = Point(70, 70), 1024, 70, 70
+    lower = 0
+    upper = len(memory) + 1
+
+
+    # goal, limit, max_x, max_y = Point(6, 6), 12, 6, 6
+
+    while True:
+        limit = (upper + lower) // 2
+
+        for space in memory[:limit]:
+            corrupted.add(space)
+
+        yes = search(start, goal, corrupted)
+
+        if yes:
+            print(memory[limit])
+        pass
 
 
 def main():
