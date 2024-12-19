@@ -9,36 +9,33 @@ import pprint
 import typing
 from utils import *
 
+def parse(data):
+    lines = [line.rstrip() for line in data]
+
+    designs = lines[2:]
+    towels = tuple(lines[0].split(', '))
+
+    return designs, towels
+
+
 @functools.cache
-def check(towels, pattern):
-    if len(pattern) == 0:
+def check(towels, design):
+    if len(design) == 0:
         return 1
 
-    possible = 0
-
-    for towel in towels:
-        if pattern.startswith(towel):
-            possible += check(towels, pattern[len(towel):])
-
-    return possible
+    return sum(check(towels, design[len(towel):]) for towel in towels if design.startswith(towel))
 
 
 def part1(data):
-    lines = [line.rstrip() for line in data]
+    designs, towels = parse(data)
 
-    towel_line, _, *patterns = lines
-    towels = tuple(towel_line.split(', '))
-
-    return sum(1 for pattern in patterns if check(towels, pattern))
+    return sum(1 for design in designs if check(towels, design))
 
 
 def part2(data):
-    lines = [line.rstrip() for line in data]
+    designs, towels = parse(data)
 
-    towel_line, _, *patterns = lines
-    towels = tuple(towel_line.split(', '))
-
-    return sum(check(towels, pattern) for pattern in patterns)
+    return sum(check(towels, design) for design in designs)
 
 
 def main():
