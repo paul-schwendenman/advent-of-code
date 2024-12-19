@@ -12,13 +12,13 @@ from utils import *
 @functools.cache
 def check(towels, pattern):
     if len(pattern) == 0:
-        return True
+        return 1
 
-    possible = False
+    possible = 0
 
     for towel in towels:
         if pattern.startswith(towel):
-            possible = possible or check(towels, pattern[len(towel):])
+            possible += check(towels, pattern[len(towel):])
 
     return possible
 
@@ -44,7 +44,12 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    lines = [line.rstrip() for line in data]
+
+    towel_line, _, *patterns = lines
+    towels = tuple(towel_line.split(', '))
+
+    return sum(check(towels, pattern) for pattern in patterns)
 
 
 def main():
