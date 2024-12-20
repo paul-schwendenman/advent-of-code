@@ -175,7 +175,7 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
