@@ -61,6 +61,7 @@ def part1(data):
         return False
 
     path = grid_search(start, grid, check_goal, get_next, is_valid, track_paths=True, strategy='dfs')
+    path_dict = dict((point, index) for index, point in enumerate(path))
 
     count = 0
     c = collections.Counter()
@@ -71,7 +72,7 @@ def part1(data):
         if taxi != 2:
             continue
 
-        steps = abs(path.index(a) - path.index(b))
+        steps = abs(path_dict[a] - path_dict[b])
         c[steps - taxi] += 1
 
         if taxi == 2 and steps - taxi >= 100:
