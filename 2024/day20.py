@@ -127,11 +127,55 @@ def part1(data):
 
 
 def part2(data):
+    grid, j, k, markers = parse_grid(data)
+
+    start = markers['S'][0]
+    end = markers['E'][0]
+
+    def check_goal(location):
+        return grid[location] == 'E'
+
+    def get_next(location):
+        yield from (location + dir for dir in Offset.cardinal())
+
+    def is_valid(prev_location, next_location, path):
+        if grid.get(next_location, '') != '#' and next_location not in path:
+            return True
+        return False
+
+    path = grid_search(start, grid, check_goal, get_next, is_valid, track_paths=True, strategy='dfs')
+
+    print(len(path))
+
+    count = 0
+    c = collections.Counter()
+    # print_grid(grid, j, k, ())
+
+    path_dict = dict((point, index) for index, point in enumerate(path))
+
+    for a, b in tqdm(itertools.combinations(path, 2)):
+        taxi = a.manhattan(b)
+
+        if taxi > 20:
+            continue
+
+        steps = abs(path_dict[a] - path_dict[b])
+        c[steps - taxi] += 1
+
+        if steps - taxi >= 100:
+            count += 1
+
+
+
+    print(c)
+
+    # print(f'start: {start}\t end: {end}, {count}')
+    return (count)
     pass
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
