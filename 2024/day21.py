@@ -67,8 +67,8 @@ def get_path(start: Point, end: Point):
         found[location] = distance
 
         if location == end:
-            print(f'found path: {all_keys[start]} to {all_keys[end]}: "{buttons}"')
-            print(f'found path: {start} -> {end}: {path}')
+            # print(f'found path: {all_keys[start]} to {all_keys[end]}: "{buttons}"')
+            # print(f'found path: {start} -> {end}: {path}')
             return buttons
 
         if distance > 10:
@@ -81,7 +81,7 @@ def get_path(start: Point, end: Point):
 
 
 def press_buttons(buttons, start=Point(2, 3)):
-    print(f'pressing: {buttons}')
+    # print(f'pressing: {buttons}')
     arm_position = start
     movements = []
 
@@ -91,13 +91,13 @@ def press_buttons(buttons, start=Point(2, 3)):
         else:
             goal = robot[button]
 
-        movement = get_path(arm_position, goal)
+        movement = ''.join(sorted(get_path(arm_position, goal)))
 
         arm_position = goal
 
         movements.append(movement + 'A')
 
-    print(movements)
+    # print(movements)
 
     return ''.join(movements)
 
@@ -123,18 +123,18 @@ def part1(data):
     acc = 0
 
     for code in codes:
-        print(f'---------- {code} ------------')
+        # print(f'---------- {code} ------------')
         buttons = press_buttons(code)
-        print(f'{code}: {buttons}')
+        # print(f'{code}: {buttons}')
         buttons = press_buttons(buttons)
-        print(f'{code}: {buttons}')
+        # print(f'{code}: {buttons}')
         buttons = press_buttons(buttons)
-        print(f'{code}: {buttons}')
+        # print(f'{code}: {buttons}')
 
         u = undo_buttons(buttons, robot_grid)
-        print(f'{code}: {u}')
+        # print(f'{code}: {u}')
         u = undo_buttons(u, robot_grid)
-        print(f'{code}: {u}')
+        # print(f'{code}: {u}')
         u = undo_buttons(u, num_pad_grid)
         print(f'{code}: {u}')
 
