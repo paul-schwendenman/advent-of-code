@@ -10,7 +10,7 @@ import typing
 from utils import *
 
 
-num_pad = {
+num_pad_grid = {
     Point(0,0): '7',
     Point(1,0): '8',
     Point(2,0): '9',
@@ -24,10 +24,10 @@ num_pad = {
     Point(1,3): '0',
     Point(2,3): 'A',
 }
-num_pad = {value: key for key, value in num_pad.items()}
+num_pad = {value: key for key, value in num_pad_grid.items()}
 
 
-robot = {
+robot_grid = {
     Point(0, 3): '',
     Point(1, 3): '^',
     Point(2, 3): 'A',
@@ -35,7 +35,7 @@ robot = {
     Point(1, 4): 'v',
     Point(2, 4): '>',
 }
-robot = {value: key for key, value in robot.items()}
+robot = {value: key for key, value in robot_grid.items()}
 
 moves = {
     '<': Offset.LEFT,
@@ -45,12 +45,19 @@ moves = {
 }
 # moves = {value: key for key, value in moves.items()}
 
-@functools.cache
+# @functools.cache
 def get_path(start: Point, end: Point):
     q = collections.deque([(start, 0, (start,), "")])
 
+    found = {}
+
     while q:
         location, distance, path, buttons = q.popleft()
+
+        if found.get(location, math.inf) < distance:
+            continue
+
+        found[location] = distance
 
         if location == end:
             return buttons
@@ -83,6 +90,19 @@ def press_buttons(buttons, start=Point(2, 3)):
     return ''.join(movements)
 
 
+def undo_buttons(buttons, grid):
+    # print(f'undoing: {buttons}')
+    def inner(buttons):
+        location = Point(2, 3)
+
+        for button in buttons:
+            # print(button, location)
+            if button == 'A':
+                yield grid[location]
+            else:
+                location += moves[button]
+
+    return ''.join(inner(buttons))
 
 
 def part1(data):
@@ -92,11 +112,21 @@ def part1(data):
 
     for code in codes:
         buttons = press_buttons(code)
+        print(f'{code}: {buttons}')
         buttons = press_buttons(buttons)
+        print(f'{code}: {buttons}')
         buttons = press_buttons(buttons)
-        # buttons = press_buttons(buttons)
+        print(f'{code}: {buttons}')
 
-        print(f'code {code}:\t {len(buttons) * extract_ints(code)[0]}\t = {len(buttons)} * {extract_ints(code)[0]}')
+        u = undo_buttons(buttons, robot_grid)
+        print(f'{code}: {u}')
+        u = undo_buttons(u, robot_grid)
+        print(f'{code}: {u}')
+        u = undo_buttons(u, num_pad_grid)
+        print(f'{code}: {u}')
+
+
+        # print(f'code {code}:\t {len(buttons) * extract_ints(code)[0]}\t = {len(buttons)} * {extract_ints(code)[0]}')
         acc += len(buttons) * extract_ints(code)[0]
 
     return acc
