@@ -45,7 +45,7 @@ moves = {
 }
 # moves = {value: key for key, value in moves.items()}
 
-# @functools.cache
+@functools.cache
 def get_path(start: Point, end: Point):
     q = collections.deque([(start, 0, (start,), "")])
 
@@ -60,6 +60,7 @@ def get_path(start: Point, end: Point):
         found[location] = distance
 
         if location == end:
+            print(f'found path: {start} -> {end}: {buttons} {path}')
             return buttons
 
         if distance > 10:
@@ -68,10 +69,11 @@ def get_path(start: Point, end: Point):
         for char, offset in moves.items():
             neighbor = location + offset
             if neighbor not in path:
-                q.append((neighbor, distance + 1, path + neighbor, buttons + char))
+                q.append((neighbor, distance + 1, path + (neighbor,), buttons + char))
 
 
 def press_buttons(buttons, start=Point(2, 3)):
+    print(f'pressing: {buttons}')
     arm_position = start
     movements = []
 
@@ -111,6 +113,7 @@ def part1(data):
     acc = 0
 
     for code in codes:
+        print(f'---------- {code} ------------')
         buttons = press_buttons(code)
         print(f'{code}: {buttons}')
         buttons = press_buttons(buttons)
@@ -126,7 +129,7 @@ def part1(data):
         print(f'{code}: {u}')
 
 
-        # print(f'code {code}:\t {len(buttons) * extract_ints(code)[0]}\t = {len(buttons)} * {extract_ints(code)[0]}')
+        print(f'code {code}:\t {len(buttons) * extract_ints(code)[0]}\t = {len(buttons)} * {extract_ints(code)[0]}')
         acc += len(buttons) * extract_ints(code)[0]
 
     return acc
