@@ -10,6 +10,8 @@ import typing
 from utils import *
 
 
+bad_place = Point(0,3)
+
 num_pad_grid = {
     Point(0,0): '7',
     Point(1,0): '8',
@@ -37,6 +39,8 @@ robot_grid = {
 }
 robot = {value: key for key, value in robot_grid.items()}
 
+all_keys = collections.ChainMap(num_pad_grid, robot_grid)
+
 moves = {
     '<': Offset.LEFT,
     '>': Offset.RIGHT,
@@ -54,13 +58,17 @@ def get_path(start: Point, end: Point):
     while q:
         location, distance, path, buttons = q.popleft()
 
+        if location == bad_place:
+            continue
+
         if found.get(location, math.inf) < distance:
             continue
 
         found[location] = distance
 
         if location == end:
-            print(f'found path: {start} -> {end}: {buttons} {path}')
+            print(f'found path: {all_keys[start]} to {all_keys[end]}: "{buttons}"')
+            print(f'found path: {start} -> {end}: {path}')
             return buttons
 
         if distance > 10:
@@ -88,6 +96,8 @@ def press_buttons(buttons, start=Point(2, 3)):
         arm_position = goal
 
         movements.append(movement + 'A')
+
+    print(movements)
 
     return ''.join(movements)
 
