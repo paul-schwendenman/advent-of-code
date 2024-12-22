@@ -25,16 +25,12 @@ def generate_secrets(secret):
 
 def generate_prices(secret):
     calc_price = lambda secret: secret % 10
+
     yield from map(calc_price, generate_secrets(secret))
 
 
-def make_sequence(secret, n=1):
-    yield from itertools.islice(generate_secrets(secret), n)
-
-
-def calc_sequence(secret, n=1):
-    for _ in range(n):
-        secret = calc_next_secret(secret)
+def calc_nth_secret(secret, n=1):
+    *_, secret = itertools.islice(generate_secrets(secret), n)
 
     return secret
 
@@ -42,7 +38,7 @@ def calc_sequence(secret, n=1):
 def part1(data):
     secrets = [int(line) for line in data]
 
-    return sum(calc_sequence(secret, 2000) for secret in secrets)
+    return sum(calc_nth_secret(secret, 2000) for secret in secrets)
 
 
 def part2(data):
@@ -50,21 +46,20 @@ def part2(data):
     changes_map = defaultdict(dict)
 
     for secret in secrets:
-        changes = collections.deque(maxlen=4)
+        rolling_diffs = collections.deque(maxlen=4)
         price = secret % 10
 
         for new_price in itertools.islice(generate_prices(secret), 2000):
             price_diff = new_price - price
-            changes.append(price_diff)
+            rolling_diffs.append(price_diff)
+            frozen_diffs = tuple(rolling_diffs)
 
-            if len(changes) == 4 and secret not in changes_map[tuple(changes)]:
-                changes_map[tuple(changes)][secret] = new_price
+            if len(rolling_diffs) == 4 and secret not in changes_map[frozen_diffs]:
+                changes_map[frozen_diffs][secret] = new_price
 
             price = new_price
 
-    all_diffs = [sum(value.values()) for value in changes_map.values()]
-
-    return max(all_diffs)
+    return max(sum(value.values()) for value in changes_map.values())
 
 
 def main():
