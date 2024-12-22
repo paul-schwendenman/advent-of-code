@@ -10,11 +10,23 @@ import typing
 from utils import *
 
 
-def calc_next(secret, n=1):
+def calc_next(secret):
+    secret = (secret ^ (secret << 6)) % 16777216    # Multiply by 64, 64 = 2 ** 6
+    secret = (secret ^ (secret >> 5)) % 16777216    # Divide by 32, 32 = 2 ** 5
+    secret = (secret ^ (secret << 11 )) % 16777216  # Multiply by 2024, 2024 = 2 ** 11
+
+    return secret
+
+
+def make_sequence(secret, n=1):
     for _ in range(n):
-        secret = (secret ^ (secret << 6)) % 16777216    # Multiply by 64, 64 = 2 ** 6
-        secret = (secret ^ (secret >> 5)) % 16777216    # Divide by 32, 32 = 2 ** 5
-        secret = (secret ^ (secret << 11 )) % 16777216  # Multiply by 2024, 2024 = 2 ** 11
+        secret = calc_next(secret)
+        yield secret
+
+
+def calc_sequence(secret, n=1):
+    for _ in range(n):
+        secret = calc_next(secret)
 
     return secret
 
@@ -22,7 +34,7 @@ def calc_next(secret, n=1):
 def part1(data):
     secrets = [int(line) for line in data]
 
-    return sum(calc_next(secret, 2000) for secret in secrets)
+    return sum(calc_sequence(secret, 2000) for secret in secrets)
 
 
 def part2(data):
@@ -34,8 +46,7 @@ def part2(data):
         price = secret % 10
         new_secret = secret
 
-        for _ in range(2000):
-            new_secret = calc_next(new_secret)
+        for new_secret in make_sequence(secret, 2000):
             new_price = new_secret % 10
 
             price_diff = new_price - price
@@ -52,7 +63,7 @@ def part2(data):
 
 
 def main():
-    # print(part1(fileinput.input()))
+    print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
