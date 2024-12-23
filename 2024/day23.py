@@ -63,16 +63,20 @@ def part2(data):
         connections[a].add(b)
         connections[b].add(a)
 
+    computers = connections.keys()
+
     best = tuple()
     queue = collections.deque(pairs)
 
     while queue:
-        current = queue.popleft()
+        current = queue.pop()
 
         if len(current) > len(best):
             best = current
 
-        for item in connections.keys():
+        for item in computers:
+            if item > current[-1]:
+                continue
             if all(item in connections[c] for c in current):
                 queue.append(current + (item,))
 
@@ -83,7 +87,7 @@ def part2(data):
 
 
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     print(part2(fileinput.input()))
 
 
