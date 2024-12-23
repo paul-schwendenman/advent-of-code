@@ -55,6 +55,30 @@ def part1(data):
 
 
 def part2(data):
+    pairs = list(map(lambda item: tuple(item), (line.rstrip().split('-') for line in data)))
+
+    connections = collections.defaultdict(set)
+
+    for a, b in pairs:
+        connections[a].add(b)
+        connections[b].add(a)
+
+    best = tuple()
+    queue = collections.deque(pairs)
+
+    while queue:
+        current = queue.popleft()
+
+        if len(current) > len(best):
+            best = current
+
+        for item in connections.keys():
+            if all(item in connections[c] for c in current):
+                queue.append(current + (item,))
+
+        pass
+
+    return ','.join(sorted(best))
     pass
 
 
