@@ -269,11 +269,79 @@ def try3(data):
 
     return value
 
+def find_instruction(instructions: list[str], a: str, b: str, op: str):
+    for instruction in instructions:
+        if instruction.startswith(f'{a} {op} {b}') or instruction.startswith(f'{b} {op} {a}'):
+            return instruction.split(' -> ')[1]
+
+
+def swap(instructions):
+    swapped = []
+    c0 = None
+    c1 = None
+
+    for index in range(45):
+        n = f'{index:02d}'
+
+        # half adder
+        # X1 XOR Y1 => M1
+        # X1 AND Y1 => N1
+        # C0 AND M1 => R1
+        # C0 XOR M1 -> Z1
+        # R1 OR N1 -> C1
+        m1 = find_instruction(instructions, f'x{n}', f'y{n}', 'XOR')
+        n1 = find_instruction(instructions, f'x{n}', f'y{n}', 'AND')
+
+        if c0:
+            r1 = find_instruction(instructions, c0, m1, 'AND')
+            if not r1:
+                n1, m1 = m1, n1
+                swapped.extend([n1, m1])
+                r1 = find_instruction(instructions, c0, m1, 'AND')
+
+            z1 = find_instruction(instructions, c0, m1, 'XOR')
+
+            if m1.startswith('z'):
+                m1, z1 = z1, m1
+                swapped.extend([z1, m1])
+
+            if n1.startswith('z'):
+                n1, z1 = z1, n1
+                swapped.extend([z1, n1])
+
+            if r1.startswith('z'):
+                r1, z1 = z1, r1
+                swapped.extend([z1, r1])
+
+            c1 = find_instruction(instructions, r1, n1, 'OR')
+
+        if c1 and c1.startswith('z') and c1 != 'z45':
+            c1, z1 = z1, c1
+            swapped.extend([c1, z1])
+
+        if c0:
+            c0 = c1
+        else:
+            c0 = n1
+
+    return swapped
+
+
+
+
+
+
+
+
+def try4(data):
+    gates, instructions = parse_data(data)
+
+    return ','.join(sorted(swap(instructions)))
 
 def main():
     # print(part1(fileinput.input()))
     # print(part2(fileinput.input()))
-    print(try3(fileinput.input()))
+    print(try4(fileinput.input()))
 
 
 if __name__ == '__main__':
