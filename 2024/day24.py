@@ -26,7 +26,7 @@ def get_int(gates, prefix='z'):
 
 def follow_path(gates: dict[str, tuple[str, str, str]], goal: str, depth=3):
     if depth == 0:
-        return f'{goal}...'
+        return f'{goal}:...'
     if goal.startswith('x'):
         return goal
     elif goal.startswith('y'):
@@ -34,7 +34,7 @@ def follow_path(gates: dict[str, tuple[str, str, str]], goal: str, depth=3):
 
     op, a, b = gates[goal]
 
-    return f'({goal}: {follow_path(gates, a, depth-1)}) {op} ({follow_path(gates, b, depth-1)})'
+    return f'{goal} := ({follow_path(gates, a, depth-1)}) {op} ({follow_path(gates, b, depth-1)})'
 
 
 def add_nums(gates, instructions):
@@ -113,7 +113,10 @@ def map_instructions(instructions):
 
     for instruction in instructions:
         a, op, b, _, c = instruction.split(' ')
-        outs[c] = (op, a, b)
+        if a < b:
+            outs[c] = (op, a, b)
+        else:
+            outs[c] = (op, b, a)
 
     return outs
 
@@ -246,9 +249,31 @@ def part2(data):
     pass
 
 
+
+
+
+def try3(data):
+    gates, instructions = parse_data(data)
+
+    instructions_map = map_instructions(instructions)
+    for i in range(12):
+        z = f'z{i:02d}'
+        print(f'{follow_path(instructions_map, z, 30)}')
+
+    z = add_nums(gates, instructions)
+    value = 0
+
+    for digit in reversed(z):
+        value = value << 1
+        value += digit
+
+    return value
+
+
 def main():
-    print(part1(fileinput.input()))
+    # print(part1(fileinput.input()))
     # print(part2(fileinput.input()))
+    print(try3(fileinput.input()))
 
 
 if __name__ == '__main__':
