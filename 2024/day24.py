@@ -123,12 +123,6 @@ def part1(data):
     return get_int(gates, 'z')
 
 
-def find_instruction(instructions: list[str], a: str, b: str, op: str):
-    for instruction in instructions:
-        if instruction.startswith(f'{a} {op} {b}') or instruction.startswith(f'{b} {op} {a}'):
-            return instruction.split(' -> ')[1]
-
-
 def swap(instructions, n_bits=45):
     '''Swap outputs based on patterns
 
@@ -139,6 +133,10 @@ def swap(instructions, n_bits=45):
     C0 XOR M1 -> Z1
     R1 OR N1 -> C1
     '''
+    operations = extract_operations(instructions)
+    def find_operation(a, b, op):
+        return operations.get((op, a, b), None)
+
     swapped = []
     c0 = None
     c1 = None
@@ -146,33 +144,33 @@ def swap(instructions, n_bits=45):
     for index in range(n_bits):
         number = f'{index:02d}'
 
-        m1 = find_instruction(instructions, f'x{number}', f'y{number}', 'XOR')
-        n1 = find_instruction(instructions, f'x{number}', f'y{number}', 'AND')
+        m1 = find_operation(f'x{number}', f'y{number}', 'XOR')
+        n1 = find_operation(f'x{number}', f'y{number}', 'AND')
 
         if c0:
-            r1 = find_instruction(instructions, c0, m1, 'AND')
+            r1 = find_operation(c0, m1, 'AND')
             if not r1:
                 n1, m1 = m1, n1
                 swapped.extend([n1, m1])
-                r1 = find_instruction(instructions, c0, m1, 'AND')
+                r1 = find_operation(c0, m1, 'AND')
 
-            z1 = find_instruction(instructions, c0, m1, 'XOR')
+            z1 = find_operation(c0, m1, 'XOR')
 
-            if m1.startswith('z'):
+            if m1[0] == 'z':
                 m1, z1 = z1, m1
                 swapped.extend([z1, m1])
 
-            if n1.startswith('z'):
+            if n1[0] == 'z':
                 n1, z1 = z1, n1
                 swapped.extend([z1, n1])
 
-            if r1.startswith('z'):
+            if r1[0] == 'z':
                 r1, z1 = z1, r1
                 swapped.extend([z1, r1])
 
-            c1 = find_instruction(instructions, r1, n1, 'OR')
+            c1 = find_operation(r1, n1, 'OR')
 
-        if c1 and c1.startswith('z') and c1 != f'z{n_bits}':
+        if c1 and c1[0] == 'z' and c1 != f'z{n_bits}':
             c1, z1 = z1, c1
             swapped.extend([c1, z1])
 
