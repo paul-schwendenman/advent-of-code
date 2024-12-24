@@ -26,7 +26,7 @@ def get_int(gates, prefix='z'):
 
 def follow_path(gates: dict[str, tuple[str, str, str]], goal: str, depth=3):
     if depth == 0:
-        return goal
+        return f'{goal}...'
     if goal.startswith('x'):
         return goal
     elif goal.startswith('y'):
@@ -34,7 +34,7 @@ def follow_path(gates: dict[str, tuple[str, str, str]], goal: str, depth=3):
 
     op, a, b = gates[goal]
 
-    return f'({follow_path(gates, a, depth-1)}) {op} ({follow_path(gates, b, depth-1)})'
+    return f'({goal}: {follow_path(gates, a, depth-1)}) {op} ({follow_path(gates, b, depth-1)})'
 
 
 def add_nums(gates, instructions):
@@ -165,15 +165,22 @@ def part1(data):
     print(f'{x+y:46b} = {x+y} = {x} + {y}')
     print(f'{z:b} = {z}')
 
-    print(f'{(x+y) ^ z:46b}')
+
+    for index in range(46):
+        if f'{z:0b}'[index] != f'{x+y:0b}'[index]:
+            print(f'mismatch bit {index}')
+            print(f'{z} = {follow_path(instructions_map, f'z{index:02d}')}')
+
+
+    # print(f'{(x+y) ^ z:46b}')
 
     # for i in range(46):
     #     z = f'z{i:02d}'
     #     print(f'{z} = {follow_path(instructions_map, z)}')
 
-    return z
+    # return z
     z = [1 if gates.get(f'z{index:02d}', False) else 0 for index in range(99)]
-    print(z)
+    # print(z)
 
     value = 0
 
@@ -189,7 +196,8 @@ def score_nums(a, b):
         if i == j:
             count += 1
         else:
-            break
+            pass
+            # break
 
     return count
 
@@ -203,33 +211,34 @@ def part2(data):
     goal_z = [int(item) for item in f'{x+y:099b}']
     z = add_nums(gates, instructions)
 
-    # print(z)
-    # print(goal_z)
-    # print(len(z), len(goal_z))
-    # print(score_nums(z, goal_z))
-    # print(score_nums(z, z))
+    print(z)
+    print(goal_z)
+    print(len(z), len(goal_z))
+    print(score_nums(z, goal_z))
+    print(score_nums(z, z))
 
     outs = map_instructions(instructions)
 
     z2 = add_nums2(gates, outs)
     score = (score_nums(z2, goal_z))
 
-    for a, b in itertools.combinations(outs.keys(), r=8):
+    for a, b in itertools.combinations(outs.keys(), r=2):
         outs[a], outs[b] = outs[b], outs[a]
 
         z3 = add_nums2(gates, outs)
 
-        if (score_nums(z3, goal_z)) > score:
-            print(a, b)
+        if (s := score_nums(z3, goal_z)) > score:
+            pass
+            print(f'{s:2d}: {a}, {b}')
 
         outs[a], outs[b] = outs[b], outs[a]
         pass
 
     z2 = add_nums2(gates, outs)
 
-    # print(len(z2), len(goal_z))
-    # print(z2)
-    # print(score_nums(z2, goal_z))
+    print(len(z2), len(goal_z))
+    print(z2)
+    print(score_nums(z2, goal_z))
 
     # assert z == list(reversed(z2))
 
@@ -239,7 +248,7 @@ def part2(data):
 
 def main():
     print(part1(fileinput.input()))
-    print(part2(fileinput.input()))
+    # print(part2(fileinput.input()))
 
 
 if __name__ == '__main__':
