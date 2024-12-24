@@ -11,7 +11,7 @@ from utils import *
 
 
 def get_int(gates, prefix='z'):
-    number = [1 if gates.get(f'{prefix}{index:02d}', False) else 0 for index in range(99)]
+    number = [1 if gates.get(f'{prefix}{index:02d}', False) else 0 for index in range(46)]
     value = 0
 
     for digit in reversed(number):
@@ -64,8 +64,8 @@ def parse_data(data):
     return gates, instructions
 
 
-def extract_operations(instructions):
-    operations = {}
+def extract_operations(instructions: list[str]):
+    operations: dict[tuple[str, str, str], str] = {}
 
     for instruction in instructions:
         a, op, b, _, c = instruction.split(' ')
@@ -75,7 +75,7 @@ def extract_operations(instructions):
     return operations
 
 
-def swap(instructions, n_bits=45):
+def swap(operations, n_bits=45):
     '''Swap outputs based on patterns
 
     half adder:
@@ -85,7 +85,6 @@ def swap(instructions, n_bits=45):
     C0 XOR M1 -> Z1
     R1 OR N1 -> C1
     '''
-    operations = extract_operations(instructions)
     def find_operation(a, b, op):
         return operations.get((op, a, b), None)
 
@@ -94,10 +93,8 @@ def swap(instructions, n_bits=45):
     c1 = None
 
     for index in range(n_bits):
-        number = f'{index:02d}'
-
-        m1 = find_operation(f'x{number}', f'y{number}', 'XOR')
-        n1 = find_operation(f'x{number}', f'y{number}', 'AND')
+        m1 = find_operation(f'x{index:02d}', f'y{index:02d}', 'XOR')
+        n1 = find_operation(f'x{index:02d}', f'y{index:02d}', 'AND')
 
         if c0:
             r1 = find_operation(c0, m1, 'AND')
@@ -144,8 +141,9 @@ def part1(data):
 
 def part2(data):
     _, instructions = parse_data(data)
+    operations = extract_operations(instructions)
 
-    return ','.join(sorted(swap(instructions)))
+    return ','.join(sorted(swap(operations)))
 
 
 def main():
