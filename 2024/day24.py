@@ -10,9 +10,6 @@ import typing
 from utils import *
 
 
-def get_list(gates, prefix='z'):
-    return [1 if gates.get(f'{prefix}{index:02d}', False) else 0 for index in range(99)]
-
 def get_int(gates, prefix='z'):
     number = [1 if gates.get(f'{prefix}{index:02d}', False) else 0 for index in range(99)]
     value = 0
@@ -24,19 +21,6 @@ def get_int(gates, prefix='z'):
     return value
 
 
-def follow_path(gates: dict[str, tuple[str, str, str]], goal: str, depth=3):
-    if depth == 0:
-        return f'{goal}:...'
-    if goal.startswith('x'):
-        return goal
-    elif goal.startswith('y'):
-        return goal
-
-    op, a, b = gates[goal]
-
-    return f'{goal} := ({follow_path(gates, a, depth-1)}) {op} ({follow_path(gates, b, depth-1)})'
-
-
 def add_nums(gates, instructions):
     queue = collections.deque(instructions)
     instructions_map = {}
@@ -44,7 +28,6 @@ def add_nums(gates, instructions):
     while queue:
         instruction = queue.popleft()
 
-    # for instruction in instructions:
         a, op, b, _, c = instruction.split(' ')
 
         if a not in gates or b not in gates:
@@ -65,7 +48,7 @@ def add_nums(gates, instructions):
         else:
             raise ValueError(f'Invalid Op: {op}')
 
-    return [1 if gates.get(f'z{index:02d}', False) else 0 for index in range(99)]
+    return gates
 
 
 def parse_data(data):
@@ -90,37 +73,6 @@ def extract_operations(instructions):
         operations[(op, b, a)] = c
 
     return operations
-
-
-def part1(data):
-    initials, instructions = [chunk.strip().split('\n') for chunk in ''.join(data).split('\n\n')]
-    gates: dict[str, bool] = {}
-
-    for i in initials:
-        name, value = i.split(': ')
-        gates[name] = value == '1'
-
-    queue = collections.deque(instructions)
-
-    while queue:
-        instruction = queue.popleft()
-
-        a, op, b, _, c = instruction.split(' ')
-
-        if a not in gates or b not in gates:
-            queue.append(instruction)
-            continue
-
-        if op == 'AND':
-            gates[c] = gates[a] & gates[b]
-        elif op == 'OR':
-            gates[c] = gates[a] | gates[b]
-        elif op == 'XOR':
-            gates[c] = gates[a] ^ gates[b]
-        else:
-            raise ValueError(f'Invalid Op: {op}')
-
-    return get_int(gates, 'z')
 
 
 def swap(instructions, n_bits=45):
@@ -180,6 +132,14 @@ def swap(instructions, n_bits=45):
             c0 = n1
 
     return swapped
+
+
+def part1(data):
+    initial_gates, instructions = parse_data(data)
+
+    gates = add_nums(initial_gates, instructions)
+
+    return get_int(gates, 'z')
 
 
 def part2(data):
