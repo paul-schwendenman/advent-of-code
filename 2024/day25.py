@@ -14,10 +14,6 @@ def parse_key_lock(lines):
         type = 'lock'
     elif all(char == '.' for char in lines[0]) and all(char == '#' for char in lines[-1]):
         type = 'key'
-    else:
-        print(f'{lines[0]} {lines[-1]}')
-        print(f'{lines}')
-        raise ValueError('fail')
 
     heights = []
 
@@ -47,11 +43,9 @@ def parse_data(data):
 
 def part1(data):
     locks, keys = parse_data(data)
-    print(f'{len(locks)} {len(keys)}')
     count = 0
 
     for lock, key in itertools.product(locks, keys):
-        print(f'{lock} {key} {[lock[index] + key[index] for index in range(5)]}')
         if all(lock[index] + key[index] <= 5 for index in range(5)):
             count += 1
 
