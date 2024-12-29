@@ -42,8 +42,8 @@ spells = {
     Spell(53, damage=4),
     Spell(73, damage=2, heal=2),
     Spell(113, armor=7, turns=6),
-    # Spell(173, damage=3, turns=3),
-    # Spell(229, mana=101, turns=5),
+    Spell(173, damage=3, turns=3),
+    Spell(229, mana=101, turns=5),
 }
 
 
@@ -81,9 +81,10 @@ class State(typing.NamedTuple):
 
 
 def part1(data):
-    boss, player = Boss(13, 8), Player(10, 250)
+    # boss, player = Boss(6, 8), Player(10, 250)
+    # boss, player = Boss(13, 8), Player(10, 250)
     # boss, player = Boss(14, 8), Player(10, 250)
-    # boss, player = Boss(51, 9), Player(50, 500)
+    boss, player = Boss(51, 9), Player(50, 500)
     lowest_mana = math.inf
 
     initial_state = State(player_hp=player.hit_points, player_mana=player.mana, boss_hp=boss.hit_points)
@@ -99,19 +100,46 @@ def part1(data):
         messages.append(f'- Player has {player_hp} hit points, {7 if shield_left else 0} armor, {mana} mana')
         messages.append(f'- Boss has {boss_hp} hit points')
 
+        if boss_hp <= 0:
+            print('--------------------------a')
+            for i in m:
+                print(i)
+            print('')
+            print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
+            if mana_spent < lowest_mana:
+                lowest_mana = mana_spent
+            continue
+
+
         if mana < 0:
             # print('pruning, out of mana')
             continue
+            pass
 
         if mana_spent > lowest_mana:
-            print(f'pruning {mana_spent} > {lowest_mana}')
+            # print(f'pruning {mana_spent} > {lowest_mana}')
             continue
+            pass
+
+        if player_hp <= 0:
+            raise ValueError('player hp')
 
         if poison_left:
             poison_left -= 1
             boss_hp -= 3 #magic
             messages.append(f'Poison deals 3 damage; its timer is now {poison_left}.')
             messages.append(f'Boss now has {boss_hp} hp')
+
+            if boss_hp <= 0:
+                print(f'boss hp zzz: {boss_hp} {poison_left}')
+                print('--------------------------b')
+                for i in messages:
+                    print(i)
+                print('')
+                print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
+                if mana_spent < lowest_mana:
+                    lowest_mana = mana_spent
+                continue
 
         if shield_left:
             shield_left -= 1
@@ -156,30 +184,35 @@ def part1(data):
                 elif spell.cost == 229:
                     m.append('Player casts Recharge.')
                     n_recharge_left = 5
+                else:
+                    raise ValueError('huh')
 
                 m.append(f'Spell costs {spell.cost} mana')
 
-                if boss_hp <= 0:
-                    print('---------------')
-                    for i in m:
-                        print(i)
-                    print(f'boss loses: {mana_spent} < {lowest_mana}')
-                    if mana_spent < lowest_mana:
-                        lowest_mana = mana_spent
-                    continue
+                # if n_boss_hp <= 0:
+                #     print('---------------')
+                #     for i in m:
+                #         print(i)
+                #     print(f'boss loses: {n_mana_spent} < {lowest_mana}')
+                #     print(f'{boss_hp} -> {n_boss_hp}')
+                #     if n_mana_spent < lowest_mana:
+                #         lowest_mana = n_mana_spent
+                #     continue
 
+                m.append('')
                 queue.append(State(n_player_hp, n_mana, n_boss_hp, n_mana_spent, Turn.BOSS, n_poison_left, n_shield_left, n_recharge_left, m))
         else:
             player_hp -= max(1, boss.damage - player_armor)
             messages.append(f'Boss attacks for {boss.damage} - {player_armor} = {max(1, boss.damage - player_armor)} damage!')
 
             if player_hp <= 0:
-                print('---------------')
-                for i in messages:
-                    print(i)
-                print('player loses')
+                # print('---------------')
+                # for i in messages:
+                #     print(i)
+                # print('player loses')
                 continue
 
+            messages.append('')
             queue.append(State(player_hp, mana, boss_hp, mana_spent, Turn.PLAYER, poison_left, shield_left, recharge_left, messages))
 
 
