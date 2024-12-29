@@ -11,6 +11,13 @@ import typing
 import copy
 
 
+class Turn(enum.Enum):
+    PLAYER = 0
+    BOSS = 1
+
+    def __str__(self):
+        return 'Player' if self == Turn.PLAYER else 'Boss'
+
 @dataclasses.dataclass(frozen=True)
 class Spell:
     cost: int
@@ -35,8 +42,8 @@ spells = {
     Spell(53, damage=4),
     Spell(73, damage=2, heal=2),
     Spell(113, armor=7, turns=6),
-    Spell(173, damage=3, turns=3),
-    Spell(229, mana=101, turns=5),
+    # Spell(173, damage=3, turns=3),
+    # Spell(229, mana=101, turns=5),
 }
 
 
@@ -62,10 +69,15 @@ class Boss:
 
 
 class State(typing.NamedTuple):
-    mana_spent: int
-    player: Player
-    boss: Boss
-    effects: typing.Set[Spell]
+    player_hp: int
+    player_mana: int
+    boss_hp: int
+    mana_spent: int = 0
+    turn: Turn = Turn.PLAYER
+    poison_left: int = 0
+    shield_left: int = 0
+    recharge_left: int = 0
+    messages: list[str] = []
 
 
 def part1(data):
@@ -74,56 +86,108 @@ def part1(data):
     # boss, player = Boss(51, 9), Player(50, 500)
     lowest_mana = math.inf
 
-    initial_state = State(0, player, boss, set())
+    initial_state = State(player_hp=player.hit_points, player_mana=player.mana, boss_hp=boss.hit_points)
 
     queue: collections.deque[State] = collections.deque([initial_state])
 
     while len(queue) > 0:
-        print(f'states={len(queue)}')
+        # print(f'states={len(queue)}')
         state = queue.popleft()
-        mana_spent, _, _, effects = state
+        player_hp, mana, boss_hp, mana_spent, turn, poison_left, shield_left, recharge_left, messages = state
+        player_armor = 0
+        messages.append(f'-- {turn} turn --')
+        messages.append(f'- Player has {player_hp} hit points, {7 if shield_left else 0} armor, {mana} mana')
+        messages.append(f'- Boss has {boss_hp} hit points')
 
-        if mana_spent > lowest_mana:
+        if mana < 0:
+            # print('pruning, out of mana')
             continue
 
-        print(f'Available spells: {len(spells - effects)}')
-        for spell in spells - effects:
-            player = copy.copy(state.player)
-            boss = copy.copy(state.boss)
+        if mana_spent > lowest_mana:
+            print(f'pruning {mana_spent} > {lowest_mana}')
+            continue
 
-            if spell.cost > player.mana:
-                # print(f'Spell too expensive: {spell.cost} > {player.mana}')
+        if poison_left:
+            poison_left -= 1
+            boss_hp -= 3 #magic
+            messages.append(f'Poison deals 3 damage; its timer is now {poison_left}.')
+            messages.append(f'Boss now has {boss_hp} hp')
+
+        if shield_left:
+            shield_left -= 1
+            player_armor = 7 #magic
+            messages.append(f'Shield\'s timer is now {shield_left}.')
+
+        if recharge_left:
+            recharge_left -= 1
+            mana += 101 #magic
+            messages.append(f'Recharge provides 101 mana; its timer is now {recharge_left}.')
+            messages.append(f'Player now has {mana} mana')
+
+        if turn == Turn.PLAYER:
+            for spell in spells:
+                n_player_hp = player_hp
+                n_boss_hp = boss_hp
+                n_mana = mana - spell.cost
+                n_mana_spent = mana_spent + spell.cost
+                n_poison_left, n_shield_left, n_recharge_left = poison_left, shield_left, recharge_left
+
+                m = copy.copy(messages)
+                if spell.turns and spell.armor and shield_left:
+                    continue
+                elif spell.turns and spell.damage and poison_left:
+                    continue
+                elif spell.turns and spell.mana and recharge_left:
+                    continue
+
+                if spell.cost == 73: #magic
+                    m.append('Player casts Drain, dealing 2 damage, and healing 2 hit points.')
+                    n_player_hp += 2
+                    n_boss_hp -= 2
+                elif spell.cost == 53: #magic
+                    m.append('Player casts Magic Missile, dealing 4 damage.')
+                    n_boss_hp -= 4
+                elif spell.cost == 113:
+                    m.append('Player casts Shield, increasing armor by 7.')
+                    n_shield_left = 6
+                elif spell.cost == 173:
+                    m.append('Player casts Poison.')
+                    n_poison_left = 6
+                elif spell.cost == 229:
+                    m.append('Player casts Recharge.')
+                    n_recharge_left = 5
+
+                m.append(f'Spell costs {spell.cost} mana')
+
+                if boss_hp <= 0:
+                    print('---------------')
+                    for i in m:
+                        print(i)
+                    print(f'boss loses: {mana_spent} < {lowest_mana}')
+                    if mana_spent < lowest_mana:
+                        lowest_mana = mana_spent
+                    continue
+
+                queue.append(State(n_player_hp, n_mana, n_boss_hp, n_mana_spent, Turn.BOSS, n_poison_left, n_shield_left, n_recharge_left, m))
+        else:
+            player_hp -= max(1, boss.damage - player_armor)
+            messages.append(f'Boss attacks for {boss.damage} - {player_armor} = {max(1, boss.damage - player_armor)} damage!')
+
+            if player_hp <= 0:
+                print('---------------')
+                for i in messages:
+                    print(i)
+                print('player loses')
                 continue
-            else:
-                # print(f'Casting spell: {spell.cost} < {player.mana}: {mana_spent}')
-                player.mana -= spell.cost
-                next_mana_spent = mana_spent + spell.cost
 
-                if spell.is_effect:
-                    effects.add(Spell)
-                else:
-                    boss.hit_points -= spell.damage
-                    player.hit_points += spell.heal
-
-            if boss.hit_points <= 0:
-                print(f'Boss loses')
-                lowest_mana = min(lowest_mana, mana_spent)
-                continue
-
-            player.hit_points -= min(1, boss.damage - player.armor)
-
-            if player.hit_points <= 0:
-                print(f'Player losses')
-                continue
-
-            queue.append(State(next_mana_spent, player, boss, effects))
+            queue.append(State(player_hp, mana, boss_hp, mana_spent, Turn.PLAYER, poison_left, shield_left, recharge_left, messages))
 
 
             pass
 
         pass
 
-    pass
+    return lowest_mana
 
 
 def part2(data):
