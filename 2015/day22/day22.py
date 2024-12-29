@@ -80,7 +80,7 @@ class State(typing.NamedTuple):
     messages: list[str] = []
 
 
-def part1(data):
+def part1(data, mode='easy'):
     # boss, player = Boss(6, 8), Player(10, 250)
     # boss, player = Boss(13, 8), Player(10, 250)
     # boss, player = Boss(14, 8), Player(10, 250)
@@ -100,7 +100,7 @@ def part1(data):
         messages.append(f'- Player has {player_hp} hit points, {7 if shield_left else 0} armor, {mana} mana')
         messages.append(f'- Boss has {boss_hp} hit points')
 
-        if turn == Turn.PLAYER:
+        if turn == Turn.PLAYER and mode == 'hard':
             player_hp -= 1
         if player_hp == 0:
             continue
@@ -115,7 +115,7 @@ def part1(data):
             # for i in m:
             #     print(i)
             # print('')
-            print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
+            # print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
             if mana_spent < lowest_mana:
                 lowest_mana = mana_spent
             continue
@@ -136,12 +136,12 @@ def part1(data):
             messages.append(f'Boss now has {boss_hp} hp')
 
             if boss_hp <= 0:
-                print(f'boss hp zzz: {boss_hp} {poison_left}')
+                # print(f'boss hp zzz: {boss_hp} {poison_left}')
                 # print('--------------------------b')
                 # for i in messages:
                 #     print(i)
                 # print('')
-                print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
+                # print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
                 if mana_spent < lowest_mana:
                     lowest_mana = mana_spent
                 continue
@@ -229,7 +229,7 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    return part1(data, mode='hard')
 
 
 def main():
