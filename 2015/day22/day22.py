@@ -100,21 +100,26 @@ def part1(data):
         messages.append(f'- Player has {player_hp} hit points, {7 if shield_left else 0} armor, {mana} mana')
         messages.append(f'- Boss has {boss_hp} hit points')
 
-        if boss_hp <= 0:
-            print('--------------------------a')
-            for i in m:
-                print(i)
-            print('')
-            print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
-            if mana_spent < lowest_mana:
-                lowest_mana = mana_spent
+        if turn == Turn.PLAYER:
+            player_hp -= 1
+        if player_hp == 0:
             continue
-
 
         if mana < 0:
             # print('pruning, out of mana')
             continue
             pass
+
+        if boss_hp <= 0:
+            # print('--------------------------a')
+            # for i in m:
+            #     print(i)
+            # print('')
+            print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
+            if mana_spent < lowest_mana:
+                lowest_mana = mana_spent
+            continue
+
 
         if mana_spent > lowest_mana:
             # print(f'pruning {mana_spent} > {lowest_mana}')
@@ -132,10 +137,10 @@ def part1(data):
 
             if boss_hp <= 0:
                 print(f'boss hp zzz: {boss_hp} {poison_left}')
-                print('--------------------------b')
-                for i in messages:
-                    print(i)
-                print('')
+                # print('--------------------------b')
+                # for i in messages:
+                #     print(i)
+                # print('')
                 print(f'boss loses: {mana_spent} < {lowest_mana} left {mana}')
                 if mana_spent < lowest_mana:
                     lowest_mana = mana_spent
