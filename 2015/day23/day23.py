@@ -34,12 +34,11 @@ def parse_program(data: typing.Iterator[str]):
 def run_program(instructions, reg_a, reg_b, cursor=0):
     while cursor < len(instructions):
         opcode, *args = instructions[cursor]
-        print(f'{cursor:2d}. reg_a={reg_a}\t reg_b={reg_b}\t {opcode} {args}')
+        # print(f'{cursor:2d}. reg_a={reg_a}\t reg_b={reg_b}\t {opcode} {args}')
         jump = 1
 
         match opcode, args[0]:
             case 'hlf', 'a':
-                print(f'{reg_a} {reg_a >> 1}')
                 reg_a = reg_a >> 1
 
             case 'hlf', 'b':
@@ -80,7 +79,7 @@ def run_program(instructions, reg_a, reg_b, cursor=0):
                 raise ValueError(f'{opcode}')
 
 
-        print(f'{cursor:2d}. reg_a={reg_a}\t reg_b={reg_b} going to {cursor + jump}')
+        # print(f'{cursor:2d}. reg_a={reg_a}\t reg_b={reg_b} going to {cursor + jump}')
         cursor += jump
     return reg_a, reg_b
 
@@ -89,14 +88,18 @@ def run_program(instructions, reg_a, reg_b, cursor=0):
 def part1(data):
     instructions = parse_program(data)
 
-    # pprint.pprint(instructions)
+    _, b = run_program(instructions, 0, 0)
 
-    return run_program(instructions, 0, 0)
+    return b
     pass
 
 
 def part2(data):
-    pass
+    instructions = parse_program(data)
+
+    _, b = run_program(instructions, 1, 0)
+
+    return b
 
 
 def main():
