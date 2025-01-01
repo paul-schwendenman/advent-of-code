@@ -11,7 +11,7 @@ def walk_path(instructions):
 
     for instruction in instructions:
         instruction = instruction.strip()
-        turn, length = instruction[0], int(instruction[1])
+        turn, length = instruction[0], int(instruction[1:])
 
         if turn == 'L':
             f *= -1j
