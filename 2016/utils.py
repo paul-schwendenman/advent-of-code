@@ -4,6 +4,7 @@ from enum import Enum
 from math import log10
 from re import findall
 from typing import TextIO, Dict
+from itertools import islice
 
 
 def extract_ints(string: str) -> list[int]:
@@ -102,3 +103,20 @@ def parse_grid(data: TextIO, *, exclude=''):
                 markers[char].append(here)
 
     return grid, i, j, markers
+
+
+def batched(iterable, n, *, strict=False):
+    '''Batch data from the iterable into tuples of length n. The last batch may be shorter than n.
+
+    >>> flattened_data = ['roses', 'red', 'violets', 'blue', 'sugar', 'sweet']
+    >>> unflattened = list(batched(flattened_data, 2))
+    >>> unflattened
+    [('roses', 'red'), ('violets', 'blue'), ('sugar', 'sweet')]
+    '''
+    if n < 1:
+        raise ValueError('n must be at least one')
+    iterator = iter(iterable)
+    while batch := tuple(islice(iterator, n)):
+        if strict and len(batch) != n:
+            raise ValueError('batched(): incomplete batch')
+        yield batch
