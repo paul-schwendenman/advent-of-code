@@ -16,6 +16,14 @@ def check_triangle(triangle):
     return a <= b <= c and a + b > c
 
 
+def get_vertical_triangles(lines):
+    for l1, l2, l3 in batched(lines, 3):
+        yield l1[0], l2[0], l3[0]
+        yield l1[1], l2[1], l3[1]
+        yield l1[2], l2[2], l3[2]
+    pass
+
+
 def part1(data):
     triangles = [extract_ints(line) for line in data]
 
@@ -23,7 +31,11 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    lines = [extract_ints(line) for line in data]
+
+    triangles = get_vertical_triangles(lines)
+
+    return sum(1 for triangle in triangles if check_triangle(triangle))
 
 
 def main():
