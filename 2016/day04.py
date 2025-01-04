@@ -52,7 +52,11 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    rooms = [check_room(line) for line in data]
+
+    room = [room for room in rooms if 'north' in room.name][0]
+
+    return room.sector_id
 
 
 def main():
