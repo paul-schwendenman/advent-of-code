@@ -14,7 +14,7 @@ from utils import *
 4 5 6
 7 8 9
 '''
-keypad = {
+keypad_1 = {
     Point(0, 0): '1',
     Point(1, 0): '2',
     Point(2, 0): '3',
@@ -33,7 +33,7 @@ keypad = {
   A B C
     D
 '''
-keypad = {
+keypad_2 = {
     Point(0, -2): '1',
     Point(-1, -1): '2',
     Point(0, -1): '3',
@@ -58,9 +58,8 @@ directions = {
 }
 
 
-def part1(data):
+def solve(data, keypad, location):
     nums = ""
-    location = Point(-2, 0)
 
     for line in data:
         for char in line.rstrip():
@@ -74,8 +73,12 @@ def part1(data):
     return (nums)
 
 
+def part1(data):
+    return solve(data, keypad_1, Point(1, 1))
+
+
 def part2(data):
-    pass
+    return solve(data, keypad_2, Point(-2, 0))
 
 
 def main():
