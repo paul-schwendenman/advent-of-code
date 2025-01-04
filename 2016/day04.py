@@ -15,11 +15,12 @@ class Room(collections.namedtuple('Room', 'encrypted_name sector_id checksum val
 
 
 def calc_checksum(encrypted_name):
+    key = lambda item: (-item[1], item[0])
     c = collections.Counter(encrypted_name)
     del c['-']
-    pairs = c.most_common(5)
+    pairs = c.most_common()
 
-    return ''.join(pair[0] for pair in pairs)
+    return ''.join(pair[0] for pair in sorted(pairs, key=key))[:5]
 
 
 def check_room(line):
