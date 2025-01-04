@@ -38,7 +38,7 @@ def test_room_example4():
 
 
 def test_room_decryption():
-    assert check_room('qzmt-zixmtkozy-ivhz-343[fake]').name == 'very encrypted name'
+    assert check_room('qzmt-zixmtkozy-ivhz-343').name == 'very encrypted name'
 
 
 def test_part1_example(example_data):

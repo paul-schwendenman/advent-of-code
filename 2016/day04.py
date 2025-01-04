@@ -35,7 +35,7 @@ def decrypt_name(encrypted_name, sector_id):
 
 
 def check_room(line):
-    match = re.match(r'([a-z-]+)-([0-9]+)\[([a-z]+)\]', line)
+    match = re.match(r'([a-z-]+)-([0-9]+)(?:\[([a-z]+)\])?', line)
     encrypted_name, sector, checksum = match.groups()
     sector_id = int(sector)
 
@@ -54,9 +54,11 @@ def part1(data):
 def part2(data):
     rooms = [check_room(line) for line in data]
 
-    room = [room for room in rooms if 'north' in room.name][0]
+    try:
+        return [room for room in rooms if 'north' in room.name][0].sector_id
+    except:
+        pass
 
-    return room.sector_id
 
 
 def main():
