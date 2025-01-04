@@ -9,7 +9,11 @@ import pprint
 import typing
 from utils import *
 
-
+'''
+1 2 3
+4 5 6
+7 8 9
+'''
 keypad = {
     Point(0, 0): '1',
     Point(1, 0): '2',
@@ -20,6 +24,29 @@ keypad = {
     Point(0, 2): '7',
     Point(1, 2): '8',
     Point(2, 2): '9',
+}
+
+'''
+    1
+  2 3 4
+5 6 7 8 9
+  A B C
+    D
+'''
+keypad = {
+    Point(0, -2): '1',
+    Point(-1, -1): '2',
+    Point(0, -1): '3',
+    Point(1, -1): '4',
+    Point(-2, 0): '5',
+    Point(-1, 0): '6',
+    Point(0, 0): '7',
+    Point(1, 0): '8',
+    Point(2, 0): '9',
+    Point(-1, 1): 'A',
+    Point(0, 1): 'B',
+    Point(1, 1): 'C',
+    Point(0, 2): 'D',
 }
 
 
@@ -33,7 +60,7 @@ directions = {
 
 def part1(data):
     nums = ""
-    location = Point(1,1)
+    location = Point(-2, 0)
 
     for line in data:
         for char in line.rstrip():
@@ -44,7 +71,7 @@ def part1(data):
 
         nums += keypad[location]
 
-    return int(nums)
+    return (nums)
 
 
 def part2(data):
