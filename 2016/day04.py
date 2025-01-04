@@ -10,7 +10,7 @@ import typing
 from utils import *
 
 
-class Room(collections.namedtuple('Room', 'encrypted_name sector_id checksum valid')):
+class Room(collections.namedtuple('Room', 'encrypted_name sector_id checksum valid name')):
     __slots__ = ()
 
 
@@ -23,13 +23,26 @@ def calc_checksum(encrypted_name):
     return ''.join(pair[0] for pair in sorted(pairs, key=key))[:5]
 
 
+def decrypt_name(encrypted_name, sector_id):
+    def d(c):
+        if c == '-':
+            return ' '
+
+        return chr(((ord(c) - ord('a') + sector_id) % 26) + ord('a'))
+        pass
+
+    return ''.join(d(c) for c in encrypted_name)
+
+
 def check_room(line):
     match = re.match(r'([a-z-]+)-([0-9]+)\[([a-z]+)\]', line)
-    encrypted_name, sector_id, checksum = match.groups()
+    encrypted_name, sector, checksum = match.groups()
+    sector_id = int(sector)
 
     valid = checksum == calc_checksum(encrypted_name)
+    name = decrypt_name(encrypted_name, sector_id)
 
-    return Room(encrypted_name, int(sector_id), checksum, valid)
+    return Room(encrypted_name, sector_id, checksum, valid, name)
 
 
 def part1(data):

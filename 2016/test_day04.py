@@ -37,6 +37,10 @@ def test_room_example4():
     assert not check_room('totally-real-room-200[decoy]').valid
 
 
+def test_room_decryption():
+    assert check_room('qzmt-zixmtkozy-ivhz-343[fake]').name == 'very encrypted name'
+
+
 def test_part1_example(example_data):
     assert part1(example_data) == 1514
 
