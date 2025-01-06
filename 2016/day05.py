@@ -38,7 +38,7 @@ def part2(data):
         position = int(hashed[5], base=16)
         value = hashed[6]
 
-        if 0 <= position < 8:
+        if 0 <= position < 8 and position not in password:
             password[position] = value
             print('\r' + ''.join(password.get(i, ' ') for i in range(8)), end='')
 
