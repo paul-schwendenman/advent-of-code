@@ -18,7 +18,10 @@ def part1(data):
 
 
 def part2(data):
-    pass
+    lines = [line.rstrip() for line in data]
+    columns = [col for col in zip(*lines)]
+
+    return ''.join(collections.Counter(column).most_common()[-1][0] for column in columns)
 
 
 def main():
