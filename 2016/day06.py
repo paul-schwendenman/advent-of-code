@@ -11,7 +11,17 @@ from utils import *
 
 
 def part1(data):
-    pass
+    lines = [line.rstrip() for line in data]
+    columns = [col for col in zip(*lines)]
+
+    value = ''
+
+    for column in columns:
+        c = collections.Counter(column)
+
+        value += c.most_common(1)[0][0]
+
+    return value
 
 
 def part2(data):
