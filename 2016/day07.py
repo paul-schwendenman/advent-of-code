@@ -11,26 +11,13 @@ from utils import *
 
 
 def check_ip(ip):
-    print(f'--- {ip} ----')
-    match = re.match(r'.*(\w)(\w)\2\1', ip)
+    matches = re.findall(r'(.?(\w)(\w)\3\2.?)', ip)
 
-    if not match:
-        print(f'skipping: {ip}')
-        return False
+    has_abba = any(match[1] != match[2] for match in matches)
+    has_hypernet_abba = not all(match[0][0] != '[' and match[0][-1] != ']' for match in matches)
 
-    print(f'group: {match.groups()}')
 
-    match2 = re.match(r'.*\[(\w)(\w)\2\1\]', ip)
-
-    if match2:
-        return False
-    groups = match.group()
-
-    if groups[0] == groups[1]:
-        return False
-
-    print(match, match2)
-    return True
+    return has_abba and not has_hypernet_abba
 
 
 def part1(data):
