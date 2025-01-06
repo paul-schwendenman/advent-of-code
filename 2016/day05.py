@@ -7,11 +7,23 @@ import collections
 import enum
 import pprint
 import typing
+import hashlib
 from utils import *
 
 
 def part1(data):
-    pass
+    door_id = [line.rstrip() for line in data][0]
+
+    password = ''
+    index = 0
+
+    for _ in range(8):
+        while not (hashed := hashlib.md5((door_id + str(index)).encode('utf-8')).hexdigest()).startswith('00000'):
+            index += 1
+        password += hashed[5]
+        index += 1
+
+    return password
 
 
 def part2(data):
