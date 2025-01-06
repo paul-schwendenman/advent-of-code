@@ -14,14 +14,7 @@ def part1(data):
     lines = [line.rstrip() for line in data]
     columns = [col for col in zip(*lines)]
 
-    value = ''
-
-    for column in columns:
-        c = collections.Counter(column)
-
-        value += c.most_common(1)[0][0]
-
-    return value
+    return ''.join(collections.Counter(column).most_common(1)[0][0] for column in columns)
 
 
 def part2(data):
