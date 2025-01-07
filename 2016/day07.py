@@ -25,23 +25,12 @@ def check_ssl(ip):
 
     chunks = [ip[i-2:i+1] for i in range(2, len(ip)) if ip[i-2] == ip[i] and ip[i] != ip[i-1]]
 
-    print(hyper)
-
-    print(chunks)
-
     for chunk in chunks:
         hcukn = chunk[1] + chunk[0] + chunk[1]
 
-        # if chunk[0] == chunk[1]:
-        #     continue
-
         for h in hyper:
-            # print(f'{hcukn} {chunk} \t {ip}')
             if hcukn in h:
-                # print(f'{hcukn} {chunk} \t {ip}')
                 return True
-    else:
-        print(f'no matches: {ip}')
 
     return False
 
