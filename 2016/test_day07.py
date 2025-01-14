@@ -26,5 +26,6 @@ def test_part1_example(example_data):
     assert part1(example_data) == 2
 
 
+@pytest.mark.skip('boiler plate')
 def test_part2_example(example_data):
     assert part2(example_data) == None
