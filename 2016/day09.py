@@ -29,7 +29,7 @@ def decompress2(file):
     bracket = re.search(r'\((\d+)x(\d+)\)', file)
 
     if not bracket:
-        return file
+        return len(file)
 
     position = bracket.start(0)
     length = int(bracket.group(1))
@@ -37,7 +37,7 @@ def decompress2(file):
     start = position + len(bracket.group())
     end = start + length
 
-    return file[:position] + decompress2(file[start:end]) * repeat + decompress2(file[end:])
+    return len(file[:position]) + decompress2(file[start:end]) * repeat + decompress2(file[end:])
 
 
 def part1(data):
@@ -45,7 +45,7 @@ def part1(data):
 
 
 def part2(data):
-    return len(decompress2(''.join(line.rstrip() for line in data)))
+    return (decompress2(''.join(line.rstrip() for line in data)))
 
 
 def main():
