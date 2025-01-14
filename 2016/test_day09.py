@@ -37,7 +37,7 @@ def test_decompress_double():
 
 
 def test_part1_example(example_data):
-    assert part1(example_data) == None
+    assert part1(example_data) == 18
 
 
 def test_part2_example(example_data):
