@@ -38,14 +38,14 @@ def parse_instructions(lines):
 
 
 
-def part1(data):
+def sim(data):
     robots, instructions = parse_instructions(data)
     values = collections.defaultdict(list)
 
     queue = collections.deque(instructions)
 
     # print(robots)
-    print(instructions)
+    # print(instructions)
 
     while queue:
         instruction = queue.popleft()
@@ -61,14 +61,17 @@ def part1(data):
             for bot, value in [(low_bot, v[0]), (high_bot, v[1])]:
                 queue.append(Instruction(bot, value))
 
-    print(values)
+    return values
+
+
+def part1(data):
+    values = sim(data)
 
     for key, value in values.items():
         if (s := sorted(value)) == [2, 5]:
             return key
         elif s == [17, 61]:
             return key
-    pass
 
 
 def part2(data):
