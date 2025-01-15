@@ -75,6 +75,9 @@ def part1(data):
 
 
 def part2(data):
+    values = sim(data)
+
+    return values['o0'][0] * values['o1'][0] * values['o2'][0]
     pass
 
 
